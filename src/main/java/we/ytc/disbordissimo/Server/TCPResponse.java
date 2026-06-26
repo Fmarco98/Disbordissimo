@@ -1,10 +1,13 @@
 package we.ytc.disbordissimo.Server;
 
+import we.ytc.disbordissimo.Common.JsonIO;
+import we.ytc.disbordissimo.Server.commands.CommandResponse;
 import we.ytc.disbordissimo.Server.utils.logger.Logger;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,10 +15,12 @@ public class TCPResponse extends Thread {
 
     private Socket client;
     private List<TCPResponse> activeResponses;
+    private List<CommandResponse> commandHandlers;
 
-    public TCPResponse(Socket client, List<TCPResponse> activeResponses) {
+    public TCPResponse(Socket client, List<TCPResponse> activeResponses, List<CommandResponse> commandsHandlers) {
         this.client = client;
         this.activeResponses = activeResponses;
+        this.commandHandlers = commandsHandlers;
 
         synchronized (this.activeResponses) {
             this.activeResponses.add(this);
@@ -36,15 +41,19 @@ public class TCPResponse extends Thread {
             throw new RuntimeException(e);
         }
 
-        String request = in.nextLine();
-        Logger.logMsg(request);
-        //compute the request
-        String result = "result";
+        JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
 
-        out.println(result);
+        var ref = new Object() {JsonIO.Resp response;};
+        this.commandHandlers.stream().forEach(command -> {
+            if(command.getCommandName().equals(request.cmdName)) {
+                ref.response = command.onPerformed((String[]) request.params.toArray());
+            }
+        });
+
+        out.println(JsonIO.serializeResp(ref.response));
+
         in.close();
         out.close();
-
         this.closeTCPResponse();
     }
 
