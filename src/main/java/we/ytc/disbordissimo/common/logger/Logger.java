@@ -6,6 +6,8 @@ import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+//TODO: rivedere documentazione (aggiornamento static->object)
+
 /**
  * <h1>Logger class</h1>
  * A simple Logger. It writes into serr and sout stream based on the log message level. <br>
