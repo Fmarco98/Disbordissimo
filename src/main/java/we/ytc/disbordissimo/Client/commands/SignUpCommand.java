@@ -3,9 +3,13 @@ package we.ytc.disbordissimo.Client.commands;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import we.ytc.disbordissimo.Client.Main;
+import we.ytc.disbordissimo.Common.HashUtils;
 import we.ytc.disbordissimo.Server.utils.logger.Logger;
+import we.ytc.disbordissimo.Common.JsonIO;
 
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -25,19 +29,22 @@ public class SignUpCommand extends Command<Void>{
 
     @Override
     public Void onPerformed(Object... params) {
-        super.openSocket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
+        try {
+            super.openSocket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
 
-        HashMap<String, Object> jsonRequestContent = new HashMap<>();
-        jsonRequestContent.put("command", this.getCommandName());
-        jsonRequestContent.put("params", List.of(params));
+            String pswd = params[1].toString();
 
-        Gson gson = new GsonBuilder().create();
-        String request = gson.toJson(jsonRequestContent);
+            JsonIO.Req req = new JsonIO.Req("sign-up", List.of(params[0], HashUtils.fromStringToHashedHex(pswd)));
+            Gson gson = new GsonBuilder().create();
+            String request = gson.toJson(req);
 
-        super.send(request);
-        Logger.logMsg(super.recv());
+            super.send(request);
+            Logger.logMsg(super.recv());
 
-        super.closeSocket();
-        return null;
+            super.closeSocket();
+            return null;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
