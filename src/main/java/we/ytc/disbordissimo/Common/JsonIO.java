@@ -7,7 +7,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class JsonIO {
-    private Gson gson = new GsonBuilder().create();
+    private static final Gson gson = new GsonBuilder().create();
+    private JsonIO() {}
 
     public static class Req {
         public Req(String cmdName, List<Object> params) {
@@ -35,19 +36,19 @@ public class JsonIO {
         public List<Object> result;
     }
 
-    public Req deserializeReq(String json) {
+    public static Req deserializeReq(String json) {
         return gson.fromJson(json, Req.class);
     }
 
-    public String serializeReq(Req req) {
+    public static String serializeReq(Req req) {
         return gson.toJson(req);
     }
 
-    public Resp deserializeResp(String json) {
+    public static Resp deserializeResp(String json) {
         return gson.fromJson(json, Resp.class);
     }
 
-    public String serializeResp(Resp resp) {
+    public static String serializeResp(Resp resp) {
         return gson.toJson(resp);
     }
 }
