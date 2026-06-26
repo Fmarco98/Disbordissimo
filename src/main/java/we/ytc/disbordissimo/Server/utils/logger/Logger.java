@@ -181,7 +181,7 @@ public final class Logger {
      * @throws FileSetUpError
      */
     public static synchronized void fileSetUp() throws FileSetUpError {
-        Logger.fileSetUp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))+".log");
+        Logger.fileSetUp("logs/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))+".log");
     }
 
     /**

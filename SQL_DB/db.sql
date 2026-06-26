@@ -1,15 +1,16 @@
-CREATE DATABASE disbordissimo;
-
 START TRANSACTION;
 
-CREATE TABLE db_info(
+CREATE DATABASE IF NOT EXISTS disbordissimo;
+USE disbordissimo;
+
+CREATE TABLE IF NOT EXISTS db_info(
 	version VARCHAR(10) NOT NULL,
     creation_date DATETIME NOT NULL DEFAULT now(),
     last_update DATETIME NOT NULL DEFAULT now(),
     project VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE Users(
+CREATE TABLE IF NOT EXISTS Users(
 	id_user BIGINT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL UNIQUE,
     passwd VARCHAR(32) NOT NULL,
@@ -17,7 +18,7 @@ CREATE TABLE Users(
     delete_datetime DATETIME DEFAULT NULL
 );
 
-CREATE TABLE Guilds(
+CREATE TABLE IF NOT EXISTS Guilds(
 	id_guild BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL UNIQUE,
 
@@ -25,7 +26,7 @@ CREATE TABLE Guilds(
     FOREIGN KEY(fk_owner) REFERENCES Users(id_user)
 );
 
-CREATE TABLE Users_Guilds(
+CREATE TABLE IF NOT EXISTS Users_Guilds(
 	id_users_guilds BIGINT PRIMARY KEY AUTO_INCREMENT,
 
     fk_user BIGINT NOT NULL,
@@ -35,7 +36,7 @@ CREATE TABLE Users_Guilds(
     FOREIGN KEY (fK_guild) REFERENCES Guilds(id_guild)
 );
 
-CREATE TABLE Channels(
+CREATE TABLE IF NOT EXISTS Channels(
 	id_channel BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(30) NOT NULL,
 
