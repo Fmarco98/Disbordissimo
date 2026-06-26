@@ -9,13 +9,13 @@ import java.util.List;
 public class JsonIO {
 
     public static final int SUCCESS_CODE = 0;
-    public static final String SUCCESS_MSG = "Success";
+    public static final String SUCCESS_MSG = "Ok";
 
     private static final Gson gson = new GsonBuilder().create();
     private JsonIO() {}
 
     public static class Req {
-        public Req(String cmdName, List<Object> params) {
+        public Req(String cmdName, List<String> params) {
             this.cmdName = cmdName;
             this.params = params;
         }
@@ -24,11 +24,11 @@ public class JsonIO {
         public String cmdName;
 
         @SerializedName("params")
-        public List<Object> params;
+        public List<String> params;
     }
 
     public static class Resp {
-        public Resp(int code, String msgCode, List<Object> result) {
+        public Resp(int code, String msgCode, List<String> result) {
             this.code = code;
             this.result = result;
             this.msgCode = msgCode;
@@ -41,7 +41,7 @@ public class JsonIO {
         public String msgCode;
 
         @SerializedName("result")
-        public List<Object> result;
+        public List<String> result;
     }
 
     public static Req deserializeReq(String json) {

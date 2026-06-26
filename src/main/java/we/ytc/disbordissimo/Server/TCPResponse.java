@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.random.RandomGenerator;
 
 public class TCPResponse extends Thread {
 
@@ -46,7 +47,7 @@ public class TCPResponse extends Thread {
         var ref = new Object() {JsonIO.Resp response;};
         this.commandHandlers.stream().forEach(command -> {
             if(command.getCommandName().equals(request.cmdName)) {
-                ref.response = command.onPerformed((String[]) request.params.toArray());
+                ref.response = command.onPerformed(toArray(request.params));
             }
         });
 
@@ -64,5 +65,13 @@ public class TCPResponse extends Thread {
         synchronized (this.activeResponses) {
             this.activeResponses.remove(this);
         }
+    }
+
+    private String[] toArray(List<String> list) {
+        var arr = new String[list.size()];
+        for(int i=0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+        return  arr;
     }
 }

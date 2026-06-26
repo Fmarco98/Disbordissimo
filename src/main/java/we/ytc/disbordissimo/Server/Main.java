@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.Server;
 
 import we.ytc.disbordissimo.Server.commands.CommandResponse;
+import we.ytc.disbordissimo.Server.commands.SignUpCommandResponse;
 import we.ytc.disbordissimo.Server.utils.db.DBManager;
 import we.ytc.disbordissimo.Server.utils.logger.Logger;
 import we.ytc.disbordissimo.TempConfig;
@@ -26,12 +27,12 @@ public class Main {
         String db_user = TempConfig.DB_USER;
         String db_pwd = TempConfig.DB_PWD;
         String db_name = TempConfig.DB_NAME;
-        Main.db = new DBManager(db_name, db_pwd, db_name);
+        //Main.db = new DBManager(db_user, db_pwd, db_name);
         Logger.logDebug("Connected to SQL DB: "+db_name+"@"+db_user);
 
         //Setup comandi
         List<CommandResponse> commandsHandlers = new ArrayList<>();
-
+        commandsHandlers.add(new SignUpCommandResponse());
 
         //Server UDP setup
 
