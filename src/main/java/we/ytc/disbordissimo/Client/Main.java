@@ -3,12 +3,6 @@ package we.ytc.disbordissimo.Client;
 import we.ytc.disbordissimo.Client.commands.Command;
 import we.ytc.disbordissimo.Client.commands.SignUpCommand;
 import we.ytc.disbordissimo.TempConfig;
-import we.ytc.disbordissimo.Server.utils.logger.Logger;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.net.Socket;
-import java.util.Scanner;
 
 public class Main {
 

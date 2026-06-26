@@ -12,13 +12,13 @@ import java.time.format.DateTimeFormatter;
  * <h1>Logger class</h1>
  * A simple Logger. It writes into serr and sout stream based on the log message level. <br>
  * Feature: <br>
- *  - Write into a logfile (if is setup) <br>
- *  - Console colors <br>
+ *  - Write into a logfile (if is set up) <br>
+ *  - In-Console colors <br>
  *  - Thread safe <br>
  * <br>
- * Log message level are defined in {@code Logger.Type}
+ * Log message level are defined in {@link Logger.Type}
  * <br><br>
- * Funtcions:<br>
+ * Functions:<br>
  *  - log(..)<br>
  *  - lognl(..)<br>
  *  - logMsg(..)<br>
@@ -45,9 +45,11 @@ public final class Logger {
         DEBUG("DEBUG");
 
         private String type;
+
         Type(String type) {
             this.type = type;
         }
+
         @Override
         public String toString() {
             return this.type;
@@ -65,7 +67,7 @@ public final class Logger {
     private static FileManager fm;
 
     /**
-     * Logs a message (without new line). The log operation is performed based on the given message {@code level}.
+     * Logs a message (without new line). The log operation is performed at the given {@code level}.
      *
      * @param level
      *        Logging message level type
@@ -77,7 +79,7 @@ public final class Logger {
     }
 
     /**
-     * Logs a message (with new line). The log operation is performed based on the given message {@code level}.
+     * Logs a message (with new line). The log operation is performed at the given {@code level}.
      *
      * @param level
      *        Logging message level type
@@ -129,7 +131,7 @@ public final class Logger {
     }
 
     /**
-     * Logs a message. The log operation is performed based on the given message {@code level}.
+     * Logs a message. The log operation is performed at the given {@code level}.
      * If {@code nl} is true, the {@code msg} will be printed with a new line char.
      *
      *

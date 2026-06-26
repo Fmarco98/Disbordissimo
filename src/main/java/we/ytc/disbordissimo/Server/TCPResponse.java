@@ -39,9 +39,9 @@ public class TCPResponse extends Thread {
         String request = in.nextLine();
         Logger.logMsg(request);
         //compute the request
-        String resutl = "result";
+        String result = "result";
 
-        out.println(resutl);
+        out.println(result);
         in.close();
         out.close();
 

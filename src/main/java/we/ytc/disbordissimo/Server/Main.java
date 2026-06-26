@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
 
     public static DBManager db;
-    public static HashMap<Long, Long> voiceChatUsers = new HashMap<>(); //HasMap: <user, channel>
+    public static HashMap<Long, Long> voiceChatUsers = new HashMap<>(); //HashMap: <user, channel>
 
     public static void main(String[] args) throws Exception {
         //Logger.fileSetUp();
@@ -37,8 +37,8 @@ public class Main {
         Logger.logDebug("TCP server opened on: %:" + port);
         List<TCPResponse> activeResponses = new LinkedList<>();
 
-        boolean runnig = true;
-        while(runnig) {
+        boolean running = true;
+        while(running) {
             Socket client = server.accept();
 
             TCPResponse response = new TCPResponse(client, activeResponses);

@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public class FileSetUpError extends IOException {
     public FileSetUpError() {
-        super("Impossible creating a file");
+        super("Impossible to create a file");
     }
 }

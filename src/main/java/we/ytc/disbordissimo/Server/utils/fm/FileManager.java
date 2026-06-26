@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 /**
  * <h1>FileManager class</h1>
- * An interaction Interface to only ASCII files.<br>
+ * An interaction Interface to ASCII files only.<br>
  * A file can be opened with all {@code FileManager.OpenType} <br><br>
  * Methods:<br>
  *  - constructor(..)<br>
@@ -76,7 +76,7 @@ public class FileManager {
     }
 
     /**
-     * Reads all file lines.
+     * Reads all the file's lines.
      *
      * @return list of lines
      */
@@ -105,10 +105,10 @@ public class FileManager {
      * If you call this function multiple times, maybe you should consider to call {@code readAll} (Efficiency suggestion).
      *
      * @param index
-     *        Line index (starts from 0)
+     *        Line index (the first one is 0)
      *
      * @return the line if it exists;
-     *         null otherwise
+     *         otherwise null
      */
     public String readLine(int index) {
         this.checkIsClosed();
@@ -131,7 +131,7 @@ public class FileManager {
     }
 
     /**
-     * Writes a message into the file. The operation is possible only if you opened the file with the right method.
+     * Writes a message into the file. The operation is possible only if the file was opened with the right method.
      *
      * @param msg
      *        The message to write
@@ -157,7 +157,7 @@ public class FileManager {
     }
 
     /**
-     * Clears the file, delete its content. The operation is possible only if you opened the file with the right method.
+     * Clears the file by deleting its content. The operation is possible only if the file was opened with the right method.
      */
     public void clear() {
         this.checkIsClosed();
@@ -173,7 +173,7 @@ public class FileManager {
     }
 
     /**
-     * Closes the {@code FileManager}. When it was closed, you won't be able to perform any operation.
+     * Closes the {@code FileManager}. When closed, it's no longer possible to perform any operation.
      */
     public void close() {
         this.checkIsClosed();
@@ -191,6 +191,7 @@ public class FileManager {
         fw.write(msg);
         fw.close();
     }
+
     private void checkIsClosed() {
         if(this.isClosed) {
             throw new ClosedException();

@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * <H1>signup command</h1>
- * Create a user.<br>
+ * <H1>SignUp Command</h1>
+ * Creates a user.<br>
  * <br>
- * {@code onPerformed(..)} method return type is void.
+ * {@code onPerformed(..)} implemented with {@code ReturnType} as {@link java.lang.Void}
  */
 public class SignUpCommand extends Command<Void>{
 

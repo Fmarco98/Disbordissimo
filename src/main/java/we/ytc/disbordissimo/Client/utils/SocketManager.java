@@ -11,7 +11,7 @@ public class SocketManager {
 
     /**
      * <h1>Socket Container data class</h1>
-     * Represent a set(socket, Scanner, Printwrite)
+     * Represent a set of socket, Scanner and PrintStream
      */
     public class SocketContainer {
         private Socket socket;
@@ -25,7 +25,7 @@ public class SocketManager {
          * @param in
          *        Scanner of {@code socket.getInputStream()}
          * @param out
-         *        PrintStream of Scanner of {@code socket.getOutputStream()}
+         *        PrintStream of {@code socket.getOutputStream()}
          */
         public SocketContainer(Socket soc, Scanner in, PrintStream out) {
             this.socket = soc;
@@ -109,7 +109,7 @@ public class SocketManager {
     }
 
     /**
-     * Closes the {@code socket}. When it was closed, you won't be able to perform any operation.
+     * Closes the {@code socket}. When closed, it's no longer possible to perform any operation.
      */
     public void close() {
         open = false;
@@ -123,7 +123,7 @@ public class SocketManager {
     }
 
     /**
-     * Sent a message to the server.
+     * Sends a message to the server.
      * @param msg
      *        message to be sent
      */
@@ -134,7 +134,7 @@ public class SocketManager {
     }
 
     /**
-     * Receive the server response.<br>
+     * Receives the server response.<br>
      * This is a blocking function.
      *
      * @return server response if the socket is open;
@@ -150,7 +150,7 @@ public class SocketManager {
      * Checks if the socket is open.
      *
      * @return {@code true} if the socket is open;
-     *         {@code false} otherwise
+     *         otherwise {@code false}
      */
     public boolean isOpen() {
         return open;

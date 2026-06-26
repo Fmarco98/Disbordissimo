@@ -35,7 +35,7 @@ public class DBManager {
     private boolean isClosed = false;
 
     /**
-     * Constructor. The connection will use the defaults {@code host} and {@code port}.
+     * Constructor. The connection will use the default {@code host} and {@code port}.
      *
      * @param user
      *        DB user
@@ -91,7 +91,7 @@ public class DBManager {
     }
 
     /**
-     * Makes a query. The {@code query} must be a prepared statement, the query params ara into the {@code params} argument.<br>
+     * Executes a query. The {@code query} must be a prepared statement, the query params are into the {@code params} argument.<br>
      * <br>
      * Data formats:<br>
      *  - s -> string<br>
@@ -109,7 +109,7 @@ public class DBManager {
      * @param params
      *        Actual query params
      *
-     * @return DB response result
+     * @return the DB's response
      */
     public synchronized ResultSet execute(String query, String types, Object... params) {
         if(this.isClosed) {
@@ -117,7 +117,7 @@ public class DBManager {
             throw new ClosedException();
         }
         if(types.length() != params.length) {
-            Logger.logError("Query params don't bound with their types");
+            Logger.logError("Query params don't match with their types");
             throw new NotBoundParamsException();
         }
 
@@ -163,12 +163,12 @@ public class DBManager {
     }
 
     /**
-     * Makes a query.
+     * Executes a query.
      *
      * @param query
      *        The query
      *
-     * @return DB response result
+     * @return the DB's response
      */
     public synchronized ResultSet execute(String query) {
         return this.execute(query, "", new String[]{});
@@ -182,21 +182,21 @@ public class DBManager {
     }
 
     /**
-     * Commits a Transaction. It's represent the transaction good end.
+     * Commits a Transaction. Used when the transaction ended as intended;
      */
     public synchronized void commit() {
         this.execute("COMMIT;");
     }
 
     /**
-     * Rollbacks a Transaction. It's represent the transaction bad end. If a rollback is executed, it undoes all queries of the transaction.
+     * Rollbacks a Transaction. Used when the transaction didn't end as intended; If a rollback is executed, all queries of the transaction are reversed
      */
     public synchronized void rollback() {
         this.execute("ROLLBACK;");
     }
 
     /**
-     * Closes the {@code DBManager}. When it was closed, you won't be able to perform any operation.
+     * Closes the {@code DBManager}. When closed, it's no longer possible to perform any operation.
      */
     public synchronized void close() {
         if(this.isClosed) {

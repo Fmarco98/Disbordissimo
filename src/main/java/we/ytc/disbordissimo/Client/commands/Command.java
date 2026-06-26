@@ -4,7 +4,7 @@ import we.ytc.disbordissimo.Client.utils.SocketManager;
 
 /**
  * <h1>Abstract Command</h1>
- * This class represent a generic command. <br>
+ * This class represents a generic command. <br>
  * Every "real" command must be a child of this class. <br>
  * <br>
  * Commands can use TCP sockets by default. To init a socket you can call
@@ -26,7 +26,7 @@ import we.ytc.disbordissimo.Client.utils.SocketManager;
  *  - getCommandName()<br>
  *
  * @param <ReturnType>
- *        The onPerformd method return type
+ *        The onPerformed method return type
  */
 public abstract class Command<ReturnType> {
 
@@ -52,7 +52,7 @@ public abstract class Command<ReturnType> {
     }
 
     /**
-     * Action of the command. <br>
+     * Logic of the command. <br>
      * This function will be implemented into the specific command
      *
      * @param params
@@ -91,7 +91,7 @@ public abstract class Command<ReturnType> {
      *        String request
      *
      * @return {@code true} if operation completed;
-     *         {@code false} otherwise
+     *         otherwise {@code false}
      */
     protected boolean send(String request) {
         if(sm != null) {
@@ -102,17 +102,17 @@ public abstract class Command<ReturnType> {
     }
 
     /**
-     * Receive the response message from the sever.
+     * Receives the response message from the sever.
      *
      * @return {@code response} if operation completed;
-     *         {@code null} otherwise
+     *         otherwise {@code null}
      */
     protected String recv() {
         return sm != null ? sm.recv() : null;
     }
 
     /**
-     * Close the SocketManager
+     * Closes the SocketManager
      */
     protected void closeSocket() {
         if(sm != null) {
