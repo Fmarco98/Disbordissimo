@@ -7,10 +7,8 @@ import we.ytc.disbordissimo.Server.utils.logger.Logger;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.random.RandomGenerator;
 
 public class TCPResponse extends Thread {
 
@@ -44,14 +42,19 @@ public class TCPResponse extends Thread {
 
         JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
 
-        var ref = new Object() {JsonIO.Resp response;};
+        var ref = new Object() {
+            boolean commandFound = false;
+            JsonIO.Resp response;
+        };
         this.commandHandlers.stream().forEach(command -> {
             if(command.getCommandName().equals(request.cmdName)) {
+                ref.commandFound = true;
                 ref.response = command.onPerformed(toArray(request.params));
             }
         });
 
-        out.println(JsonIO.serializeResp(ref.response));
+        String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
+        out.println(jsonResponse);
 
         in.close();
         out.close();

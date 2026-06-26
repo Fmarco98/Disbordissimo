@@ -16,6 +16,6 @@ public class SignUpCommandResponse implements CommandResponse{
     public JsonIO.Resp onPerformed(String... params) {
         Logger.logMsg(String.valueOf(Arrays.stream(params).toList()));
 
-        return new JsonIO.Resp(JsonIO.SUCCESS_CODE, JsonIO.SUCCESS_MSG, List.of("gay"));
+        return new JsonIO.Resp(JsonIO.SUCCESS_CODE, JsonIO.SUCCESS_MSG, null);
     }
 }
