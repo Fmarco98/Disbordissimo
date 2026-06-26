@@ -5,10 +5,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class HashUtils {
-    public static String fromStringToHashedHex(String toHash) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-        byte[] encodedHash = digest.digest(toHash.getBytes(StandardCharsets.UTF_8));
-        return bytesToHex(encodedHash);
+    public static String fromStringToHashedHex(String toHash) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            byte[] encodedHash = digest.digest(toHash.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(encodedHash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String bytesToHex(byte[] hash) {
