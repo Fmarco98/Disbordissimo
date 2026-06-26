@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.Client.utils;
 
+import we.ytc.disbordissimo.Client.utils.exceptions.SocketNotOpenException;
 import we.ytc.disbordissimo.Server.utils.logger.Logger;
 
 import java.io.IOException;
@@ -128,7 +129,7 @@ public class SocketManager {
      *        message to be sent
      */
     public void send(String msg) {
-        if(!open) return; //TODO: custom exption
+        if(!open) throw new SocketNotOpenException();
 
         out.println(msg);
     }
@@ -141,7 +142,7 @@ public class SocketManager {
      *         {@code null} otherwise
      */
     public String recv() {
-        if(!open) return null;
+        if(!open) throw new SocketNotOpenException();
 
         return in.nextLine();
     }
