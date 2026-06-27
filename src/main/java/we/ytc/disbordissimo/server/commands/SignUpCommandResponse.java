@@ -6,6 +6,13 @@ import we.ytc.disbordissimo.server.Main;
 
 import java.util.Arrays;
 
+//TODO: documentation
+
+/**
+ * <h1>Sign up command response</h1>
+ *
+ *
+ */
 public class SignUpCommandResponse implements CommandResponse{
     @Override
     public String getCommandName() {

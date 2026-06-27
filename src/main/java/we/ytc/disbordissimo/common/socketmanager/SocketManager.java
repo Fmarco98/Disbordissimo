@@ -8,6 +8,14 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
+//TODO: documentation
+
+/**
+ * <H1>Socket Manager class</h1>
+ *
+ *
+ *
+ */
 public class SocketManager {
 
     /**

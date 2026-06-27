@@ -22,18 +22,15 @@ public class Main {
 
     //Test
     public static void main(String[] args) throws Exception {
-//        JoinCommand join = new JoinCommand();
-//        SocketContainer s = join.onPerformed("1234", "9876");
-//
-//        Thread.sleep(5000);
-//
-//        QuitCommand quit = new QuitCommand();
-//        quit.onPerformed(s);
+        long userID = 1234;
+        long chID = 9876;
+
+        JoinCommand join = new JoinCommand();
+        SocketContainer ss = join.onPerformed(String.valueOf(userID), String.valueOf(chID));
 
         DatagramSocket s = new DatagramSocket();
-        long userID = 1L;
         byte[] data = "ciao".getBytes();
-        ByteBuffer bbuf = ByteBuffer.allocate(8+4);
+        ByteBuffer bbuf = ByteBuffer.allocate(8+1024);
         bbuf.putLong(userID);
         bbuf.put(data);
 
@@ -42,6 +39,14 @@ public class Main {
         byte[] out = bbuf.array();
         DatagramPacket p = new DatagramPacket(out, out.length, InetAddress.getByName(TempConfig.UDP_HOST), TempConfig.UDP_PORT);
         s.send(p);
+        p = new DatagramPacket(out, out.length);
+        s.receive(p);
+        Main.getLogger().logMsg(new String(p.getData()));
+
+        Thread.sleep(5000);
+
+        QuitCommand quit = new QuitCommand();
+        quit.onPerformed(ss);
     }
 
     public static Logger getLogger() {

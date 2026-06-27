@@ -7,6 +7,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+/** //TODO: documentation
+ * <h1>Json I/O class</h1>
+ *
+ *
+ */
 public class JsonIO {
     private static final Gson gson = new GsonBuilder().create();
 
@@ -18,6 +23,11 @@ public class JsonIO {
 
     private JsonIO() {}
 
+    /** //TODO: documentation
+     * <h1>Json Request data class</h1>
+     *
+     *
+     */
     public static class Req {
         public Req(String cmdName, List<String> params) {
             this.cmdName = cmdName;
@@ -31,6 +41,11 @@ public class JsonIO {
         public List<String> params;
     }
 
+    /** //TODO: documentation
+     * <h1>Json Response data class</h1>
+     *
+     *
+     */
     public static class Resp {
         public Resp(int code, String msgCode, List<String> result) {
             this.code = code;
@@ -48,10 +63,25 @@ public class JsonIO {
         public List<String> result;
     }
 
+    /**
+     * Deserializes a {@code json} string into a {@link JsonIO.Req}
+     *
+     * @param json
+     *        Json String
+     * @return {@link JsonIO.Req} object
+     */
     public static Req deserializeReq(String json) {
         return gson.fromJson(json, Req.class);
     }
 
+    /**
+     * Serializes the {@link JsonIO.Req}
+     *
+     * @param req
+     *        {@link JsonIO.Req} object
+     *
+     * @return Json String
+     */
     public static String serializeReq(Req req) {
         if(req.params == null) {
             req.params = new ArrayList<>();
@@ -59,10 +89,25 @@ public class JsonIO {
         return gson.toJson(req);
     }
 
+    /**
+     * Deserializes a {@code json} string into a {@link JsonIO.Resp}
+     *
+     * @param json
+     *        Json String
+     * @return {@link JsonIO.Resp} object
+     */
     public static Resp deserializeResp(String json) {
         return gson.fromJson(json, Resp.class);
     }
 
+    /**
+     * Serializes the {@link JsonIO.Resp}
+     *
+     * @param resp
+     *        {@link JsonIO.Resp} object
+     *
+     * @return Json String
+     */
     public static String serializeResp(Resp resp) {
         if(resp.result == null) {
             resp.result = new ArrayList<>();

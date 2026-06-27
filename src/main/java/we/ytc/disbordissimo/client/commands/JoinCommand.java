@@ -8,6 +8,11 @@ import we.ytc.disbordissimo.common.JsonIO;
 
 import java.util.List;
 
+//TODO: documentation
+
+/**
+ * <H1>Join Command</h1>
+ */
 public class JoinCommand extends Command<SocketContainer>{
 
     public JoinCommand() {
@@ -34,6 +39,9 @@ public class JoinCommand extends Command<SocketContainer>{
 
         Main.getLogger().logDebug("join ok");
 
+        // Returns the socket to use for the QuitCommand.
+        // Reason: A project design choice is to use the TCP connection to check if the client is
+        // or isn't still connected.
         return this.getSocketManager().getSocketContainer();
     }
 }

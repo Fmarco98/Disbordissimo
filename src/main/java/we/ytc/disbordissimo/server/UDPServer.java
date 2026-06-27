@@ -6,9 +6,16 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO: documentation
+
+/**
+ * <h1>UDP Server class</h1>
+ *
+ */
 public class UDPServer extends Thread {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
 
@@ -16,8 +23,17 @@ public class UDPServer extends Thread {
     private DatagramSocket server;
     private List<UDPResponse> activeResponses;
 
+    /**
+     * Constructor.
+     *
+     * @param port
+     *        UDP Server port
+     *
+     * @throws SocketException
+     */
     public UDPServer(int port) throws SocketException {
         server = new DatagramSocket(port);
+        server.setSoTimeout(100); // Sett a timeout to avoid deadlocks cause by line.35
         open = true;
         activeResponses = new LinkedList<>();
     }
@@ -29,7 +45,11 @@ public class UDPServer extends Thread {
             DatagramPacket packet = new DatagramPacket(packetBuff, packetBuff.length);
             try {
                 synchronized (server) {
-                    server.receive(packet);
+                    try {
+                        server.receive(packet);
+                    } catch (SocketTimeoutException e) {
+                        continue;
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -53,6 +73,11 @@ public class UDPServer extends Thread {
         server.close();
     }
 
+    /**
+     * Sends a UDP Datagram.
+     * @param packet
+     *        Datagram
+     */
     public synchronized void send(DatagramPacket packet) {
         synchronized (server) {
             try {
@@ -63,11 +88,19 @@ public class UDPServer extends Thread {
         }
     }
 
-    public void stopSever() {
+    /**
+     * Stops the UDP server.
+     */
+    public synchronized void stopSever() {
         open = false;
     }
 
-    public List<UDPResponse> getActiveResponses() {
+    /**
+     * Gets the list of UDP active responses
+     *
+     * @return UDP active responses
+     */
+    public synchronized List<UDPResponse> getActiveResponses() {
         return activeResponses;
     }
 }

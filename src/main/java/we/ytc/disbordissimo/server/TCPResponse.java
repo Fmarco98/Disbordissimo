@@ -11,6 +11,14 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
+//TODO: documentation
+
+/**
+ * <h1>TCP Response class</h1>
+ *
+ *
+ *
+ */
 public class TCPResponse extends Thread {
 
     private Socket client;
@@ -18,6 +26,16 @@ public class TCPResponse extends Thread {
     private List<TCPResponse> activeResponses;
     private List<CommandResponse> commandHandlers;
 
+    /**
+     * Constructor.
+     *
+     * @param client
+     *        TCP Client
+     * @param activeResponses
+     *        TCP Server active responses list
+     * @param commandsHandlers
+     *        {@link CommandResponse} list
+     */
     public TCPResponse(Socket client, List<TCPResponse> activeResponses, List<CommandResponse> commandsHandlers) {
         this.client = client;
         this.activeResponses = activeResponses;

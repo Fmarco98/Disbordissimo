@@ -6,6 +6,13 @@ import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 
 import java.io.IOException;
 
+//TODO: documentation
+
+/**
+ * <H1>Quit Command</h1>
+ *
+ *
+ */
 public class QuitCommand extends Command<Void>{
     public QuitCommand() {
         super("quit");

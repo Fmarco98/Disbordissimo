@@ -3,7 +3,26 @@ package we.ytc.disbordissimo.server.commands;
 import we.ytc.disbordissimo.common.JsonIO;
 import we.ytc.disbordissimo.common.socketmanager.SocketManager;
 
+//TODO: documentatio
+
+/**
+ * <h1>Command response interface</h1>
+ *
+ */
 public interface CommandResponse {
+
+    /**
+     * Gets the command name.
+     * @return command name
+     */
     String getCommandName();
+
+    /** //TODO: documentatio
+     * Command response action
+     *
+     * @param socket
+     * @param params
+     * @return
+     */
     JsonIO.Resp onPerformed(SocketManager socket, String ...params);
 }
