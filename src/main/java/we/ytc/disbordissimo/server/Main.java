@@ -48,6 +48,10 @@ public class Main {
 //        t.start();
 
         //Server UDP setup
+        int udpPort = TempConfig.UDP_PORT;
+        UDPServer udpServer = new UDPServer(udpPort);
+        Main.getLogger().logDebug("UDP server opened on: %:" + udpPort);
+        udpServer.start();
 
         //-------------------------------------------
 
