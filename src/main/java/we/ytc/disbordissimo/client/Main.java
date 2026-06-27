@@ -1,7 +1,8 @@
 package we.ytc.disbordissimo.client;
 
-import we.ytc.disbordissimo.client.commands.Command;
-import we.ytc.disbordissimo.client.commands.SignUpCommand;
+import we.ytc.disbordissimo.client.commands.JoinCommand;
+import we.ytc.disbordissimo.client.commands.QuitCommand;
+import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 import we.ytc.disbordissimo.TempConfig;
 import we.ytc.disbordissimo.common.logger.Logger;
 
@@ -15,8 +16,13 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        Command cmd = new SignUpCommand();
-        cmd.onPerformed("ciao1", "ciao2");
+        JoinCommand join = new JoinCommand();
+        SocketContainer s = join.onPerformed("1234", "9876");
+
+        Thread.sleep(5000);
+
+        QuitCommand quit = new QuitCommand();
+        quit.onPerformed(s);
     }
 
     public static Logger getLogger() {

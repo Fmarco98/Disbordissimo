@@ -1,6 +1,8 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.common.JsonIO;
+import we.ytc.disbordissimo.common.socketmanager.SocketManager;
+import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 import we.ytc.disbordissimo.server.commands.CommandResponse;
 
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.Scanner;
 public class TCPResponse extends Thread {
 
     private Socket client;
+    private SocketManager sm;
     private List<TCPResponse> activeResponses;
     private List<CommandResponse> commandHandlers;
 
@@ -39,8 +42,10 @@ public class TCPResponse extends Thread {
             Main.getLogger().logError("An Error occurred while opening I/O streams: " + e.getMessage());
             throw new RuntimeException(e);
         }
+        sm = new SocketManager(new SocketContainer(client, in, out));
 
-        JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
+
+        JsonIO.Req request = JsonIO.deserializeReq(sm.recv());
 
         var ref = new Object() {
             boolean commandFound = false;
@@ -49,15 +54,13 @@ public class TCPResponse extends Thread {
         this.commandHandlers.stream().forEach(command -> {
             if(command.getCommandName().equals(request.cmdName)) {
                 ref.commandFound = true;
-                ref.response = command.onPerformed(toArray(request.params));
+                ref.response = command.onPerformed(sm, toArray(request.params));
             }
         });
 
         String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
-        out.println(jsonResponse);
+        sm.send(jsonResponse);
 
-        in.close();
-        out.close();
         this.closeTCPResponse();
     }
 
@@ -65,13 +68,16 @@ public class TCPResponse extends Thread {
         String address = String.valueOf(client.getInetAddress());
         int port = client.getPort();
         try {
-            this.client.close();
+            this.sm.close();
+            synchronized (this.activeResponses) {
+                this.activeResponses.remove(this);
+            }
         } catch (IOException e) {
             Main.getLogger().logError("An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage());
+            synchronized (this.activeResponses) {
+                this.activeResponses.remove(this);
+            }
             throw new RuntimeException(e);
-        }
-        synchronized (this.activeResponses) {
-            this.activeResponses.remove(this);
         }
     }
 

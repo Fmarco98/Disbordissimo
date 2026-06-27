@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.client.utils.socketmanager.exceptions;
+package we.ytc.disbordissimo.common.socketmanager.exceptions;
 
 public class SocketNotOpenException extends RuntimeException {
     public SocketNotOpenException() {

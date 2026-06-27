@@ -1,6 +1,6 @@
-package we.ytc.disbordissimo.client.utils.socketmanager.exceptions;
+package we.ytc.disbordissimo.common.socketmanager;
 
-import we.ytc.disbordissimo.common.logger.Logger;
+import we.ytc.disbordissimo.common.socketmanager.exceptions.SocketNotOpenException;
 import we.ytc.disbordissimo.server.Main;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class SocketManager {
      * <h1>Socket Container data class</h1>
      * Represent a set of socket, Scanner and PrintStream
      */
-    public class SocketContainer {
+    public static class SocketContainer {
         private Socket socket;
         private Scanner in;
         private PrintStream out;
@@ -112,15 +112,12 @@ public class SocketManager {
     /**
      * Closes the {@code socket}. When closed, it's no longer possible to perform any operation.
      */
-    public void close() {
+    public void close() throws IOException {
         open = false;
-        try {
-            this.in.close();
-            this.out.close();
-            this.socket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        this.in.close();
+        this.out.close();
+        this.socket.close();
     }
 
     /**

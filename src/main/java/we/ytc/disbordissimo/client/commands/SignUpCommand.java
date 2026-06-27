@@ -7,6 +7,7 @@ import we.ytc.disbordissimo.common.HashUtils;
 import we.ytc.disbordissimo.common.JsonIO;
 import we.ytc.disbordissimo.common.logger.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -31,14 +32,18 @@ public class SignUpCommand extends Command<Void> {
         String user = params[0].toString();
         String pswd = params[1].toString();
 
-        JsonIO.Req req = new JsonIO.Req("sign-up", List.of(user, HashUtils.fromStringToHashedHex(pswd)));
+        JsonIO.Req req = new JsonIO.Req(super.getCommandName(), List.of(user, HashUtils.fromStringToHashedHex(pswd)));
         Gson gson = new GsonBuilder().create();
         String request = gson.toJson(req);
 
         super.send(request);
         Main.getLogger().logMsg(super.recv());
 
-        super.closeSocket();
+        try {
+            super.closeSocket();
+        } catch (IOException e ) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 }

@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.server.commands.CommandResponse;
+import we.ytc.disbordissimo.server.commands.JoinQuitCommandResponse;
 import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
@@ -19,8 +20,7 @@ public class Main {
 
     private static Logger logger = null;
     private static DBManager db = null;
-
-    public static HashMap<Long, Long> voiceChatUsers = new HashMap<>(); //HashMap: <user, channel>
+    private static HashMap<Long, LinkedList<ActiveUser>> voiceChatActiveUsers = new HashMap<>(); //HashMap: <channel, List<ActiveUser>>
 
     public static void main(String[] args) throws Exception {
         //Logger.fileSetUp();
@@ -31,6 +31,21 @@ public class Main {
         //Setup comandi
         List<CommandResponse> commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new SignUpCommandResponse());
+        commandsHandlers.add(new JoinQuitCommandResponse());
+
+//        Thread t = new Thread(()->{
+//            while(true) {
+//                synchronized (Main.getVoiceChatActiveUsers()) {
+//                    Main.getLogger().logMsg(Main.getVoiceChatActiveUsers().toString());
+//                }
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//        t.start();
 
         //Server UDP setup
 
@@ -85,5 +100,9 @@ public class Main {
             logger = new Logger(); //TODO: log setup conf
         }
         return logger;
+    }
+
+    public static HashMap<Long, LinkedList<ActiveUser>> getVoiceChatActiveUsers() {
+        return voiceChatActiveUsers;
     }
 }

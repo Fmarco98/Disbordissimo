@@ -1,6 +1,8 @@
 package we.ytc.disbordissimo.client.commands;
 
-import we.ytc.disbordissimo.client.utils.socketmanager.exceptions.SocketManager;
+import we.ytc.disbordissimo.common.socketmanager.SocketManager;
+
+import java.io.IOException;
 
 /**
  * <h1>Abstract Command</h1>
@@ -80,8 +82,17 @@ public abstract class Command<ReturnType> {
      *        Server port
      */
     protected void openSocket(String host, int port) {
-        this.closeSocket();
         sm = new SocketManager(host, port);
+    }
+
+    /**
+     * Opens an existing socket.
+     *
+     * @param sc
+     *        Socket Container
+     */
+    protected void openSocket(SocketManager.SocketContainer sc) {
+        this.sm = new SocketManager(sc);
     }
 
     /**
@@ -114,7 +125,7 @@ public abstract class Command<ReturnType> {
     /**
      * Closes the SocketManager
      */
-    protected void closeSocket() {
+    protected void closeSocket() throws IOException {
         if(sm != null) {
             sm.close();
         }
