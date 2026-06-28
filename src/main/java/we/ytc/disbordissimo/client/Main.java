@@ -1,7 +1,6 @@
 package we.ytc.disbordissimo.client;
 
 import we.ytc.disbordissimo.client.commands.JoinCommand;
-import we.ytc.disbordissimo.TempConfig;
 import we.ytc.disbordissimo.client.commands.QuitCommand;
 import we.ytc.disbordissimo.common.logger.Logger;
 
@@ -18,28 +17,28 @@ public class Main {
         long userID = 1234;
         long chID = 9876;
 
-        JoinCommand join = new JoinCommand();
-        join.execute(String.valueOf(userID), String.valueOf(chID));
-
-        DatagramSocket s = new DatagramSocket();
-        byte[] data = "ciao".getBytes();
-        ByteBuffer bbuf = ByteBuffer.allocate(8+1024);
-        bbuf.putLong(userID);
-        bbuf.put(data);
-
-        bbuf.flip();
-
-        byte[] out = bbuf.array();
-        DatagramPacket p = new DatagramPacket(out, out.length, InetAddress.getByName(TempConfig.UDP_HOST), TempConfig.UDP_PORT);
-        s.send(p);
-        p = new DatagramPacket(out, out.length);
-        s.receive(p);
-        Main.getLogger().logMsg(new String(p.getData()));
-
-        Thread.sleep(5000);
-
-        QuitCommand quit = new QuitCommand();
-        quit.execute(String.valueOf(userID), String.valueOf(chID));
+//        JoinCommand join = new JoinCommand();
+//        join.execute(String.valueOf(userID), String.valueOf(chID));
+//
+//        DatagramSocket s = new DatagramSocket();
+//        byte[] data = "ciao".getBytes();
+//        ByteBuffer bbuf = ByteBuffer.allocate(8+1024);
+//        bbuf.putLong(userID);
+//        bbuf.put(data);
+//
+//        bbuf.flip();
+//
+//        byte[] out = bbuf.array();
+//        DatagramPacket p = new DatagramPacket(out, out.length, InetAddress.getByName(TempConfig.UDP_HOST), TempConfig.UDP_PORT);
+//        s.send(p);
+//        p = new DatagramPacket(out, out.length);
+//        s.receive(p);
+//        Main.getLogger().logMsg(new String(p.getData()));
+//
+//        Thread.sleep(5000);
+//
+//        QuitCommand quit = new QuitCommand();
+//        quit.execute(String.valueOf(userID), String.valueOf(chID));
     }
 
     public static Logger getLogger() {

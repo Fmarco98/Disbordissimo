@@ -1,18 +1,17 @@
 package we.ytc.disbordissimo.server;
 
+import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 import we.ytc.disbordissimo.server.commands.CommandResponse;
 import we.ytc.disbordissimo.server.commands.JoinCommandResponse;
 import we.ytc.disbordissimo.server.commands.QuitCommandResponse;
 import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
-import we.ytc.disbordissimo.TempConfig;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 //TODO: documentation
@@ -22,9 +21,10 @@ import java.util.List;
  */
 public class Main {
 
+    private static Config config;
     private static Logger logger = null;
     private static DBManager db = null;
-    private static VoiceChannelsManager voiceChannels = new VoiceChannelsManager(TempConfig.USER_TIMEOUT);
+    private static VoiceChannelsManager voiceChannels;
 
     /**
      * Server main
@@ -32,7 +32,19 @@ public class Main {
     public static void main(String[] args) throws Exception {
         //Server setup
 
-        //TODO: lettura da config
+        if (Config.configFileExists()) {
+            config = Config.loadConfig();
+        } else {
+            Main.getLogger().logWarning("Couldn't find config file. Creating one...");
+            config = Config.defaultConfig();
+        }
+
+        //Logger setup
+        Main.getLogger().logMsg("Setting up logger based on config...");
+        changeLogger();
+        Main.getLogger().logMsg("Logger loaded!");
+
+        voiceChannels = new VoiceChannelsManager(config.activeClassCleanerConfig.userTimeout);
 
         //Setup comandi
         List<CommandResponse> commandsHandlers = new ArrayList<>();
@@ -55,7 +67,7 @@ public class Main {
         t.start();
 
         //Server UDP setup
-        int udpPort = TempConfig.UDP_PORT;
+        int udpPort = config.udpServerConfig.port;
         UDPServer udpServer = new UDPServer(udpPort);
         Main.getLogger().logDebug("UDP server opened on: %:" + udpPort);
         udpServer.start();
@@ -63,7 +75,7 @@ public class Main {
         //-------------------------------------------
 
         //Server TCP setup
-        int port = TempConfig.TCP_PORT;
+        int port = config.tcpServerConfig.port;
         ServerSocket server = new ServerSocket(port);
         Main.getLogger().logDebug("TCP server opened on: %:" + port);
         List<TCPResponse> activeResponses = new ArrayList<>();
@@ -98,11 +110,12 @@ public class Main {
     public static DBManager getDB() {
         if(db == null) {
             try {
-                String db_user = TempConfig.DB_USER;
-                String db_pwd = TempConfig.DB_PWD;
-                String db_name = TempConfig.DB_NAME;
+                String db_host = config.sqlConnectionConfig.host;
+                String db_user = config.sqlConnectionConfig.user;
+                String db_pwd = config.sqlConnectionConfig.password;
+                String db_name = config.sqlConnectionConfig.dbName;
 
-                db = new DBManager(db_user, db_pwd, db_name);
+                db = new DBManager(db_host, db_user, db_pwd, db_name);
                 Main.getLogger().logDebug("Connected to SQL DB: "+db_name+"@"+db_user);
             } catch (SQLException e) {
                 Main.getLogger().logError("An Error occurred while connecting to DB : " + e.getMessage());
@@ -119,9 +132,35 @@ public class Main {
      */
     public static Logger getLogger() {
         if(logger == null) {
-            logger = new Logger(); //TODO: log setup conf
+            logger = new Logger();
         }
         return logger;
+    }
+
+    public static void changeLogger() {
+        //logger.close();
+        try {
+            if (config.loggerConfig.isFileEnabled) {
+                if (config.loggerConfig.isDefaultLogFile) {
+                    logger = new Logger(config.loggerConfig.isConsoleEnabled, true);
+                } else {
+                    logger = new Logger(config.loggerConfig.isConsoleEnabled, config.loggerConfig.filePath);
+                }
+            } else {
+                logger = new Logger(config.loggerConfig.isConsoleEnabled, false);
+            }
+        } catch (FileSetUpError e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the global {@link Config}.
+     *
+     * @return {@link Config} object
+     */
+    public static Config getConfig() {
+        return config;
     }
 
     /** //TODO: documentation

@@ -1,6 +1,5 @@
 package we.ytc.disbordissimo.server;
 
-import we.ytc.disbordissimo.TempConfig;
 import we.ytc.disbordissimo.common.TimeUtils;
 
 import java.io.Closeable;
@@ -54,7 +53,7 @@ public class VoiceChannelsManager {
                 Main.getLogger().logDebug("cleaning finished");
 
                 try {
-                    Thread.sleep(TempConfig.CLEANING_SLEEP);
+                    Thread.sleep(Main.getConfig().activeClassCleanerConfig.cleaningSleep);
                 } catch (InterruptedException e) {}
             }
         }, "ActiveUser-Cleaner");
