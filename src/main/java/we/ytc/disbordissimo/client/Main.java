@@ -2,7 +2,6 @@ package we.ytc.disbordissimo.client;
 
 import we.ytc.disbordissimo.client.commands.JoinCommand;
 import we.ytc.disbordissimo.client.commands.QuitCommand;
-import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 import we.ytc.disbordissimo.TempConfig;
 import we.ytc.disbordissimo.common.logger.Logger;
 
@@ -26,7 +25,7 @@ public class Main {
         long chID = 9876;
 
         JoinCommand join = new JoinCommand();
-        SocketContainer ss = join.onPerformed(String.valueOf(userID), String.valueOf(chID));
+        join.execute(String.valueOf(userID), String.valueOf(chID));
 
         DatagramSocket s = new DatagramSocket();
         byte[] data = "ciao".getBytes();
@@ -45,8 +44,8 @@ public class Main {
 
         Thread.sleep(5000);
 
-        QuitCommand quit = new QuitCommand();
-        quit.onPerformed(ss);
+//        QuitCommand quit = new QuitCommand();
+//        quit.execute(String.valueOf(userID), String.valueOf(chID));
     }
 
     public static Logger getLogger() {

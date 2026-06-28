@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +14,23 @@ import java.util.List;
  *
  */
 public class JsonIO {
-    private static final Gson gson = new GsonBuilder().create();
+    private JsonIO() {}
 
+    private static final Gson gson = new GsonBuilder().create();
     public static final int SUCCESS_CODE = 0;
     public static final String SUCCESS_MSG = "Ok";
+
     public static final String CMD_NOT_FOUND_RESPONSE = serializeResp(
             new JsonIO.Resp(404, "Command Not Found", new ArrayList<>())
     );
 
-    private JsonIO() {}
+    public static Resp genSuccessResponse() {
+        return genSuccessResponse(null);
+    }
+
+    public static Resp genSuccessResponse(List<String> params) {
+        return new Resp(SUCCESS_CODE, SUCCESS_MSG, params);
+    }
 
     /** //TODO: documentation
      * <h1>Json Request data class</h1>

@@ -1,8 +1,6 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.common.JsonIO;
-import we.ytc.disbordissimo.common.socketmanager.SocketManager;
-import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 import we.ytc.disbordissimo.server.commands.CommandResponse;
 
 import java.io.IOException;
@@ -22,7 +20,8 @@ import java.util.Scanner;
 public class TCPResponse extends Thread {
 
     private Socket client;
-    private SocketManager sm;
+    private Scanner in;
+    private PrintStream out;
     private List<TCPResponse> activeResponses;
     private List<CommandResponse> commandHandlers;
 
@@ -51,8 +50,6 @@ public class TCPResponse extends Thread {
         //Token response
         Main.getLogger().logDebug("Responding to " + client.getInetAddress() + ":" + client.getPort());
 
-        Scanner in;
-        PrintStream out;
         try {
             in = new Scanner(client.getInputStream());
             out = new PrintStream(client.getOutputStream());
@@ -60,10 +57,8 @@ public class TCPResponse extends Thread {
             Main.getLogger().logError("An Error occurred while opening I/O streams: " + e.getMessage());
             throw new RuntimeException(e);
         }
-        sm = new SocketManager(new SocketContainer(client, in, out));
 
-
-        JsonIO.Req request = JsonIO.deserializeReq(sm.recv());
+        JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
 
         var ref = new Object() {
             boolean commandFound = false;
@@ -72,12 +67,12 @@ public class TCPResponse extends Thread {
         this.commandHandlers.stream().forEach(command -> {
             if(command.getCommandName().equals(request.cmdName)) {
                 ref.commandFound = true;
-                ref.response = command.onPerformed(sm, toArray(request.params));
+                ref.response = command.onPerformed(toArray(request.params));
             }
         });
 
         String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
-        sm.send(jsonResponse);
+        out.println(jsonResponse);
 
         this.closeTCPResponse();
     }
@@ -86,7 +81,9 @@ public class TCPResponse extends Thread {
         String address = String.valueOf(client.getInetAddress());
         int port = client.getPort();
         try {
-            this.sm.close();
+            out.close();
+            in.close();
+            client.close();
             synchronized (this.activeResponses) {
                 this.activeResponses.remove(this);
             }

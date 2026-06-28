@@ -1,8 +1,13 @@
 package we.ytc.disbordissimo.server;
 
+import we.ytc.disbordissimo.TempConfig;
+import we.ytc.disbordissimo.common.TimeUtils;
+
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 //TODO: documentation
 
@@ -13,10 +18,48 @@ import java.util.List;
  */
 public class VoiceChannelsManager {
 
-    private static HashMap<Long, LinkedList<ActiveUser>> channel_users = new HashMap<>(); //HashMap: <channel, List<ActiveUser>>
-    private static HashMap<Long, Long> users_channel = new HashMap<>(); //HashMap: <user, channel>
+    private HashMap<Long, LinkedList<ActiveUser>> channel_users;
+    private HashMap<Long, Long> users_channel;
+    private long timeOut;
+    private boolean t_running;
+    private Thread cleaning;
 
-    public VoiceChannelsManager() {}
+    public VoiceChannelsManager(long timeOut) {
+        channel_users = new HashMap<>(); //HashMap: <channel, List<ActiveUser>>
+        users_channel = new HashMap<>(); //HashMap: <user, channel>
+        this.timeOut = timeOut;
+
+        t_running = true;
+        cleaning = new Thread(() -> {
+            while(t_running) {
+                Main.getLogger().logDebug("Try to clean");
+                synchronized (this) {
+                    Set<Long> channelIDs = channel_users.keySet();
+                    for(long chID : channelIDs) {
+                        List<ActiveUser> activeUsers = channel_users.get(chID);
+
+                        int i=0;
+                        while (i < activeUsers.size()) {
+                            ActiveUser user = activeUsers.get(i);
+                            // Checks if last recv is timed out (: recv timed out => user is no longer connected)
+                            if (TimeUtils.currentTimestamp() - user.getLastRecvTimestamp() > timeOut) {
+                                this.quit(chID, user);
+                                Main.getLogger().logDebug("Cleaned user: " + user.getUserID());
+                            } else {
+                                i++;
+                            }
+                        }
+                    }
+                }
+                Main.getLogger().logDebug("cleaning finished");
+
+                try {
+                    Thread.sleep(TempConfig.CLEANING_SLEEP);
+                } catch (InterruptedException e) {}
+            }
+        });
+        cleaning.start();
+    }
 
     /** //TODO
      * Join into a channel
@@ -75,6 +118,19 @@ public class VoiceChannelsManager {
      */
     public synchronized List<ActiveUser> getConnectedUsers(long channelID) {
         return channel_users.get(channelID);
+    }
+
+    public void stopCleaning() throws InterruptedException {
+        t_running = false;
+        cleaning.join();
+    }
+
+    /** //TODO: documentation
+     *
+     * @return
+     */
+    public long getTimeOut() {
+        return timeOut;
     }
 
     @Override

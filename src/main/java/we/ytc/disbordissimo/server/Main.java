@@ -1,7 +1,8 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.server.commands.CommandResponse;
-import we.ytc.disbordissimo.server.commands.JoinQuitCommandResponse;
+import we.ytc.disbordissimo.server.commands.JoinCommandResponse;
+import we.ytc.disbordissimo.server.commands.QuitCommandResponse;
 import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
@@ -23,13 +24,12 @@ public class Main {
 
     private static Logger logger = null;
     private static DBManager db = null;
-    private static VoiceChannelsManager voiceChannels = new VoiceChannelsManager();
+    private static VoiceChannelsManager voiceChannels = new VoiceChannelsManager(TempConfig.USER_TIMEOUT);
 
     /**
      * Server main
      */
     public static void main(String[] args) throws Exception {
-        //Logger.fileSetUp();
         //Server setup
 
         //TODO: lettura da config
@@ -37,7 +37,8 @@ public class Main {
         //Setup comandi
         List<CommandResponse> commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new SignUpCommandResponse());
-        commandsHandlers.add(new JoinQuitCommandResponse());
+        commandsHandlers.add(new JoinCommandResponse());
+        commandsHandlers.add(new QuitCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {
@@ -76,6 +77,7 @@ public class Main {
         }
         server.close();
 
+        udpServer.join();
         synchronized (activeResponses) {
             activeResponses.stream().forEach(response -> {
                 try {

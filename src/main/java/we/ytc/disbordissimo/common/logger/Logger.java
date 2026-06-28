@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.common.logger;
 
+import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.fm.FileManager;
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 
@@ -163,7 +164,7 @@ public final class Logger {
      *        New line flag
      */
     public synchronized void log(Type level, String msg, boolean nl) {
-        String line = "["+this.getLocalTime()+"]["+this.getThreadID()+"]["+level+"] "+msg;
+        String line = "["+ TimeUtils.getLocalTime()+"]["+this.getThreadID()+"]["+level+"] "+msg;
         line = nl ? line+"\n" : line;
 
         // file printing
@@ -204,9 +205,5 @@ public final class Logger {
     private String getThreadID() {
         // Get Thread ID (Name)
         return Thread.currentThread().getName();
-    }
-    private String getLocalTime() {
-        // Get local datetime formatted
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
     }
 }

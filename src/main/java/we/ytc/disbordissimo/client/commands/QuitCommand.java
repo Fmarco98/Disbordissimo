@@ -2,9 +2,9 @@ package we.ytc.disbordissimo.client.commands;
 
 import we.ytc.disbordissimo.client.Main;
 import we.ytc.disbordissimo.common.JsonIO;
-import we.ytc.disbordissimo.common.socketmanager.SocketManager.SocketContainer;
 
 import java.io.IOException;
+import java.util.List;
 
 //TODO: documentation
 
@@ -13,15 +13,17 @@ import java.io.IOException;
  *
  *
  */
-public class QuitCommand extends Command<Void>{
+public class QuitCommand extends Command {
     public QuitCommand() {
         super("quit");
     }
 
     @Override
-    public Void onPerformed(Object... params) {
-        super.openSocket((SocketContainer) params[0]);
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), null);
+    public void onActionPerformed(String... params) {
+        String userID = params[0];
+        String channel = params[1];
+
+        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, channel));
         super.send(JsonIO.serializeReq(request));
 
         String jsonResponse = super.recv();
@@ -34,12 +36,5 @@ public class QuitCommand extends Command<Void>{
         }
 
         Main.getLogger().logDebug("quit ok");
-
-        try {
-            super.closeSocket();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
     }
 }

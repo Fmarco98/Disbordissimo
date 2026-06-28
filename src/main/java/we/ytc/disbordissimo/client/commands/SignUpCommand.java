@@ -5,9 +5,7 @@ import com.google.gson.GsonBuilder;
 import we.ytc.disbordissimo.client.Main;
 import we.ytc.disbordissimo.common.HashUtils;
 import we.ytc.disbordissimo.common.JsonIO;
-import we.ytc.disbordissimo.common.logger.Logger;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -16,7 +14,7 @@ import java.util.List;
  * <br>
  * {@code onPerformed(..)} implemented with {@code ReturnType} as {@link java.lang.Void}
  */
-public class SignUpCommand extends Command<Void> {
+public class SignUpCommand extends Command {
 
     /**
      * Constructor.
@@ -26,11 +24,9 @@ public class SignUpCommand extends Command<Void> {
     }
 
     @Override
-    public Void onPerformed(Object... params) {
-        super.openSocket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
-
-        String user = params[0].toString();
-        String pswd = params[1].toString();
+    public void onActionPerformed(String... params) {
+        String user = params[0];
+        String pswd = params[1];
 
         JsonIO.Req req = new JsonIO.Req(super.getCommandName(), List.of(user, HashUtils.fromStringToHashedHex(pswd)));
         Gson gson = new GsonBuilder().create();
@@ -38,12 +34,5 @@ public class SignUpCommand extends Command<Void> {
 
         super.send(request);
         Main.getLogger().logMsg(super.recv());
-
-        try {
-            super.closeSocket();
-        } catch (IOException e ) {
-            throw new RuntimeException(e);
-        }
-        return null;
     }
 }

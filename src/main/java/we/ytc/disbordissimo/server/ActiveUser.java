@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.server;
 
+import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.audio.AudioUtils;
 
 //TODO: documentation
@@ -12,6 +13,7 @@ public class ActiveUser {
 
     private long userID;
     private byte[] micFrame;
+    private long lastRecvTime;
 
     /**
      * Constructor.
@@ -21,12 +23,14 @@ public class ActiveUser {
     public ActiveUser(long userID) {
         this.userID = userID;
         this.micFrame = new byte[AudioUtils.MIC_FRAME_LENGTH];
+        this.lastRecvTime = TimeUtils.currentTimestamp();
     }
 
     /**
      * Sets a new {@code microphone frame} for the represented user.
      */
     public void setMicFrame(byte[] micFrame) {
+        this.lastRecvTime = TimeUtils.currentTimestamp();
         this.micFrame = micFrame;
     }
 
@@ -37,6 +41,14 @@ public class ActiveUser {
      */
     public byte[] getMicFrame() {
         return micFrame;
+    }
+
+    /** //TODO: documentation
+     *
+     * @return
+     */
+    public long getLastRecvTimestamp() {
+        return lastRecvTime;
     }
 
     /**
@@ -51,5 +63,15 @@ public class ActiveUser {
     @Override
     public String toString() {
         return "ActiveUser{userId="+userID+";}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof ActiveUser) {
+            ActiveUser other = (ActiveUser) obj;
+
+            return other.userID == this.userID;
+        }
+        return false;
     }
 }

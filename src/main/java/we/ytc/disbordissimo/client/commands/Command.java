@@ -1,8 +1,12 @@
 package we.ytc.disbordissimo.client.commands;
 
-import we.ytc.disbordissimo.common.socketmanager.SocketManager;
+import we.ytc.disbordissimo.client.Main;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 /**
  * <h1>Abstract Command</h1>
@@ -26,14 +30,13 @@ import java.io.IOException;
  *  Publics methods:<br>
  *  - onPerformed(..)<br>
  *  - getCommandName()<br>
- *
- * @param <ReturnType>
- *        The onPerformed method return type
  */
-public abstract class Command<ReturnType> {
+public abstract class Command {
 
     private String commandName;
-    private SocketManager sm;
+    private Socket socket;
+    private Scanner in;
+    private PrintStream out;
 
     /**
      * Constructor.
@@ -62,37 +65,32 @@ public abstract class Command<ReturnType> {
      *
      * @return something
      */
-    public abstract ReturnType onPerformed(Object ...params);
+    public abstract void onActionPerformed(String ...params);
 
-    /**
-     * Gets the SocketManager
+    /** //TODO: documentation
      *
-     * @return SocketManger
+     * @param params
      */
-    protected SocketManager getSocketManager() {
-        return sm;
-    }
+    public void execute(String ...params) {
+        try {
+            socket = new Socket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
+            in = new Scanner(socket.getInputStream());
+            out = new PrintStream(socket.getOutputStream());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-    /**
-     * Opens a new socket.
-     *
-     * @param host
-     *        Server host
-     * @param port
-     *        Server port
-     */
-    protected void openSocket(String host, int port) {
-        sm = new SocketManager(host, port);
-    }
+        this.onActionPerformed(params);
 
-    /**
-     * Opens an existing socket.
-     *
-     * @param sc
-     *        Socket Container
-     */
-    protected void openSocket(SocketManager.SocketContainer sc) {
-        this.sm = new SocketManager(sc);
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -100,34 +98,17 @@ public abstract class Command<ReturnType> {
      *
      * @param request
      *        String request
-     *
-     * @return {@code true} if operation completed;
-     *         otherwise {@code false}
      */
-    protected boolean send(String request) {
-        if(sm != null) {
-            sm.send(request);
-            return true;
-        }
-        return false;
+    protected void send(String request) {
+        out.println(request);
     }
 
     /**
      * Receives the response message from the sever.
      *
-     * @return {@code response} if operation completed;
-     *         otherwise {@code null}
+     * @return {@code response}
      */
     protected String recv() {
-        return sm != null ? sm.recv() : null;
-    }
-
-    /**
-     * Closes the SocketManager
-     */
-    protected void closeSocket() throws IOException {
-        if(sm != null) {
-            sm.close();
-        }
+        return in.nextLine();
     }
 }
