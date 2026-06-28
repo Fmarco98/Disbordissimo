@@ -1,6 +1,8 @@
-package we.ytc.disbordissimo.server;
+package we.ytc.disbordissimo.server.networking;
 
-import we.ytc.disbordissimo.common.audio.AudioUtils;
+import we.ytc.disbordissimo.common.AudioUtils;
+import we.ytc.disbordissimo.server.ActiveUser;
+import we.ytc.disbordissimo.server.Main;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

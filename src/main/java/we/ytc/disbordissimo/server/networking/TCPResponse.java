@@ -1,7 +1,7 @@
-package we.ytc.disbordissimo.server;
+package we.ytc.disbordissimo.server.networking;
 
 import we.ytc.disbordissimo.common.JsonIO;
-import we.ytc.disbordissimo.server.commands.CommandResponse;
+import we.ytc.disbordissimo.server.Main;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -23,31 +23,28 @@ public class TCPResponse extends Thread {
     private Socket client;
     private Scanner in;
     private PrintStream out;
-    private List<TCPResponse> activeResponses;
-    private List<CommandResponse> commandHandlers;
+    private TCPServer server;
 
     /**
      * Constructor.
      *
      * @param client
      *        TCP Client
-     * @param activeResponses
-     *        TCP Server active responses list
-     * @param commandsHandlers
-     *        {@link CommandResponse} list
+     * @param server
+     *        TCP Server
      */
-    public TCPResponse(Socket client, List<TCPResponse> activeResponses, List<CommandResponse> commandsHandlers) {
+    public TCPResponse(Socket client, TCPServer server) {
         synchronized (ResponseID) {
             this.setName("TCP-Response-" + ResponseID);
             ResponseID++;
         }
 
         this.client = client;
-        this.activeResponses = activeResponses;
-        this.commandHandlers = commandsHandlers;
+        this.server = server;
 
-        synchronized (this.activeResponses) {
-            this.activeResponses.add(this);
+        var activeResponses = server.getActiveResponses();
+        synchronized (activeResponses) {
+            activeResponses.add(this);
         }
     }
 
@@ -70,7 +67,7 @@ public class TCPResponse extends Thread {
             boolean commandFound = false;
             JsonIO.Resp response;
         };
-        this.commandHandlers.stream().forEach(command -> {
+        server.getCommandHandlers().stream().forEach(command -> {
             if(command.getCommandName().equals(request.cmdName)) {
                 ref.commandFound = true;
                 ref.response = command.onPerformed(toArray(request.params));
@@ -86,17 +83,19 @@ public class TCPResponse extends Thread {
     private void closeTCPResponse() {
         String address = String.valueOf(client.getInetAddress());
         int port = client.getPort();
+
+        var activeResponses = server.getActiveResponses();
         try {
             out.close();
             in.close();
             client.close();
-            synchronized (this.activeResponses) {
-                this.activeResponses.remove(this);
+            synchronized (activeResponses) {
+                activeResponses.remove(this);
             }
         } catch (IOException e) {
             Main.getLogger().logError("An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage());
-            synchronized (this.activeResponses) {
-                this.activeResponses.remove(this);
+            synchronized (activeResponses) {
+                activeResponses.remove(this);
             }
             throw new RuntimeException(e);
         }

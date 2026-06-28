@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.client.commands;
 
-import we.ytc.disbordissimo.client.Main;
+import we.ytc.disbordissimo.client.Client;
+import we.ytc.disbordissimo.client.DisbordissimoClient;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -74,7 +75,8 @@ public abstract class Command {
      */
     public boolean execute(String ...params) {
         try {
-            socket = new Socket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
+            DisbordissimoClient.Config conf = Client.getClient().getConfig();
+            socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());
         } catch (UnknownHostException e) {

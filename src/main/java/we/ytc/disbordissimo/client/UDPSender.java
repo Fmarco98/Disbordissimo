@@ -1,7 +1,6 @@
 package we.ytc.disbordissimo.client;
 
-import we.ytc.disbordissimo.TempConfig;
-import we.ytc.disbordissimo.common.audio.AudioUtils;
+import we.ytc.disbordissimo.common.AudioUtils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

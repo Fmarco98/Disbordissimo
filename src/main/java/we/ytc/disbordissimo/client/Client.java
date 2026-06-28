@@ -4,10 +4,9 @@ import we.ytc.disbordissimo.client.commands.JoinCommand;
 import we.ytc.disbordissimo.client.commands.QuitCommand;
 import we.ytc.disbordissimo.client.commands.SignUpCommand;
 import we.ytc.disbordissimo.client.exceptions.AlreadyLaunchedException;
-import we.ytc.disbordissimo.common.audio.AudioUtils;
+import we.ytc.disbordissimo.common.AudioUtils;
 import we.ytc.disbordissimo.common.logger.Logger;
 
-import javax.swing.*;
 import java.net.DatagramSocket;
 
 public final class Client extends DisbordissimoClient {
@@ -83,6 +82,9 @@ public final class Client extends DisbordissimoClient {
         return false;
     }
 
+    public Config getConfig() {
+        return config;
+    }
     public static void setLogger(Logger logger) {
         INSTANCE.logger = logger;
     }

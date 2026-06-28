@@ -1,6 +1,7 @@
-package we.ytc.disbordissimo.server;
+package we.ytc.disbordissimo.server.networking;
 
-import we.ytc.disbordissimo.common.audio.AudioUtils;
+import we.ytc.disbordissimo.common.AudioUtils;
+import we.ytc.disbordissimo.server.Main;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,7 +20,7 @@ import java.util.List;
 public class UDPServer extends Thread {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
 
-    private boolean open;
+    private boolean running;
     private DatagramSocket server;
     private List<UDPResponse> activeResponses;
 
@@ -36,14 +37,14 @@ public class UDPServer extends Thread {
 
         server = new DatagramSocket(port);
         server.setSoTimeout(100); // Sett a timeout to avoid deadlocks cause by line.35
-        open = true;
+        running = true;
         activeResponses = new ArrayList<>();
     }
 
     @Override
     public void run() {
         byte[] packetBuff = new byte[DATAGRAM_PACKET_SIZE];
-        while(open) {
+        while(running) {
             DatagramPacket packet = new DatagramPacket(packetBuff, packetBuff.length);
             try {
                 synchronized (server) {
@@ -94,7 +95,10 @@ public class UDPServer extends Thread {
      * Stops the UDP server.
      */
     public synchronized void stopSever() {
-        open = false;
+        running = false;
+        try {
+            this.join();
+        } catch (InterruptedException e) {}
     }
 
     /**

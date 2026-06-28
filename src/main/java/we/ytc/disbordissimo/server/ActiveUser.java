@@ -1,7 +1,7 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.common.TimeUtils;
-import we.ytc.disbordissimo.common.audio.AudioUtils;
+import we.ytc.disbordissimo.common.AudioUtils;
 
 //TODO: documentation
 

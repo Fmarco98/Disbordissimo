@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.common.audio;
+package we.ytc.disbordissimo.common;
 
 import java.util.List;
 

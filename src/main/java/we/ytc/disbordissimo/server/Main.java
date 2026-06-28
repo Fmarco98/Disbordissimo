@@ -1,15 +1,17 @@
 package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
+import we.ytc.disbordissimo.common.logger.YtcLogger;
 import we.ytc.disbordissimo.server.commands.CommandResponse;
 import we.ytc.disbordissimo.server.commands.JoinCommandResponse;
 import we.ytc.disbordissimo.server.commands.QuitCommandResponse;
 import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
+import we.ytc.disbordissimo.server.networking.TCPServer;
+import we.ytc.disbordissimo.server.networking.UDPServer;
+import we.ytc.disbordissimo.server.utils.Config;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
 
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,60 +48,45 @@ public class Main {
 
         voiceChannels = new VoiceChannelsManager(config.activeClassCleanerConfig.userTimeout);
 
-        //Setup comandi
+        // Commands setup
         List<CommandResponse> commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new SignUpCommandResponse());
         commandsHandlers.add(new JoinCommandResponse());
         commandsHandlers.add(new QuitCommandResponse());
 
-        Thread t = new Thread(()->{
-            while(true) {
-                synchronized (Main.getActiveVoiceChannels()) {
-                    Main.getLogger().logMsg(Main.getActiveVoiceChannels().toString());
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        t.start();
+//        Thread t = new Thread(()->{
+//            while(true) {
+//                synchronized (Main.getActiveVoiceChannels()) {
+//                    Main.getLogger().logMsg(Main.getActiveVoiceChannels().toString());
+//                }
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//        t.start();
 
         //Server UDP setup
         int udpPort = config.udpServerConfig.port;
         UDPServer udpServer = new UDPServer(udpPort);
-        Main.getLogger().logDebug("UDP server opened on: %:" + udpPort);
         udpServer.start();
+        Main.getLogger().logDebug("UDP server opened on: %:" + udpPort);
 
         //-------------------------------------------
 
         //Server TCP setup
-        int port = config.tcpServerConfig.port;
-        ServerSocket server = new ServerSocket(port);
-        Main.getLogger().logDebug("TCP server opened on: %:" + port);
-        List<TCPResponse> activeResponses = new ArrayList<>();
+        int tcpPort = config.tcpServerConfig.port;
+        TCPServer tcpServer = new TCPServer(tcpPort, commandsHandlers);
+        Main.getLogger().logDebug("UDP server opened on: %:" + tcpPort);
 
-        boolean running = true;
-        while(running) {
-            Socket client = server.accept();
+        // Calling 'run' to reuse the main thread.
+        tcpServer.run();
 
-            TCPResponse response = new TCPResponse(client, activeResponses, commandsHandlers);
-            response.start();
-        }
-        server.close();
+        tcpServer.stopServer();
+        udpServer.stopSever();
 
-        udpServer.join();
-        synchronized (activeResponses) {
-            activeResponses.stream().forEach(response -> {
-                try {
-                    response.join();
-                } catch (InterruptedException e) {
-                    Main.getLogger().logError("TCPResponses joining: " + e.getMessage());
-                    throw new RuntimeException(e);
-                }
-            });
-        }
     }
 
     /** //TODO: documentation
@@ -132,22 +119,25 @@ public class Main {
      */
     public static Logger getLogger() {
         if(logger == null) {
-            logger = new Logger();
+            logger = new YtcLogger();
         }
         return logger;
     }
 
+    /** //TODO: documentation
+     *
+     */
     public static void changeLogger() {
-        //logger.close();
+        if(logger != null) logger.close();
         try {
             if (config.loggerConfig.isFileEnabled) {
                 if (config.loggerConfig.isDefaultLogFile) {
-                    logger = new Logger(config.loggerConfig.isConsoleEnabled, true);
+                    logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, true);
                 } else {
-                    logger = new Logger(config.loggerConfig.isConsoleEnabled, config.loggerConfig.filePath);
+                    logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, config.loggerConfig.filePath);
                 }
             } else {
-                logger = new Logger(config.loggerConfig.isConsoleEnabled, false);
+                logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, false);
             }
         } catch (FileSetUpError e) {
             throw new RuntimeException(e);

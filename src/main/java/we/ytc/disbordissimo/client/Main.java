@@ -2,7 +2,9 @@ package we.ytc.disbordissimo.client;
 
 import we.ytc.disbordissimo.client.commands.JoinCommand;
 import we.ytc.disbordissimo.client.commands.QuitCommand;
+import we.ytc.disbordissimo.client.commands.SignUpCommand;
 import we.ytc.disbordissimo.common.logger.Logger;
+import we.ytc.disbordissimo.common.logger.YtcLogger;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -29,7 +31,7 @@ public class Main {
 //        bbuf.flip();
 //
 //        byte[] out = bbuf.array();
-//        DatagramPacket p = new DatagramPacket(out, out.length, InetAddress.getByName(TempConfig.UDP_HOST), TempConfig.UDP_PORT);
+//        DatagramPacket p = new DatagramPacket(out, out.length, InetAddress.getByName("localhost"), 6969);
 //        s.send(p);
 //        p = new DatagramPacket(out, out.length);
 //        s.receive(p);
@@ -43,7 +45,7 @@ public class Main {
 
     public static Logger getLogger() {
         if(logger == null) {
-            logger = new Logger(); //TODO: log setup conf
+            logger = new YtcLogger(); //TODO: log setup conf
         }
         return logger;
     }
