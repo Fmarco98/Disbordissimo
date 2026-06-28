@@ -7,7 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: documentation
@@ -32,10 +32,12 @@ public class UDPServer extends Thread {
      * @throws SocketException
      */
     public UDPServer(int port) throws SocketException {
+        super("UDP-Server");
+
         server = new DatagramSocket(port);
         server.setSoTimeout(100); // Sett a timeout to avoid deadlocks cause by line.35
         open = true;
-        activeResponses = new LinkedList<>();
+        activeResponses = new ArrayList<>();
     }
 
     @Override

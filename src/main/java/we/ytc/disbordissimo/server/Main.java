@@ -66,7 +66,7 @@ public class Main {
         int port = TempConfig.TCP_PORT;
         ServerSocket server = new ServerSocket(port);
         Main.getLogger().logDebug("TCP server opened on: %:" + port);
-        List<TCPResponse> activeResponses = new LinkedList<>();
+        List<TCPResponse> activeResponses = new ArrayList<>();
 
         boolean running = true;
         while(running) {

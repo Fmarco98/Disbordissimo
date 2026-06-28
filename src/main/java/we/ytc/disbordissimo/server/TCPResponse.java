@@ -18,6 +18,7 @@ import java.util.Scanner;
  *
  */
 public class TCPResponse extends Thread {
+    private static Long ResponseID = 0L;
 
     private Socket client;
     private Scanner in;
@@ -36,6 +37,11 @@ public class TCPResponse extends Thread {
      *        {@link CommandResponse} list
      */
     public TCPResponse(Socket client, List<TCPResponse> activeResponses, List<CommandResponse> commandsHandlers) {
+        synchronized (ResponseID) {
+            this.setName("TCP-Response-" + ResponseID);
+            ResponseID++;
+        }
+
         this.client = client;
         this.activeResponses = activeResponses;
         this.commandHandlers = commandsHandlers;

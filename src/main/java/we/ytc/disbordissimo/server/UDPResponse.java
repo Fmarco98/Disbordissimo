@@ -5,6 +5,7 @@ import we.ytc.disbordissimo.common.audio.AudioUtils;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 //TODO: documentation
@@ -15,6 +16,7 @@ import java.util.List;
  *
  */
 public class UDPResponse extends Thread {
+    private static Long ResponseID = 0L;
 
     private byte[] rawData;
     private List<UDPResponse> activeResponses;
@@ -38,6 +40,11 @@ public class UDPResponse extends Thread {
      *        UDP server
      */
     public UDPResponse(InetAddress address, int port, byte[] rawData, UDPServer server) {
+        synchronized (ResponseID) {
+            this.setName("UDP-Response-" + ResponseID);
+            ResponseID++;
+        }
+
         this.activeResponses = server.getActiveResponses();
         synchronized (this.activeResponses) {
             this.activeResponses.add(this);
@@ -65,15 +72,27 @@ public class UDPResponse extends Thread {
             return;
         }
 
+        List<ActiveUser> connectedUsers = Main.getActiveVoiceChannels().getConnectedUsers(voiceChannelID);
+        List<byte[]> streams = new ArrayList<>();
+        synchronized (connectedUsers) {
+            connectedUsers.stream().forEach(user -> {
+                if (user.getUserID() != userID) {
+                    streams.add(user.getMicFrame());
+                } else {
+                    user.setMicFrame(mic_frame);
+                }
+            });
+        }
+
         //Mix audio
-        byte[] mixed_audio = new byte[1];
+        byte[] mixed_audio = AudioUtils.mixListOfStreams(streams);
 
-        ByteBuffer resposnePacket = ByteBuffer.allocate(UDPServer.DATAGRAM_PACKET_SIZE);
-        resposnePacket.putLong(voiceChannelID);
-        resposnePacket.put(mixed_audio);
-        resposnePacket.flip();
+        ByteBuffer responsePacket = ByteBuffer.allocate(UDPServer.DATAGRAM_PACKET_SIZE);
+        responsePacket.putLong(voiceChannelID);
+        responsePacket.put(mixed_audio);
+        responsePacket.flip();
 
-        DatagramPacket packet = new DatagramPacket(resposnePacket.array(), resposnePacket.array().length, address, port);
+        DatagramPacket packet = new DatagramPacket(responsePacket.array(), responsePacket.array().length, address, port);
         server.send(packet);
 
         this.closeResponse();

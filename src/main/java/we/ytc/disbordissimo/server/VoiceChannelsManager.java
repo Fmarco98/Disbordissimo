@@ -57,7 +57,7 @@ public class VoiceChannelsManager {
                     Thread.sleep(TempConfig.CLEANING_SLEEP);
                 } catch (InterruptedException e) {}
             }
-        });
+        }, "ActiveUser-Cleaner");
         cleaning.start();
     }
 
@@ -88,10 +88,11 @@ public class VoiceChannelsManager {
      */
     public synchronized void quit(long channelID, ActiveUser user) {
         List<ActiveUser> users = channel_users.get(channelID);
-        users.remove(user);
-
-        if(users.size() == 0) {
-            channel_users.remove(channelID);
+        synchronized (users) {
+            users.remove(user);
+            if(users.size() == 0) {
+                channel_users.remove(channelID);
+            }
         }
 
         users_channel.remove(user.getUserID());
