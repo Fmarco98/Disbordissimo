@@ -1,6 +1,6 @@
 package we.ytc.disbordissimo.client.commands;
 
-import we.ytc.disbordissimo.client.Main;
+import we.ytc.disbordissimo.client.Client;
 import we.ytc.disbordissimo.common.JsonIO;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class JoinCommand extends Command {
     }
 
     @Override
-    public void onActionPerformed(String... params) {
+    public boolean onActionPerformed(String... params) {
         String userID = params[0];
         String channel = params[1];
 
@@ -29,10 +29,12 @@ public class JoinCommand extends Command {
 
         if(response.code != 0) {
             String err = "Command:Join -> response"+jsonResponse;
-            Main.getLogger().logError(err);
+            Client.getLogger().logError(err);
             throw new RuntimeException(err);
         }
 
-        Main.getLogger().logDebug("join ok");
+        Client.getLogger().logDebug("join ok");
+
+        return true;
     }
 }

@@ -1,9 +1,8 @@
 package we.ytc.disbordissimo.client.commands;
 
-import we.ytc.disbordissimo.client.Main;
+import we.ytc.disbordissimo.client.Client;
 import we.ytc.disbordissimo.common.JsonIO;
 
-import java.io.IOException;
 import java.util.List;
 
 //TODO: documentation
@@ -19,7 +18,7 @@ public class QuitCommand extends Command {
     }
 
     @Override
-    public void onActionPerformed(String... params) {
+    public boolean onActionPerformed(String... params) {
         String userID = params[0];
         String channel = params[1];
 
@@ -31,10 +30,12 @@ public class QuitCommand extends Command {
 
         if(response.code != 0) {
             String err = "Command:Quit -> response"+jsonResponse;
-            Main.getLogger().logError(err);
+            Client.getLogger().logError(err);
             throw new RuntimeException(err);
         }
 
-        Main.getLogger().logDebug("quit ok");
+        Client.getLogger().logDebug("quit ok");
+
+        return true;
     }
 }

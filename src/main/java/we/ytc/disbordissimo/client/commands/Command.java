@@ -56,22 +56,23 @@ public abstract class Command {
         return this.commandName;
     }
 
-    /**
+    /** //TODO: documentation
      * Logic of the command. <br>
      * This function will be implemented into the specific command
      *
      * @param params
      *        Calling params
      *
-     * @return something
+     * @return @return {@code true} ok; {@code false} not ok
      */
-    public abstract void onActionPerformed(String ...params);
+    public abstract boolean onActionPerformed(String ...params);
 
     /** //TODO: documentation
      *
      * @param params
+     * @return {@code true} ok; {@code false} not ok
      */
-    public void execute(String ...params) {
+    public boolean execute(String ...params) {
         try {
             socket = new Socket(Main.Config.TCP_HOST, Main.Config.TCP_PORT);
             in = new Scanner(socket.getInputStream());
@@ -82,7 +83,7 @@ public abstract class Command {
             throw new RuntimeException(e);
         }
 
-        this.onActionPerformed(params);
+        boolean exit_status = this.onActionPerformed(params);
 
         try {
             in.close();
@@ -91,6 +92,7 @@ public abstract class Command {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return exit_status;
     }
 
     /**

@@ -2,7 +2,7 @@ package we.ytc.disbordissimo.client.commands;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import we.ytc.disbordissimo.client.Main;
+import we.ytc.disbordissimo.client.Client;
 import we.ytc.disbordissimo.common.HashUtils;
 import we.ytc.disbordissimo.common.JsonIO;
 
@@ -24,7 +24,7 @@ public class SignUpCommand extends Command {
     }
 
     @Override
-    public void onActionPerformed(String... params) {
+    public boolean onActionPerformed(String... params) {
         String user = params[0];
         String pswd = params[1];
 
@@ -33,6 +33,8 @@ public class SignUpCommand extends Command {
         String request = gson.toJson(req);
 
         super.send(request);
-        Main.getLogger().logMsg(super.recv());
+        Client.getLogger().logMsg(super.recv());
+
+        return true;
     }
 }
