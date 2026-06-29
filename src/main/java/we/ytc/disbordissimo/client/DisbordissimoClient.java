@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.client;
 
+import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
 
@@ -39,19 +40,19 @@ public abstract sealed class DisbordissimoClient permits Client {
         return new Client(config, logger);
     }
 
-    public abstract boolean signUp(String username, String password);
+    public abstract boolean signUp(String username, String password) throws CommandFailedException;
 
-    public abstract boolean login(String username, String password);
+    public abstract boolean login(String username, String password) throws CommandFailedException;
 
-    public abstract boolean join(long channelID) throws Exception;
+    public abstract boolean join(long channelID) throws CommandFailedException;
 
-    public abstract boolean quit(long channelID);
+    public abstract boolean quit(long channelID) throws CommandFailedException;
 
     //Verifica se connesso ad una voice chat
-    public abstract boolean isConnectedTo(long channelID);
+    public abstract boolean isConnectedTo(long channelID) throws CommandFailedException;
 
-    public abstract boolean getGuilds();
+    public abstract boolean getGuilds() throws CommandFailedException;
 
-    public abstract boolean getGuildChannels(long guildID);
+    public abstract boolean getGuildChannels(long guildID) throws CommandFailedException;
 
 }

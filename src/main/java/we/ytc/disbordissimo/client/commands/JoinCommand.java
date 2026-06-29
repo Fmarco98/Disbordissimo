@@ -21,7 +21,7 @@ public class JoinCommand extends Command {
     }
 
     @Override
-    public boolean onActionPerformed(String... params) {
+    public int onActionPerformed(String... params) {
         String userID = params[0];
         String channel = params[1];
 
@@ -50,6 +50,6 @@ public class JoinCommand extends Command {
 
         Client.getLogger().logDebug("join ok");
 
-        return true;
+        return 0;
     }
 }

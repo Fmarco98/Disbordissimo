@@ -23,7 +23,7 @@ public class SignUpCommand extends Command {
     }
 
     @Override
-    public boolean onActionPerformed(String... params) {
+    public int onActionPerformed(String... params) {
         String username = params[0];
         String passwd = params[1];
 
@@ -34,20 +34,21 @@ public class SignUpCommand extends Command {
         switch (response.code) {
             case ReturnCodes.SUCCESS:
                 Client.getLogger().logDebug("user{"+username+"} signed up successfully.");
-                //Client.getClient().login(username, passwd);
-                return true;
+                Client.setLastBooleanResult(true);
+                return 0;
 
             case ReturnCodes.USER_ALREADY_EXISTS:
                 Client.getLogger().logDebug("That user already exists");
-                return false;
+                Client.setLastBooleanResult(false);
+                return 0;
 
             case ReturnCodes.ERROR:
                 Client.getLogger().logError("An Server error occurred");
-                return false;
+                return 1;
 
             default:
                 Client.getLogger().logWarning("Unhandled response code; response="+response.toString());
-                return false;
+                return 1;
         }
     }
 }

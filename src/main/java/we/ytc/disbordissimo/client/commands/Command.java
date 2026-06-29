@@ -64,16 +64,16 @@ public abstract class Command {
      * @param params
      *        Calling params
      *
-     * @return @return {@code true} ok; {@code false} not ok
+     * @return exit code
      */
-    public abstract boolean onActionPerformed(String ...params);
+    public abstract int onActionPerformed(String ...params);
 
     /** //TODO: documentation
      *
      * @param params
-     * @return {@code true} ok; {@code false} not ok
+     * @return exit code
      */
-    public boolean execute(String ...params) {
+    public int execute(String ...params) {
         try {
             DisbordissimoClient.Config conf = Client.getConfig();
             socket = new Socket(conf.getServerAddress(), conf.getServerPort());
@@ -85,7 +85,7 @@ public abstract class Command {
             throw new RuntimeException(e);
         }
 
-        boolean exit_status = this.onActionPerformed(params);
+        int exit = this.onActionPerformed(params);
 
         try {
             in.close();
@@ -94,7 +94,7 @@ public abstract class Command {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return exit_status;
+        return exit;
     }
 
     /**

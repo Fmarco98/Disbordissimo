@@ -2,10 +2,7 @@ package we.ytc.disbordissimo.server;
 
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
-import we.ytc.disbordissimo.server.commands.CommandResponse;
-import we.ytc.disbordissimo.server.commands.JoinCommandResponse;
-import we.ytc.disbordissimo.server.commands.QuitCommandResponse;
-import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
+import we.ytc.disbordissimo.server.commands.*;
 import we.ytc.disbordissimo.server.networking.TCPServer;
 import we.ytc.disbordissimo.server.networking.UDPServer;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
@@ -52,6 +49,7 @@ public class Main {
         commandsHandlers.add(new SignUpCommandResponse());
         commandsHandlers.add(new JoinCommandResponse());
         commandsHandlers.add(new QuitCommandResponse());
+        commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
 
 //        Thread t = new Thread(()->{
 //            while(true) {

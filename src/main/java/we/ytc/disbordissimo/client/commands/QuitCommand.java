@@ -18,7 +18,7 @@ public class QuitCommand extends Command {
     }
 
     @Override
-    public boolean onActionPerformed(String... params) {
+    public int onActionPerformed(String... params) {
         String userID = params[0];
         String channel = params[1];
 
@@ -40,6 +40,6 @@ public class QuitCommand extends Command {
 
         Client.getLogger().logDebug("quit ok");
 
-        return true;
+        return 0;
     }
 }
