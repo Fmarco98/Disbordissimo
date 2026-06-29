@@ -3,6 +3,8 @@ package we.ytc.disbordissimo.client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 public class UDPReceiver extends Thread {
 
@@ -12,6 +14,11 @@ public class UDPReceiver extends Thread {
     public UDPReceiver(DatagramSocket socket) {
         running = true;
         this.socket = socket;
+        try {
+            this.socket.setSoTimeout(Client.getConfig().getUDPTimeOut());
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -22,10 +29,15 @@ public class UDPReceiver extends Thread {
             DatagramPacket packet = new DatagramPacket(packetBuffer, packetBuffer.length);
             try {
                 socket.receive(packet);
+            } catch (SocketTimeoutException e) {
+                continue;
             } catch (IOException e) {
                 Client.getLogger().logError("An error occurred while receiving a UDP packet");
             }
             Main.getLogger().logMsg(new String(packet.getData()));
+
+            //write into audiostream
+
         }
     }
 

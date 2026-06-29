@@ -75,7 +75,7 @@ public abstract class Command {
      */
     public boolean execute(String ...params) {
         try {
-            DisbordissimoClient.Config conf = Client.getClient().getConfig();
+            DisbordissimoClient.Config conf = Client.getConfig();
             socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());

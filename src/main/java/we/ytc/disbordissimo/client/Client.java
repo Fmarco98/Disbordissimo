@@ -41,28 +41,14 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public boolean join(long channelID) throws Exception {
+    public boolean join(long channelID) {
         //TODO checks
-
-        socket = new DatagramSocket();
-        receiverThread = new UDPReceiver(socket);
-        senderThread = new UDPSender(socket, config.getServerAddress(), config.getServerPort());
-
-        boolean exit_status = new JoinCommand().execute();
-
-        receiverThread.start();
-        senderThread.start();
-
-        return exit_status;
+        return new JoinCommand().execute();
     }
 
     @Override
     public boolean quit(long channelID) {
         boolean exit_status = new QuitCommand().execute();
-
-        senderThread.stopThread();
-        receiverThread.stopThread();
-        socket.close();
 
         return exit_status;
     }
@@ -82,8 +68,26 @@ public final class Client extends DisbordissimoClient {
         return false;
     }
 
-    public Config getConfig() {
-        return config;
+    public static UDPSender getSenderThread() {
+        return INSTANCE.senderThread;
+    }
+    public static void setSenderThread(UDPSender senderThread) {
+        INSTANCE.senderThread = senderThread;
+    }
+    public static DatagramSocket getSocket() {
+        return INSTANCE.socket;
+    }
+    public static void setSocket(DatagramSocket socket) {
+        INSTANCE.socket = socket;
+    }
+    public static UDPReceiver getReceiverThread() {
+        return INSTANCE.receiverThread;
+    }
+    public static void setReceiverThread(UDPReceiver receiverThread) {
+        INSTANCE.receiverThread = receiverThread;
+    }
+    public static Config getConfig() {
+        return INSTANCE.config;
     }
     public static void setLogger(Logger logger) {
         INSTANCE.logger = logger;

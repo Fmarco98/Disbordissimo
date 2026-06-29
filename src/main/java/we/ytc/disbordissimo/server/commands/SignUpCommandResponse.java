@@ -1,9 +1,11 @@
 package we.ytc.disbordissimo.server.commands;
 
-import we.ytc.disbordissimo.common.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.MsgCodes;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
 
-import java.util.Arrays;
+import java.sql.SQLException;
 
 //TODO: documentation
 
@@ -12,7 +14,9 @@ import java.util.Arrays;
  *
  *
  */
-public class SignUpCommandResponse implements CommandResponse{
+public class SignUpCommandResponse implements CommandResponse {
+    private static String USER_INSERT_QUERY = "INSERT INTO users(username, passwd) VALUES (?, ?);";
+
     @Override
     public String getCommandName() {
         return "sign-up";
@@ -20,8 +24,21 @@ public class SignUpCommandResponse implements CommandResponse{
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Main.getLogger().logMsg(String.valueOf(Arrays.stream(params).toList()));
+        String username = params[0];
+        String hashPasswd = params[1];
 
-        return new JsonIO.Resp(JsonIO.SUCCESS_CODE, JsonIO.SUCCESS_MSG, null);
+        try {
+            Main.getDB().execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
+            Main.getLogger().logMsg("Created a new user("+username+")");
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1062) { // That username has already been used.
+                return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
+            }
+
+            Main.getLogger().logError("SQL error occurred: "+e);
+            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+        }
+
+        return JsonIO.genSuccessResponse();
     }
 }

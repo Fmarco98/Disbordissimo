@@ -1,7 +1,7 @@
 package we.ytc.disbordissimo.client.commands;
 
 import we.ytc.disbordissimo.client.Client;
-import we.ytc.disbordissimo.common.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.JsonIO;
 
 import java.util.List;
 
@@ -33,6 +33,10 @@ public class QuitCommand extends Command {
             Client.getLogger().logError(err);
             throw new RuntimeException(err);
         }
+
+        Client.getSenderThread().stopThread();
+        Client.getReceiverThread().stopThread();
+        Client.getSocket().close();
 
         Client.getLogger().logDebug("quit ok");
 

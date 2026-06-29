@@ -1,21 +1,29 @@
 package we.ytc.disbordissimo.client;
 
 import we.ytc.disbordissimo.common.logger.Logger;
+import we.ytc.disbordissimo.common.logger.YtcLogger;
 
 import java.net.InetAddress;
 
 public abstract sealed class DisbordissimoClient permits Client {
 
     public static class Config {
-        public static Config create() {
-            return new Config();
-        }
-
-        private Config() {}
-
         private InetAddress serverAddress;
         private int serverPort;
+        private int UDPTimeOut;
 
+        public Config(InetAddress serverAddress, int serverPort) {
+            this(serverAddress, serverPort, 500);
+        }
+        public Config(InetAddress serverAddress, int serverPort, int UDPTimeOut) {
+            this.serverAddress = serverAddress;
+            this.serverPort = serverPort;
+            this.UDPTimeOut = UDPTimeOut;
+        }
+
+        public int getUDPTimeOut() {
+            return UDPTimeOut;
+        }
         public InetAddress getServerAddress() {
             return serverAddress;
         }
@@ -24,6 +32,9 @@ public abstract sealed class DisbordissimoClient permits Client {
         }
     }
 
+    public static DisbordissimoClient create(Config config) {
+        return create(config, new YtcLogger());
+    }
     public static DisbordissimoClient create(Config config, Logger logger) {
         return new Client(config, logger);
     }

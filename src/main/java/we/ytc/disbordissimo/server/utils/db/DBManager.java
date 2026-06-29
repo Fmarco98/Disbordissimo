@@ -110,7 +110,7 @@ public class DBManager {
      *
      * @return the DB's response
      */
-    public synchronized ResultSet execute(String query, String types, Object... params) {
+    public synchronized ResultSet execute(String query, String types, Object... params) throws SQLException {
         if(this.isClosed) {
             throw new ClosedException();
         }
@@ -118,43 +118,39 @@ public class DBManager {
             throw new NotBoundParamsException();
         }
 
-        try {
-            PreparedStatement stmt = this.mysql.prepareStatement(query);
-            char[] varTypes = types.toCharArray();
+        PreparedStatement stmt = this.mysql.prepareStatement(query);
+        char[] varTypes = types.toCharArray();
 
-            for(int i=0; i < varTypes.length; i++) {
-                char type = varTypes[i];
+        for(int i=0; i < varTypes.length; i++) {
+            char type = varTypes[i];
 
-                switch (type) {
-                    case 's':
-                        stmt.setString(i+1, (String) params[i]);
-                        break;
-                    case 'i':
-                        stmt.setInt(i+1, (int) params[i]);
-                        break;
-                    case 'd':
-                        stmt.setDouble(i+1, (double) params[i]);
-                        break;
-                    case 'f':
-                        stmt.setFloat(i+1, (float)params[i]);
-                        break;
-                    case 'D':
-                        stmt.setDate(i+1, new Date(((java.util.Date)params[i]).getTime()));
-                        break;
-                    case 't':
-                        stmt.setTimestamp(i+1, (Timestamp) params[i]);
-                        break;
-                    case 'T':
-                        stmt.setTime(i+1, (Time) params[i]);
-                        break;
-                }
+            switch (type) {
+                case 's':
+                    stmt.setString(i+1, (String) params[i]);
+                    break;
+                case 'i':
+                    stmt.setInt(i+1, (int) params[i]);
+                    break;
+                case 'd':
+                    stmt.setDouble(i+1, (double) params[i]);
+                    break;
+                case 'f':
+                    stmt.setFloat(i+1, (float)params[i]);
+                    break;
+                case 'D':
+                    stmt.setDate(i+1, new Date(((java.util.Date)params[i]).getTime()));
+                    break;
+                case 't':
+                    stmt.setTimestamp(i+1, (Timestamp) params[i]);
+                    break;
+                case 'T':
+                    stmt.setTime(i+1, (Time) params[i]);
+                    break;
             }
-
-            stmt.execute();
-            return stmt.getResultSet();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
+
+        stmt.execute();
+        return stmt.getResultSet();
     }
 
     /**
@@ -165,7 +161,7 @@ public class DBManager {
      *
      * @return the DB's response
      */
-    public synchronized ResultSet execute(String query) {
+    public synchronized ResultSet execute(String query) throws SQLException {
         return this.execute(query, "", new String[]{});
     }
 
@@ -173,21 +169,33 @@ public class DBManager {
      * Starts a Transaction.
      */
     public synchronized void startTransaction() {
-        this.execute("START TRANSACTION;");
+        try {
+            this.execute("START TRANSACTION;");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Commits a Transaction. Used when the transaction ended as intended;
      */
     public synchronized void commit() {
-        this.execute("COMMIT;");
+        try {
+            this.execute("COMMIT;");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Rollbacks a Transaction. Used when the transaction didn't end as intended; If a rollback is executed, all queries of the transaction are reversed
      */
     public synchronized void rollback() {
-        this.execute("ROLLBACK;");
+        try {
+            this.execute("ROLLBACK;");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

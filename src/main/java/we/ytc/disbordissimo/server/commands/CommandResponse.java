@@ -1,6 +1,6 @@
 package we.ytc.disbordissimo.server.commands;
 
-import we.ytc.disbordissimo.common.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.JsonIO;
 
 //TODO: documentatio
 

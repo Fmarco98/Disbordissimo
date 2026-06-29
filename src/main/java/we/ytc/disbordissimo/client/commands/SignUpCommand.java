@@ -1,10 +1,9 @@
 package we.ytc.disbordissimo.client.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import we.ytc.disbordissimo.client.Client;
 import we.ytc.disbordissimo.common.HashUtils;
-import we.ytc.disbordissimo.common.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
@@ -25,16 +24,30 @@ public class SignUpCommand extends Command {
 
     @Override
     public boolean onActionPerformed(String... params) {
-        String user = params[0];
-        String pswd = params[1];
+        String username = params[0];
+        String passwd = params[1];
 
-        JsonIO.Req req = new JsonIO.Req(super.getCommandName(), List.of(user, HashUtils.fromStringToHashedHex(pswd)));
-        Gson gson = new GsonBuilder().create();
-        String request = gson.toJson(req);
+        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(username, HashUtils.fromStringToHashedHex(passwd)));
+        super.send(JsonIO.serializeReq(request));
 
-        super.send(request);
-        Client.getLogger().logMsg(super.recv());
+        JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
+        switch (response.code) {
+            case ReturnCodes.SUCCESS:
+                Client.getLogger().logDebug("user{"+username+"} signed up successfully.");
+                //Client.getClient().login(username, passwd);
+                return true;
 
-        return true;
+            case ReturnCodes.USER_ALREADY_EXISTS:
+                Client.getLogger().logDebug("That user already exists");
+                return false;
+
+            case ReturnCodes.ERROR:
+                Client.getLogger().logError("An Server error occurred");
+                return false;
+
+            default:
+                Client.getLogger().logWarning("Unhandled response code; response="+response.toString());
+                return false;
+        }
     }
 }

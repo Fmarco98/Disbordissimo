@@ -30,6 +30,8 @@ public class UDPSender extends Thread {
         while(running) {
             byte[] micRaw = new byte[AudioUtils.MIC_FRAME_LENGTH];
 
+            // get mic frame
+
             packetBuffer.position(8);
             packetBuffer.limit(packetBuffer.capacity());
             packetBuffer.put(micRaw);

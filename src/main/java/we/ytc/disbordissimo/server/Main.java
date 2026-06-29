@@ -8,7 +8,6 @@ import we.ytc.disbordissimo.server.commands.QuitCommandResponse;
 import we.ytc.disbordissimo.server.commands.SignUpCommandResponse;
 import we.ytc.disbordissimo.server.networking.TCPServer;
 import we.ytc.disbordissimo.server.networking.UDPServer;
-import we.ytc.disbordissimo.server.utils.Config;
 import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
 

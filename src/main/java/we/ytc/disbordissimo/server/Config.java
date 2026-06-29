@@ -1,10 +1,9 @@
-package we.ytc.disbordissimo.server.utils;
+package we.ytc.disbordissimo.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
-import we.ytc.disbordissimo.server.Main;
 
 import java.io.*;
 
@@ -27,7 +26,9 @@ public class Config {
     @SerializedName("logger")
     public LoggerConfig loggerConfig;
 
-    private Config(String version, TcpServerConfig tcpServerConfig, UdpServerConfig udpServerConfig, SqlConnectionConfig sqlConnectionConfig, ActiveClassCleanerConfig activeClassCleanerConfig, LoggerConfig loggerConfig) {
+    private Config(String version, TcpServerConfig tcpServerConfig, UdpServerConfig udpServerConfig,
+                   SqlConnectionConfig sqlConnectionConfig, ActiveClassCleanerConfig activeClassCleanerConfig,
+                   LoggerConfig loggerConfig) {
         this.version = version;
         this.tcpServerConfig = tcpServerConfig;
         this.udpServerConfig = udpServerConfig;

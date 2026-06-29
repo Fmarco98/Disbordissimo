@@ -1,10 +1,9 @@
-package we.ytc.disbordissimo.common;
+package we.ytc.disbordissimo.common.jsonio;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +16,9 @@ public class JsonIO {
     private JsonIO() {}
 
     private static final Gson gson = new GsonBuilder().create();
-    public static final int SUCCESS_CODE = 0;
-    public static final String SUCCESS_MSG = "Ok";
 
     public static final String CMD_NOT_FOUND_RESPONSE = serializeResp(
-            new JsonIO.Resp(404, "Command Not Found", new ArrayList<>())
+            new JsonIO.Resp(ReturnCodes.COMMAND_NOT_FOUND_CODE, MsgCodes.COMMAND_NOT_FOUND, null)
     );
 
     public static Resp genSuccessResponse() {
@@ -29,7 +26,7 @@ public class JsonIO {
     }
 
     public static Resp genSuccessResponse(List<String> params) {
-        return new Resp(SUCCESS_CODE, SUCCESS_MSG, params);
+        return new Resp(ReturnCodes.SUCCESS, MsgCodes.SUCCESS, params);
     }
 
     /** //TODO: documentation
@@ -48,6 +45,11 @@ public class JsonIO {
 
         @SerializedName("params")
         public List<String> params;
+
+        @Override
+        public String toString() {
+            return "JsonIO.Resp{cmdName="+cmdName+"; params="+params+"}";
+        }
     }
 
     /** //TODO: documentation
@@ -70,6 +72,11 @@ public class JsonIO {
 
         @SerializedName("result")
         public List<String> result;
+
+        @Override
+        public String toString() {
+            return "JsonIO.Resp{code="+code+"; msgCode="+msgCode+"; result="+result+"}";
+        }
     }
 
     /**

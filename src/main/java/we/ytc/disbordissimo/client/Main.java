@@ -41,6 +41,11 @@ public class Main {
 //
 //        QuitCommand quit = new QuitCommand();
 //        quit.execute(String.valueOf(userID), String.valueOf(chID));
+
+        DisbordissimoClient.Config config = new DisbordissimoClient.Config(InetAddress.getByName("localhost"), 6969, 500);
+        DisbordissimoClient client = DisbordissimoClient.create(config, getLogger());
+
+        client.signUp("gigio", "123456");
     }
 
     public static Logger getLogger() {
