@@ -44,16 +44,21 @@ public abstract sealed class DisbordissimoClient permits Client {
     public abstract void signUp(String username, String password) throws CommandFailedException;
 
     public abstract void login(String username, String password) throws CommandFailedException;
+    public abstract void logout();
+    public abstract boolean isLoggedIn();
 
-    public abstract void join(long channelID) throws CommandFailedException;
+    public abstract void join(String channel, String guild) throws CommandFailedException;
 
-    public abstract void quit(long channelID) throws CommandFailedException;
+    public abstract void quit(String channel, String guild) throws CommandFailedException;
 
     //Verifica se connesso ad una voice chat
-    public abstract boolean isConnectedTo(long channelID) throws CommandFailedException;
+    public abstract boolean isConnectedTo(String channel, String guild) throws CommandFailedException;
 
     public abstract List<String> getGuilds() throws CommandFailedException;
 
-    public abstract List<String> getGuildChannels(long guildID) throws CommandFailedException;
+    public abstract List<String> getGuildChannels(String guild) throws CommandFailedException;
+
+    public abstract void createGuild(String guild) throws CommandFailedException;
+    public abstract void createGuildChannel(String channel, String guild) throws CommandFailedException;
 
 }

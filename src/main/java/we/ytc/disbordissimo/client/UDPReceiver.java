@@ -34,7 +34,7 @@ public class UDPReceiver extends Thread {
             } catch (IOException e) {
                 Client.getLogger().logError("An error occurred while receiving a UDP packet");
             }
-            Main.getLogger().logMsg(new String(packet.getData()));
+           // Client.getLogger().logMsg(new String(packet.getData()));
 
             //write into audiostream
 

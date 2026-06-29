@@ -3,6 +3,7 @@ package we.ytc.disbordissimo.client;
 import we.ytc.disbordissimo.client.commands.*;
 import we.ytc.disbordissimo.client.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
+import we.ytc.disbordissimo.client.exceptions.NotLoggedException;
 import we.ytc.disbordissimo.common.AudioUtils;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
@@ -48,22 +49,36 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized void join(long channelID) throws CommandFailedException {
-        //TODO checks
-        int exit = new JoinCommand().execute();
+    public void logout() {
+        this.userID = -1;
+    }
+
+    @Override
+    public boolean isLoggedIn() {
+        return userID != -1;
+    }
+
+    @Override
+    public synchronized void join(String channel, String guild) throws CommandFailedException {
+        checksLoggedIn();
+
+        int exit = new JoinCommand().execute(guild, channel);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public synchronized void quit(long channelID) throws CommandFailedException {
+    public synchronized void quit(String channel, String guild) throws CommandFailedException {
+        checksLoggedIn();
+
         int exit = new QuitCommand().execute();
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
-
     }
 
     @Override
-    public synchronized boolean isConnectedTo(long channelID) throws CommandFailedException {
-        int exit = new TestVoiceChatConnectionCommand().execute(String.valueOf(channelID));
+    public synchronized boolean isConnectedTo(String channel, String guild) throws CommandFailedException {
+        checksLoggedIn();
+
+        int exit = new TestVoiceChatConnectionCommand().execute(channel, guild);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
 
         return lastBoolResult;
@@ -71,12 +86,28 @@ public final class Client extends DisbordissimoClient {
 
     @Override
     public synchronized List<String> getGuilds() throws CommandFailedException {
+        checksLoggedIn();
+
         return null;
     }
 
     @Override
-    public synchronized List<String> getGuildChannels(long guildID) throws CommandFailedException {
+    public synchronized List<String> getGuildChannels(String guild) throws CommandFailedException {
+        checksLoggedIn();
+
         return null;
+    }
+
+    @Override
+    public void createGuild(String guild) throws CommandFailedException {
+        checksLoggedIn();
+
+    }
+
+    @Override
+    public void createGuildChannel(String channel, String guild) throws CommandFailedException {
+        checksLoggedIn();
+
     }
 
     public static void setLastBooleanResult(boolean r) {
@@ -117,5 +148,9 @@ public final class Client extends DisbordissimoClient {
     }
     public static Client getClient() {
         return INSTANCE;
+    }
+
+    private void checksLoggedIn() {
+        if(!isLoggedIn()) throw new NotLoggedException();
     }
 }

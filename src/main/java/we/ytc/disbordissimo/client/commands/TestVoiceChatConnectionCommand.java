@@ -14,9 +14,10 @@ public class TestVoiceChatConnectionCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String channelID = params[0];
+        String channelName = params[0];
+        String guildName = params[1];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(String.valueOf(Client.getUserID()), channelID));
+        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(String.valueOf(Client.getUserID()), channelName, guildName));
         super.send(JsonIO.serializeReq(request));
 
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
@@ -24,6 +25,14 @@ public class TestVoiceChatConnectionCommand extends Command {
             case ReturnCodes.SUCCESS:
                 Client.setLastBooleanResult(Boolean.valueOf(response.result.get(0)));
                 return ReturnCodes.SUCCESS;
+
+            case ReturnCodes.GUILD_NOT_FOUND:
+                Client.getLogger().logWarning(response.msgCode);
+                return ReturnCodes.GUILD_NOT_FOUND;
+
+            case ReturnCodes.CHANNEL_NOT_FOUND:
+                Client.getLogger().logWarning(response.msgCode);
+                return ReturnCodes.CHANNEL_NOT_FOUND;
 
             case ReturnCodes.ERROR:
                 Client.getLogger().logError("A server error occurred");

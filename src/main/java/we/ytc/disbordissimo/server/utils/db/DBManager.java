@@ -95,6 +95,7 @@ public class DBManager {
      * Data formats:<br>
      *  - s -> string<br>
      *  - i -> int<br>
+     *  - l -> long<br>
      *  - d -> double<br>
      *  - f -> float<br>
      *  - D -> date<br>
@@ -130,6 +131,9 @@ public class DBManager {
                     break;
                 case 'i':
                     stmt.setInt(i+1, (int) params[i]);
+                    break;
+                case 'l':
+                    stmt.setLong(i+1, (long) params[i]);
                     break;
                 case 'd':
                     stmt.setDouble(i+1, (double) params[i]);

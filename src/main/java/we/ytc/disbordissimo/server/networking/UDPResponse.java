@@ -18,7 +18,6 @@ import java.util.List;
  *
  */
 public class UDPResponse extends Thread {
-    private static Long ResponseID = 0L;
 
     private byte[] rawData;
     private List<UDPResponse> activeResponses;
@@ -42,10 +41,7 @@ public class UDPResponse extends Thread {
      *        UDP server
      */
     public UDPResponse(InetAddress address, int port, byte[] rawData, UDPServer server) {
-        synchronized (ResponseID) {
-            this.setName("UDP-Response-" + ResponseID);
-            ResponseID++;
-        }
+        super("UDP-Response");
 
         this.activeResponses = server.getActiveResponses();
         synchronized (this.activeResponses) {
@@ -87,7 +83,8 @@ public class UDPResponse extends Thread {
         }
 
         //Mix audio
-        byte[] mixed_audio = AudioUtils.mixListOfStreams(streams);
+
+        byte[] mixed_audio = streams.size() > 0 ? AudioUtils.mixListOfStreams(streams) : new byte[AudioUtils.MIC_FRAME_LENGTH];
 
         ByteBuffer responsePacket = ByteBuffer.allocate(UDPServer.DATAGRAM_PACKET_SIZE);
         responsePacket.putLong(voiceChannelID);

@@ -49,7 +49,7 @@ public class Main {
         commandsHandlers.add(new SignUpCommandResponse());
         commandsHandlers.add(new LoginCommandResponse());
         commandsHandlers.add(new JoinCommandResponse());
-        commandsHandlers.add(new QuitCommandResponse());
+        commandsHandlers.add(new QuitCommandResponse()); //TODO
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
 
 //        Thread t = new Thread(()->{

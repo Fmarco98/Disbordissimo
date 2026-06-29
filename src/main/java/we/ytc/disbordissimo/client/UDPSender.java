@@ -25,15 +25,12 @@ public class UDPSender extends Thread {
     @Override
     public void run() {
         ByteBuffer packetBuffer = ByteBuffer.allocate(Client.DATAGRAM_PACKET_SIZE);
-        packetBuffer.putLong(Client.getUserID());
-
         while(running) {
             byte[] micRaw = new byte[AudioUtils.MIC_FRAME_LENGTH];
 
             // get mic frame
 
-            packetBuffer.position(8);
-            packetBuffer.limit(packetBuffer.capacity());
+            packetBuffer.putLong(Client.getUserID());
             packetBuffer.put(micRaw);
 
             packetBuffer.flip();
@@ -44,6 +41,7 @@ public class UDPSender extends Thread {
                 throw new RuntimeException(e);
             }
             packetBuffer.flip();
+            packetBuffer.clear();
         }
     }
 

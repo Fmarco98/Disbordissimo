@@ -33,7 +33,9 @@ CREATE TABLE IF NOT EXISTS users_guilds(
     fk_guild BIGINT NOT NULL,
 
     FOREIGN KEY (fk_user) REFERENCES users(id_user),
-    FOREIGN KEY (fK_guild) REFERENCES guilds(id_guild)
+    FOREIGN KEY (fK_guild) REFERENCES guilds(id_guild),
+
+    UNIQUE (fk_user, fk_guild)
 );
 
 CREATE TABLE IF NOT EXISTS channels(
@@ -42,10 +44,24 @@ CREATE TABLE IF NOT EXISTS channels(
 
     fk_guild BIGINT NOT NULL,
 
-    FOREIGN KEY(fk_guild) REFERENCES guilds(id_guild)
+    FOREIGN KEY(fk_guild) REFERENCES guilds(id_guild),
+    UNIQUE(name, fk_guild)
 );
 
 INSERT INTO db_info(version, project) VALUES
-("1.0", "dibordissimo");
+("1.0", "disbordissimo");
+
+CREATE VIEW channel_guild_byname AS (
+    SELECT g.id_guild, c.id_channel, g.name as guildname, c.name as channelname
+    FROM guilds g
+    JOIN channels c ON g.id_guild = c.fk_guild
+);
+
+CREATE VIEW user_guild_byname AS (
+    SELECT g.id_guild, g.name as guildname, u.id_user as member
+    FROM guilds g
+    JOIN users_guilds ug ON g.id_guild = ug.fk_guild
+    JOIN users u ON u.id_user = ug.fk_user
+);
 
 COMMIT;

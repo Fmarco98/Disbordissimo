@@ -23,34 +23,48 @@ public class JoinCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = params[0];
+        String userID = String.valueOf(Client.getUserID());
+        String guild = params[0];
         String channel = params[1];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, channel));
+        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, guild, channel));
         super.send(JsonIO.serializeReq(request));
 
-        String jsonResponse = super.recv();
-        JsonIO.Resp response = JsonIO.deserializeResp(jsonResponse);
+        JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
+        switch (response.code) {
+            case ReturnCodes.SUCCESS:
+                try {
+                    Client.setSocket(new DatagramSocket());
+                    Client.setReceiverThread(new UDPReceiver(Client.getSocket()));
+                    Client.setSenderThread(new UDPSender(Client.getSocket(), Client.getConfig().getServerAddress(),
+                                           Client.getConfig().getServerPort()));
+                    Client.getReceiverThread().start();
+                    Client.getSenderThread().start();
+                } catch (SocketException e) {
+                    throw new RuntimeException(e);
+                }
+                Client.getLogger().logDebug("join ok");
+                return ReturnCodes.SUCCESS;
 
-        if(response.code != ReturnCodes.SUCCESS) {
-            String err = "Command:Join -> response"+jsonResponse;
-            Client.getLogger().logError(err);
-            throw new RuntimeException(err);
+            case ReturnCodes.CHANNEL_ALREADY_JOINED:
+                Client.getLogger().logWarning(response.msgCode);
+                return ReturnCodes.CHANNEL_ALREADY_JOINED;
+
+            case ReturnCodes.GUILD_NOT_FOUND:
+                Client.getLogger().logWarning(response.msgCode);
+                return ReturnCodes.GUILD_NOT_FOUND;
+
+            case ReturnCodes.CHANNEL_NOT_FOUND:
+                Client.getLogger().logWarning(response.msgCode);
+                return ReturnCodes.CHANNEL_NOT_FOUND;
+
+            case ReturnCodes.ERROR:
+                Client.getLogger().logError("A server error occurred");
+                return ReturnCodes.ERROR;
+
+            default:
+                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                return ReturnCodes.ERROR;
         }
-
-        try {
-            Client.setSocket(new DatagramSocket());
-            Client.setReceiverThread(new UDPReceiver(Client.getSocket()));
-            Client.setSenderThread(new UDPSender(Client.getSocket(), Client.getConfig().getServerAddress(),
-                                    Client.getConfig().getServerPort()));
-            Client.getReceiverThread().start();
-            Client.getSenderThread().start();
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        }
-
-        Client.getLogger().logDebug("join ok");
-
-        return ReturnCodes.SUCCESS;
     }
 }
