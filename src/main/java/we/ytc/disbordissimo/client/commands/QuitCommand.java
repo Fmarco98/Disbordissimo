@@ -2,6 +2,7 @@ package we.ytc.disbordissimo.client.commands;
 
 import we.ytc.disbordissimo.client.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class QuitCommand extends Command {
         String jsonResponse = super.recv();
         JsonIO.Resp response = JsonIO.deserializeResp(jsonResponse);
 
-        if(response.code != 0) {
+        if(response.code != ReturnCodes.SUCCESS) {
             String err = "Command:Quit -> response"+jsonResponse;
             Client.getLogger().logError(err);
             throw new RuntimeException(err);
@@ -40,6 +41,6 @@ public class QuitCommand extends Command {
 
         Client.getLogger().logDebug("quit ok");
 
-        return 0;
+        return ReturnCodes.SUCCESS;
     }
 }

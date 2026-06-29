@@ -29,7 +29,6 @@ public class SignUpCommandResponse implements CommandResponse {
 
         try {
             Main.getDB().execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
-            Main.getLogger().logMsg("Created a new user("+username+")");
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) { // That username has already been used.
                 return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);

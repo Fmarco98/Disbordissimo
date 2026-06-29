@@ -34,21 +34,19 @@ public class SignUpCommand extends Command {
         switch (response.code) {
             case ReturnCodes.SUCCESS:
                 Client.getLogger().logDebug("user{"+username+"} signed up successfully.");
-                Client.setLastBooleanResult(true);
-                return 0;
+                return ReturnCodes.SUCCESS;
 
             case ReturnCodes.USER_ALREADY_EXISTS:
                 Client.getLogger().logDebug("That user already exists");
-                Client.setLastBooleanResult(false);
-                return 0;
+                return ReturnCodes.USER_ALREADY_EXISTS;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("An Server error occurred");
-                return 1;
+                Client.getLogger().logError("A server error occurred");
+                return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unhandled response code; response="+response.toString());
-                return 1;
+                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                return ReturnCodes.ERROR;
         }
     }
 }

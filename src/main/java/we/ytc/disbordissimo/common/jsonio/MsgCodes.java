@@ -10,4 +10,5 @@ public class MsgCodes {
 
     //DB
     public static final String USER_ALREADY_EXISTS = "An user with that username already exists";
+    public static final String USER_NOT_FOUND = "The requested user isn't contained into the DB";
 }

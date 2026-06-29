@@ -47,6 +47,7 @@ public class Main {
         // Commands setup
         List<CommandResponse> commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new SignUpCommandResponse());
+        commandsHandlers.add(new LoginCommandResponse());
         commandsHandlers.add(new JoinCommandResponse());
         commandsHandlers.add(new QuitCommandResponse());
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());

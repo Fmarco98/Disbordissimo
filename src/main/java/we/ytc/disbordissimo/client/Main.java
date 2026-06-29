@@ -45,7 +45,11 @@ public class Main {
         DisbordissimoClient.Config config = new DisbordissimoClient.Config(InetAddress.getByName("localhost"), 6969, 500);
         DisbordissimoClient client = DisbordissimoClient.create(config, getLogger());
 
-        client.signUp("gigio", "123456");
+        //client.signUp("gigio", "123456");
+
+        client.login("gigio", "123456");
+
+        //getLogger().logMsg(String.valueOf(client.isConnectedTo(12345L)));
     }
 
     public static Logger getLogger() {

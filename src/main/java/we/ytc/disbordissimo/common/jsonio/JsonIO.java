@@ -18,7 +18,7 @@ public class JsonIO {
     private static final Gson gson = new GsonBuilder().create();
 
     public static final String CMD_NOT_FOUND_RESPONSE = serializeResp(
-            new JsonIO.Resp(ReturnCodes.COMMAND_NOT_FOUND_CODE, MsgCodes.COMMAND_NOT_FOUND, null)
+            new JsonIO.Resp(ReturnCodes.COMMAND_NOT_FOUND, MsgCodes.COMMAND_NOT_FOUND, null)
     );
 
     public static Resp genSuccessResponse() {

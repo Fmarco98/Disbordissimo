@@ -1,15 +1,14 @@
 package we.ytc.disbordissimo.client;
 
-import we.ytc.disbordissimo.client.commands.JoinCommand;
-import we.ytc.disbordissimo.client.commands.QuitCommand;
-import we.ytc.disbordissimo.client.commands.SignUpCommand;
-import we.ytc.disbordissimo.client.commands.TestVoiceChatConnectionCommand;
+import we.ytc.disbordissimo.client.commands.*;
 import we.ytc.disbordissimo.client.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.common.AudioUtils;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
 
 import java.net.DatagramSocket;
+import java.util.List;
 
 public final class Client extends DisbordissimoClient {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
@@ -25,6 +24,7 @@ public final class Client extends DisbordissimoClient {
     private UDPSender senderThread;
 
     private boolean lastBoolResult = false;
+    private List<String> lastStringList = null;
 
     protected Client(Config conf, Logger logger) {
         if(INSTANCE != null) {
@@ -36,51 +36,47 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized boolean signUp(String username, String password) throws CommandFailedException {
+    public synchronized void signUp(String username, String password) throws CommandFailedException {
         int exit = new SignUpCommand().execute(username, password);
-        if (exit != 0) throw new CommandFailedException(exit);
-
-        return lastBoolResult;
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public synchronized boolean login(String username, String password) throws CommandFailedException {
-        return false;
+    public synchronized void login(String username, String password) throws CommandFailedException {
+        int exit = new LoginCommand().execute(username, password);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public synchronized boolean join(long channelID) throws CommandFailedException {
+    public synchronized void join(long channelID) throws CommandFailedException {
         //TODO checks
         int exit = new JoinCommand().execute();
-        if (exit != 0) throw new CommandFailedException(exit);
-
-        return false;
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public synchronized boolean quit(long channelID) throws CommandFailedException {
+    public synchronized void quit(long channelID) throws CommandFailedException {
         int exit = new QuitCommand().execute();
-        if (exit != 0) throw new CommandFailedException(exit);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
 
-        return false;
     }
 
     @Override
     public synchronized boolean isConnectedTo(long channelID) throws CommandFailedException {
         int exit = new TestVoiceChatConnectionCommand().execute(String.valueOf(channelID));
-        if (exit != 0) throw new CommandFailedException(exit);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
 
         return lastBoolResult;
     }
 
     @Override
-    public synchronized boolean getGuilds() throws CommandFailedException {
-        return false;
+    public synchronized List<String> getGuilds() throws CommandFailedException {
+        return null;
     }
 
     @Override
-    public synchronized boolean getGuildChannels(long guildID) throws CommandFailedException {
-        return false;
+    public synchronized List<String> getGuildChannels(long guildID) throws CommandFailedException {
+        return null;
     }
 
     public static void setLastBooleanResult(boolean r) {
