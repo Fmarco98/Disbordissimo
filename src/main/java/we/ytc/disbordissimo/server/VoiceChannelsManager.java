@@ -87,6 +87,9 @@ public class VoiceChannelsManager {
      */
     public synchronized void quit(long channelID, ActiveUser user) {
         List<ActiveUser> users = channel_users.get(channelID);
+
+        if(users == null) return;
+
         synchronized (users) {
             users.remove(user);
             if(users.size() == 0) {

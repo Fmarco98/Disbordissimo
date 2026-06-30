@@ -84,7 +84,7 @@ public final class Client extends DisbordissimoClient {
     public synchronized void quit(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new QuitCommand().execute();
+        int exit = new QuitCommand().execute(guild, channel);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 

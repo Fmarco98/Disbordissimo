@@ -27,5 +27,11 @@ public class Main {
         client.join("voice1", "pippo's server");
         boolean f = client.isConnectedTo("voice1", "pippo's server");
         new YtcLogger().logMsg(String.valueOf(f));
+
+        Thread.sleep(5000);
+        client.quit("voice1", "pippo's server");
+        Thread.sleep(1000);
+        client.quit("voice1", "pippo's server");
+
     }
 }
