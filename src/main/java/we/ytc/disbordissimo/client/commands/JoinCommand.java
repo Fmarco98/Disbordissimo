@@ -58,6 +58,10 @@ public class JoinCommand extends Command {
                 Client.getLogger().logWarning(response.msgCode);
                 return ReturnCodes.CHANNEL_NOT_FOUND;
 
+            case ReturnCodes.COMMAND_NOT_FOUND:
+                Client.getLogger().logError("An invalid command was sent.");
+                return ReturnCodes.COMMAND_NOT_FOUND;
+
             case ReturnCodes.ERROR:
                 Client.getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;

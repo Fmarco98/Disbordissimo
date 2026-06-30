@@ -11,29 +11,38 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetGuildsCommandResponse implements CommandResponse{
+import static we.ytc.disbordissimo.server.commands.JoinCommandResponse.IS_MEMBER_QUERY;
 
-    private final String GET_GUILDS = "SELECT guildname " +
-                                      "FROM user_guild_byname " +
-                                      "WHERE member = ? " +
-                                      "GROUP BY guildname;";
+public class GetGuildChannelsCommandResponse implements CommandResponse {
+
+    private final String GET_GUILD_CHANNELS = "SELECT channelname " +
+                                              "FROM channel_guild_byname " +
+                                              "WHERE guildname = ? " +
+                                              "GROUP BY channelname;";
 
     @Override
     public String getCommandName() {
-        return "get-guilds";
+        return "get-guild-channel";
     }
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
         try {
             long userID = Long.valueOf(params[0]);
+            String guildName = params[1];
 
             try {
-                ResultSet queryResult = Main.getDB().execute(GET_GUILDS, "l", userID);
-                List<String> result = new ArrayList<>();
+                ResultSet queryResult = Main.getDB().execute(IS_MEMBER_QUERY, "sl", guildName, userID);
+                queryResult.last();
+                if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
+                    return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
+                }
+                queryResult.close();
 
+                queryResult = Main.getDB().execute(GET_GUILD_CHANNELS, "s", guildName);
+                List<String> result = new ArrayList<>();
                 while(queryResult.next()) {
-                    result.add(queryResult.getString("guildname"));
+                    result.add(queryResult.getString("channelname"));
                 }
                 queryResult.close();
 

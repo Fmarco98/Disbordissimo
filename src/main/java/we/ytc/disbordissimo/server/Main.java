@@ -52,6 +52,7 @@ public class Main {
         commandsHandlers.add(new QuitCommandResponse());
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
         commandsHandlers.add(new GetGuildsCommandResponse());
+        commandsHandlers.add(new GetGuildChannelsCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {

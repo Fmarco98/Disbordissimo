@@ -110,10 +110,13 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized List<String> getGuildChannels(String guild) throws CommandFailedException {
+    public synchronized String[] getGuildChannels(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        return null;
+        int exit = new GetGuildChannelsCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+
+        return lastStringList.toArray(new String[]{});
     }
 
     @Override

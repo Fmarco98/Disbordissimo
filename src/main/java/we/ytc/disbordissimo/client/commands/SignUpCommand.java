@@ -40,6 +40,10 @@ public class SignUpCommand extends Command {
                 Client.getLogger().logDebug("That user already exists");
                 return ReturnCodes.USER_ALREADY_EXISTS;
 
+            case ReturnCodes.COMMAND_NOT_FOUND:
+                Client.getLogger().logWarning("An invalid command was sent.");
+                return ReturnCodes.COMMAND_NOT_FOUND;
+
             case ReturnCodes.ERROR:
                 Client.getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;

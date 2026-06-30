@@ -64,7 +64,7 @@ public abstract sealed class DisbordissimoClient permits Client {
 
     public abstract String[] getGuilds() throws CommandFailedException;
 
-    public abstract List<String> getGuildChannels(String guild) throws CommandFailedException;
+    public abstract String[] getGuildChannels(String guild) throws CommandFailedException;
 
     public abstract void createGuild(String guild) throws CommandFailedException;
     public abstract void createGuildChannel(String channel, String guild) throws CommandFailedException;

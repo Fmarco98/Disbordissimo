@@ -29,6 +29,10 @@ public class GetGuildsCommand extends Command{
                 Client.setLastStringList(response.result);
                 return ReturnCodes.SUCCESS;
 
+            case ReturnCodes.COMMAND_NOT_FOUND:
+                Client.getLogger().logError("An invalid command was sent.");
+                return ReturnCodes.COMMAND_NOT_FOUND;
+
             case ReturnCodes.ERROR:
                 Client.getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
