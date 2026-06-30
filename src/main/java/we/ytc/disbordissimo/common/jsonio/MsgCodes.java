@@ -16,7 +16,7 @@ public class MsgCodes {
 
     // Guild
     public static final String GUILD_NOT_FOUND = "The requested guild doesn't exists";
-    public static final String GUILD_ALREADY_EXIST = "The guild already exists";
+    public static final String GUILD_ALREADY_EXISTS = "The guild already exists";
 
     public static final String GUILD_ALREADY_JOINED = "You've already joined the requested guild";
 

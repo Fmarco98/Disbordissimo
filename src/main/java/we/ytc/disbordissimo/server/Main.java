@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.server;
 
+import we.ytc.disbordissimo.client.commands.CreateGuildCommand;
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
 import we.ytc.disbordissimo.server.commands.*;
@@ -53,6 +54,7 @@ public class Main {
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
         commandsHandlers.add(new GetGuildsCommandResponse());
         commandsHandlers.add(new GetGuildChannelsCommandResponse());
+        commandsHandlers.add(new CreateGuildCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {

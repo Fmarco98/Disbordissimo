@@ -64,12 +64,12 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public void logout() {
+    public synchronized void logout() {
         this.userID = -1;
     }
 
     @Override
-    public boolean isLoggedIn() {
+    public synchronized boolean isLoggedIn() {
         return userID != -1;
     }
 
@@ -120,13 +120,15 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public void createGuild(String guild) throws CommandFailedException {
+    public synchronized void createGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
+        int exit = new CreateGuildCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public void createGuildChannel(String channel, String guild) throws CommandFailedException {
+    public synchronized void createGuildChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
     }
