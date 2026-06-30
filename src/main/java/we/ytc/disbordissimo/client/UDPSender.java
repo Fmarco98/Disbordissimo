@@ -16,11 +16,15 @@ public class UDPSender extends Thread {
     private InetAddress address;
     private int port;
 
+    private int sleep = 500;
+
     public UDPSender(DatagramSocket socket, InetAddress address, int port) {
         running = true;
         this.socket = socket;
         this.address = address;
         this.port = port;
+
+        sleep = 1000 / Client.getConfig().getKbps();
     }
 
     @Override
@@ -48,6 +52,10 @@ public class UDPSender extends Thread {
             }
             packetBuffer.flip();
             packetBuffer.clear();
+
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {}
         }
     }
 

@@ -13,16 +13,21 @@ public abstract sealed class DisbordissimoClient permits Client {
         private InetAddress serverAddress;
         private int serverPort;
         private int UDPTimeOut;
+        private int kbps;
 
         public Config(InetAddress serverAddress, int serverPort) {
-            this(serverAddress, serverPort, 500);
+            this(serverAddress, serverPort, 64, 500);
         }
-        public Config(InetAddress serverAddress, int serverPort, int UDPTimeOut) {
+        public Config(InetAddress serverAddress, int serverPort, int kbps , int UDPTimeOut) {
             this.serverAddress = serverAddress;
             this.serverPort = serverPort;
             this.UDPTimeOut = UDPTimeOut;
+            this.kbps = kbps;
         }
 
+        public int getKbps() {
+            return kbps;
+        }
         public int getUDPTimeOut() {
             return UDPTimeOut;
         }
@@ -57,7 +62,7 @@ public abstract sealed class DisbordissimoClient permits Client {
     //Verifica se connesso ad una voice chat
     public abstract boolean isConnectedTo(String channel, String guild) throws CommandFailedException;
 
-    public abstract List<String> getGuilds() throws CommandFailedException;
+    public abstract String[] getGuilds() throws CommandFailedException;
 
     public abstract List<String> getGuildChannels(String guild) throws CommandFailedException;
 

@@ -3,12 +3,13 @@ package we.ytc.disbordissimo.client;
 import we.ytc.disbordissimo.client.commands.*;
 import we.ytc.disbordissimo.client.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
-import we.ytc.disbordissimo.client.exceptions.NotLoggedException;
+import we.ytc.disbordissimo.client.exceptions.NotLoggedInException;
 import we.ytc.disbordissimo.common.AudioUtils;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
 
 import java.net.DatagramSocket;
+import java.util.Arrays;
 import java.util.List;
 
 public final class Client extends DisbordissimoClient {
@@ -99,10 +100,13 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized List<String> getGuilds() throws CommandFailedException {
+    public synchronized String[] getGuilds() throws CommandFailedException {
         checksLoggedIn();
 
-        return null;
+        int exit = new GetGuildsCommand().execute();
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+
+        return lastStringList.toArray(new String[]{});
     }
 
     @Override
@@ -127,7 +131,9 @@ public final class Client extends DisbordissimoClient {
     public static void setLastBooleanResult(boolean r) {
         INSTANCE.lastBoolResult = r;
     }
-
+    public static void setLastStringList(List<String> r) {
+        INSTANCE.lastStringList = r;
+    }
 
     public static PacketReceivedHandler getOnReceived() {
         return INSTANCE.onReceived;
@@ -173,6 +179,6 @@ public final class Client extends DisbordissimoClient {
     }
 
     private void checksLoggedIn() {
-        if(!isLoggedIn()) throw new NotLoggedException();
+        if(!isLoggedIn()) throw new NotLoggedInException();
     }
 }
