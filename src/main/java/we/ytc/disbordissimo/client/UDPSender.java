@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.client;
 
+import we.ytc.disbordissimo.client.exceptions.IllegalMicFrameSize;
 import we.ytc.disbordissimo.common.AudioUtils;
 
 import java.io.IOException;
@@ -24,11 +25,16 @@ public class UDPSender extends Thread {
 
     @Override
     public void run() {
+        if(Client.getOnSending() == null) return;
+
         ByteBuffer packetBuffer = ByteBuffer.allocate(Client.DATAGRAM_PACKET_SIZE);
         while(running) {
             byte[] micRaw = new byte[AudioUtils.MIC_FRAME_LENGTH];
 
-            // get mic frame
+            micRaw = Client.getOnSending().onPacketSending();
+            if(micRaw.length != AudioUtils.MIC_FRAME_LENGTH) {
+                throw new IllegalMicFrameSize(micRaw.length);
+            }
 
             packetBuffer.putLong(Client.getUserID());
             packetBuffer.put(micRaw);

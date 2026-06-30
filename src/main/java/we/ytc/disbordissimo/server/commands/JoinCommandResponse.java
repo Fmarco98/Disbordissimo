@@ -33,34 +33,39 @@ public class JoinCommandResponse implements CommandResponse{
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        long userID = Long.valueOf(params[0]);
-        String guildName = params[1];
-        String channelName = params[2];
-
         try {
-            ResultSet queryResult = Main.getDB().execute(IS_MEMBER_QUERY, "sl", guildName, userID);
-            queryResult.last();
-            if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
-                return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
-            }
-            queryResult.close();
+            long userID = Long.valueOf(params[0]);
+            String guildName = params[1];
+            String channelName = params[2];
 
-            queryResult = Main.getDB().execute(CHANNEL_EXIST, "ss", guildName, channelName);
-            queryResult.last();
-            if(queryResult.getRow() != 1) {
-                return new JsonIO.Resp(ReturnCodes.CHANNEL_NOT_FOUND, MsgCodes.CHANNEL_NOT_FOUND, null);
-            }
-            long channelID = queryResult.getLong("id_channel");
-            queryResult.close();
+            try {
+                ResultSet queryResult = Main.getDB().execute(IS_MEMBER_QUERY, "sl", guildName, userID);
+                queryResult.last();
+                if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
+                    return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
+                }
+                queryResult.close();
 
-            if(Main.getActiveVoiceChannels().getVoiceChannel(userID) != -1) {
-                return new JsonIO.Resp(ReturnCodes.CHANNEL_ALREADY_JOINED, MsgCodes.CHANNEL_ALREADY_JOINED, null);
-            }
+                queryResult = Main.getDB().execute(CHANNEL_EXIST, "ss", guildName, channelName);
+                queryResult.last();
+                if (queryResult.getRow() != 1) {
+                    return new JsonIO.Resp(ReturnCodes.CHANNEL_NOT_FOUND, MsgCodes.CHANNEL_NOT_FOUND, null);
+                }
+                long channelID = queryResult.getLong("id_channel");
+                queryResult.close();
 
-            Main.getActiveVoiceChannels().join(channelID, new ActiveUser(userID));
-            return JsonIO.genSuccessResponse();
-        } catch (SQLException e) {
-            Main.getLogger().logError("SQL error occurred: "+e);
+                if (Main.getActiveVoiceChannels().getVoiceChannel(userID) != -1) {
+                    return new JsonIO.Resp(ReturnCodes.CHANNEL_ALREADY_JOINED, MsgCodes.CHANNEL_ALREADY_JOINED, null);
+                }
+
+                Main.getActiveVoiceChannels().join(channelID, new ActiveUser(userID));
+                return JsonIO.genSuccessResponse();
+            } catch (SQLException e) {
+                Main.getLogger().logError("SQL error occurred: " + e);
+                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            }
+        } catch (Exception e) {
+            Main.getLogger().logError(e.toString());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
     }

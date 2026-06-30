@@ -1,10 +1,15 @@
 package we.ytc.disbordissimo.client;
 
+import we.ytc.disbordissimo.client.exceptions.IllegalMicFrameSize;
+import we.ytc.disbordissimo.common.AudioUtils;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class UDPReceiver extends Thread {
 
@@ -23,10 +28,14 @@ public class UDPReceiver extends Thread {
 
     @Override
     public void run() {
-        byte[] packetBuffer = new byte[Client.DATAGRAM_PACKET_SIZE];
+        if(Client.getOnReceived() == null) return;
+
+        byte[] arrayBuf = new byte[Client.DATAGRAM_PACKET_SIZE];
+        byte[] audio = new byte[AudioUtils.MIC_FRAME_LENGTH];
+        DatagramPacket packet = new DatagramPacket(arrayBuf, arrayBuf.length);
+        ByteBuffer packetBuffer = ByteBuffer.wrap(arrayBuf);
 
         while(running) {
-            DatagramPacket packet = new DatagramPacket(packetBuffer, packetBuffer.length);
             try {
                 socket.receive(packet);
             } catch (SocketTimeoutException e) {
@@ -34,10 +43,15 @@ public class UDPReceiver extends Thread {
             } catch (IOException e) {
                 Client.getLogger().logError("An error occurred while receiving a UDP packet");
             }
-           // Client.getLogger().logMsg(new String(packet.getData()));
+            // Client.getLogger().logMsg(new String(packet.getData()));
+            packetBuffer.rewind();
+            long channelID = packetBuffer.getLong();
+            packetBuffer.get(audio);
 
-            //write into audiostream
-
+            if(audio.length != AudioUtils.MIC_FRAME_LENGTH) {
+                throw new IllegalMicFrameSize(audio.length);
+            }
+            Client.getOnReceived().onPacketReceived(audio);
         }
     }
 

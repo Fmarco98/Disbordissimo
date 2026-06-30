@@ -3,6 +3,7 @@ package we.ytc.disbordissimo.client;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 
 public class Main {
 
@@ -13,6 +14,13 @@ public class Main {
 
         DisbordissimoClient.Config config = new DisbordissimoClient.Config(InetAddress.getByName("localhost"), 6969, 500);
         DisbordissimoClient client = DisbordissimoClient.create(config, new YtcLogger());
+
+//        client.setPacketReceivedHandler((audio) -> {
+//            System.out.println(Arrays.toString(audio));
+//        });
+//        client.setPacketSendingHandler(() -> {
+//            return new byte[1024];
+//        });
 
         //client.signUp("gigio", "123456");
         client.login("pippo", "123456");

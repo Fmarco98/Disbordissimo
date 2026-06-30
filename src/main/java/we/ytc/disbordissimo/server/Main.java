@@ -52,19 +52,19 @@ public class Main {
         commandsHandlers.add(new QuitCommandResponse()); //TODO
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
 
-//        Thread t = new Thread(()->{
-//            while(true) {
-//                synchronized (Main.getActiveVoiceChannels()) {
-//                    Main.getLogger().logMsg(Main.getActiveVoiceChannels().toString());
-//                }
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        });
-//        t.start();
+        Thread t = new Thread(()->{
+            while(true) {
+                synchronized (Main.getActiveVoiceChannels()) {
+                    Main.getLogger().logMsg(Main.getActiveVoiceChannels().toString());
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        t.start();
 
         //Server UDP setup
         int udpPort = config.udpServerConfig.port;

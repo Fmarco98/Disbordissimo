@@ -23,6 +23,8 @@ public final class Client extends DisbordissimoClient {
     private DatagramSocket socket;
     private UDPReceiver receiverThread;
     private UDPSender senderThread;
+    private PacketReceivedHandler onReceived;
+    private PacketSendingHandler onSending;
 
     private boolean lastBoolResult = false;
     private List<String> lastStringList = null;
@@ -34,6 +36,18 @@ public final class Client extends DisbordissimoClient {
         INSTANCE = this;
         config = conf;
         this.logger = logger;
+        onSending = null;
+        onReceived = null;
+    }
+
+    @Override
+    public synchronized void setPacketSendingHandler(PacketSendingHandler sending) {
+        onSending = sending;
+    }
+
+    @Override
+    public synchronized void setPacketReceivedHandler(PacketReceivedHandler received) {
+        onReceived = received;
     }
 
     @Override
@@ -112,6 +126,14 @@ public final class Client extends DisbordissimoClient {
 
     public static void setLastBooleanResult(boolean r) {
         INSTANCE.lastBoolResult = r;
+    }
+
+
+    public static PacketReceivedHandler getOnReceived() {
+        return INSTANCE.onReceived;
+    }
+    public static PacketSendingHandler getOnSending() {
+        return INSTANCE.onSending;
     }
     public static UDPSender getSenderThread() {
         return INSTANCE.senderThread;

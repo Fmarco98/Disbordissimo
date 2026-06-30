@@ -22,21 +22,26 @@ public class LoginCommandResponse implements CommandResponse{
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        String username = params[0];
-        String hashPasswd = params[1];
-
         try {
-            ResultSet result = Main.getDB().execute(USER_REQUEST_QUERY,"ss", username, hashPasswd);
+            String username = params[0];
+            String hashPasswd = params[1];
 
-            result.last();
-            int rowsNum = result.getRow();
-            if(rowsNum != 1) {
-                return new JsonIO.Resp(ReturnCodes.USER_NOT_FOUND, MsgCodes.USER_NOT_FOUND, null);
+            try {
+                ResultSet result = Main.getDB().execute(USER_REQUEST_QUERY,"ss", username, hashPasswd);
+
+                result.last();
+                int rowsNum = result.getRow();
+                if(rowsNum != 1) {
+                    return new JsonIO.Resp(ReturnCodes.USER_NOT_FOUND, MsgCodes.USER_NOT_FOUND, null);
+                }
+
+                return JsonIO.genSuccessResponse(List.of(result.getString("id_user")));
+            } catch (SQLException e) {
+                Main.getLogger().logError("SQL error occurred: "+e);
+                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
-
-            return JsonIO.genSuccessResponse(List.of(result.getString("id_user")));
-        } catch (SQLException e) {
-            Main.getLogger().logError("SQL error occurred: "+e);
+        } catch (Exception e) {
+            Main.getLogger().logError(e.toString());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
     }

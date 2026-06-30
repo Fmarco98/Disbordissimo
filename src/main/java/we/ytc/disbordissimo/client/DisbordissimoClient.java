@@ -41,6 +41,9 @@ public abstract sealed class DisbordissimoClient permits Client {
         return new Client(config, logger);
     }
 
+    public abstract void setPacketSendingHandler(PacketSendingHandler sending);
+    public abstract void setPacketReceivedHandler(PacketReceivedHandler received);
+
     public abstract void signUp(String username, String password) throws CommandFailedException;
 
     public abstract void login(String username, String password) throws CommandFailedException;

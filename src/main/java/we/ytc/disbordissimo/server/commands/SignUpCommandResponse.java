@@ -24,20 +24,25 @@ public class SignUpCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        String username = params[0];
-        String hashPasswd = params[1];
-
         try {
-            Main.getDB().execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) { // That username has already been used.
-                return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
+            String username = params[0];
+            String hashPasswd = params[1];
+
+            try {
+                Main.getDB().execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
+            } catch (SQLException e) {
+                if (e.getErrorCode() == 1062) { // That username has already been used.
+                    return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
+                }
+
+                Main.getLogger().logError("SQL error occurred: "+e);
+                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
 
-            Main.getLogger().logError("SQL error occurred: "+e);
+            return JsonIO.genSuccessResponse();
+        } catch (Exception e) {
+            Main.getLogger().logError(e.toString());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
-
-        return JsonIO.genSuccessResponse();
     }
 }
