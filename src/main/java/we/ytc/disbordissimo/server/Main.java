@@ -21,7 +21,6 @@ public class Main {
 
     private static Config config;
     private static Logger logger = null;
-    private static DBManager db = null;
     private static VoiceChannelsManager voiceChannels;
 
     /**
@@ -57,6 +56,7 @@ public class Main {
         commandsHandlers.add(new CreateGuildChannelCommandResponse());
         commandsHandlers.add(new JoinGuildCommandResponse());
         commandsHandlers.add(new GetGuildOwnerCommandResponse());
+        commandsHandlers.add(new DropGuildChannelCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {
@@ -91,29 +91,6 @@ public class Main {
         tcpServer.stopServer();
         udpServer.stopSever();
 
-    }
-
-    /** //TODO: documentation
-     * Gets the DB access interface.
-     *
-     * @return {@link DBManager}
-     */
-    public static DBManager getDB() {
-        if(db == null) {
-            try {
-                String db_host = config.sqlConnectionConfig.host;
-                String db_user = config.sqlConnectionConfig.user;
-                String db_pwd = config.sqlConnectionConfig.password;
-                String db_name = config.sqlConnectionConfig.dbName;
-
-                db = new DBManager(db_host, db_user, db_pwd, db_name);
-                Main.getLogger().logDebug("Connected to SQL DB: "+db_name+"@"+db_user);
-            } catch (SQLException e) {
-                Main.getLogger().logError("An Error occurred while connecting to DB : " + e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-        return db;
     }
 
     /**

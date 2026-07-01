@@ -26,7 +26,7 @@ public class Main {
         Logger logger = new YtcLogger();
 
         //client.signUp("gigio", "123456");
-        client.login("pippo", "123456");
+        client.login("anna", "123456");
 //        client.join("voice1", "pippo's server");
 //        boolean f = client.isConnectedTo("voice1", "pippo's server");
 //        logger.logMsg(String.valueOf(f));
@@ -40,6 +40,8 @@ public class Main {
 //        client.createGuildChannel("voice3", "pippo's server");
 //        client.joinGuild("pipo's server");
 //        logger.logMsg(Arrays.toString(client.getGuildChannels("pipo's server")));
-        logger.logMsg(client.getGuildOwner("pipo's server"));
+//        logger.logMsg(client.getGuildOwner("pipo's server"));
+
+        client.dropGuildChannel("voice3", "pipo's server");
     }
 }

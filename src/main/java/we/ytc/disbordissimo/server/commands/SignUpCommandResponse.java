@@ -4,6 +4,7 @@ import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.utils.db.DBManager;
 
 import java.sql.SQLException;
 
@@ -24,13 +25,22 @@ public class SignUpCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
+        DBManager db = null;
         try {
+             db = new DBManager(
+                    Main.getConfig().sqlConnectionConfig.host,
+                    Main.getConfig().sqlConnectionConfig.user,
+                    Main.getConfig().sqlConnectionConfig.password,
+                    Main.getConfig().sqlConnectionConfig.dbName
+            );
+
             String username = params[0];
             String hashPasswd = params[1];
 
             try {
-                Main.getDB().execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
+                db.execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
             } catch (SQLException e) {
+                db.close();
                 if (e.getErrorCode() == 1062) { // That username has already been used.
                     return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
                 }
@@ -39,8 +49,10 @@ public class SignUpCommandResponse implements CommandResponse {
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
 
+            db.close();
             return JsonIO.genSuccessResponse();
         } catch (Exception e) {
+            db.close();
             Main.getLogger().logError(e.toString());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }

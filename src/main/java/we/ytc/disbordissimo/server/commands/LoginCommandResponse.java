@@ -4,6 +4,7 @@ import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.utils.db.DBManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,11 +24,18 @@ public class LoginCommandResponse implements CommandResponse{
     @Override
     public JsonIO.Resp onPerformed(String... params) {
         try {
+            DBManager db = new DBManager(
+                    Main.getConfig().sqlConnectionConfig.host,
+                    Main.getConfig().sqlConnectionConfig.user,
+                    Main.getConfig().sqlConnectionConfig.password,
+                    Main.getConfig().sqlConnectionConfig.dbName
+            );
+
             String username = params[0];
             String hashPasswd = params[1];
 
             try {
-                ResultSet result = Main.getDB().execute(USER_REQUEST_QUERY,"ss", username, hashPasswd);
+                ResultSet result = db.execute(USER_REQUEST_QUERY,"ss", username, hashPasswd);
 
                 result.last();
                 int rowsNum = result.getRow();

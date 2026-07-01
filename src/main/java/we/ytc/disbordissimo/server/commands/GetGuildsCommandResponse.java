@@ -5,6 +5,7 @@ import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.ActiveUser;
 import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.utils.db.DBManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,11 +26,19 @@ public class GetGuildsCommandResponse implements CommandResponse{
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
+        DBManager db = null;
         try {
+            db = new DBManager(
+                    Main.getConfig().sqlConnectionConfig.host,
+                    Main.getConfig().sqlConnectionConfig.user,
+                    Main.getConfig().sqlConnectionConfig.password,
+                    Main.getConfig().sqlConnectionConfig.dbName
+            );
+
             long userID = Long.valueOf(params[0]);
 
             try {
-                ResultSet queryResult = Main.getDB().execute(GET_GUILDS, "l", userID);
+                ResultSet queryResult = db.execute(GET_GUILDS, "l", userID);
                 List<String> result = new ArrayList<>();
 
                 while(queryResult.next()) {
@@ -37,12 +46,15 @@ public class GetGuildsCommandResponse implements CommandResponse{
                 }
                 queryResult.close();
 
+                db.close();
                 return JsonIO.genSuccessResponse(result);
             } catch (SQLException e) {
+                db.close();
                 Main.getLogger().logError("SQL error occurred: " + e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
         } catch (Exception e) {
+            db.close();
             Main.getLogger().logError(e.toString());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
