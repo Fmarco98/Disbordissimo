@@ -178,6 +178,8 @@ public final class Client extends DisbordissimoClient {
     public synchronized void dropGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
+        int exit = new DropGuildChannelCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     public static void setLastBooleanResult(boolean r) {

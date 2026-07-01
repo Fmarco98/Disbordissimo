@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS guilds(
     name VARCHAR(30) NOT NULL UNIQUE,
 
     fk_owner BIGINT NOT NULL,
-    FOREIGN KEY(fk_owner) REFERENCES users(id_user)
+    FOREIGN KEY(fk_owner) REFERENCES users(id_user) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS users_guilds(
@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS users_guilds(
     fk_user BIGINT NOT NULL,
     fk_guild BIGINT NOT NULL,
 
-    FOREIGN KEY (fk_user) REFERENCES users(id_user),
-    FOREIGN KEY (fK_guild) REFERENCES guilds(id_guild),
+    FOREIGN KEY (fk_user) REFERENCES users(id_user) ON DELETE CASCADE,
+    FOREIGN KEY (fK_guild) REFERENCES guilds(id_guild) ON DELETE CASCADE,
 
     UNIQUE (fk_user, fk_guild)
 );
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS channels(
 
     fk_guild BIGINT NOT NULL,
 
-    FOREIGN KEY(fk_guild) REFERENCES guilds(id_guild),
+    FOREIGN KEY(fk_guild) REFERENCES guilds(id_guild) ON DELETE CASCADE,
     UNIQUE(name, fk_guild)
 );
 
