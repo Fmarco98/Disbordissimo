@@ -4,9 +4,13 @@ import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBManager;
+import we.ytc.disbordissimo.server.utils.db.DBUtils;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
 public class CreateGuildCommandResponse implements CommandResponse {
 
@@ -25,37 +29,33 @@ public class CreateGuildCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        DBManager db = null;
+        Connection db = Main.getDB();
         try {
-            db = new DBManager(
-                    Main.getConfig().sqlConnectionConfig.host,
-                    Main.getConfig().sqlConnectionConfig.user,
-                    Main.getConfig().sqlConnectionConfig.password,
-                    Main.getConfig().sqlConnectionConfig.dbName
-            );
-
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
 
-            db.startTransaction();
-            db.execute(GUILD_INSERT_QUERY,"sl", guildName, userID);
-            db.execute(INSERT_MEMBER, "sl", guildName, userID);
-            db.commit();
+            DBUtils.startTransaction(db);
+            DBUtils.bindParams(db, GUILD_INSERT_QUERY,"sl", guildName, userID).executeUpdate();
+            DBUtils.bindParams(db, INSERT_MEMBER, "sl", guildName, userID).executeUpdate();
+            DBUtils.commit(db);
 
-            db.close();
+            DBUtils.close(db);
             return JsonIO.genSuccessResponse();
         } catch (SQLException e) {
-            db.rollback();
-            db.close();
-            if (e.getErrorCode() == 1062) { // the requested guild already exists.
+            DBUtils.rollback(db);
+            DBUtils.close(db);
+            if (e.getErrorCode() == 1062) { // That guild already exists
                 return new JsonIO.Resp(ReturnCodes.GUILD_ALREADY_EXISTS, MsgCodes.GUILD_ALREADY_EXISTS, null);
             }
 
-            Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
+            Main.getLogger().logError("SQL error occurred: " + e);
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+
         } catch (Exception e) {
-            db.close();
+            DBUtils.rollback(db);
+            DBUtils.close(db);
             Main.getLogger().logError(e.toString());
+            e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
     }

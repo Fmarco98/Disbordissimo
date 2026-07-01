@@ -4,9 +4,17 @@ import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBManager;
+import we.ytc.disbordissimo.server.utils.db.DBUtils;
 
+import java.awt.image.DataBufferInt;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
 //TODO: documentation
 
@@ -25,35 +33,31 @@ public class SignUpCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        DBManager db = null;
+        Connection db = Main.getDB();
         try {
-             db = new DBManager(
-                    Main.getConfig().sqlConnectionConfig.host,
-                    Main.getConfig().sqlConnectionConfig.user,
-                    Main.getConfig().sqlConnectionConfig.password,
-                    Main.getConfig().sqlConnectionConfig.dbName
-            );
-
             String username = params[0];
             String hashPasswd = params[1];
 
-            try {
-                db.execute(USER_INSERT_QUERY,"ss", username, hashPasswd);
-            } catch (SQLException e) {
-                db.close();
-                if (e.getErrorCode() == 1062) { // That username has already been used.
-                    return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
-                }
+            DBUtils.startTransaction(db);
+            DBUtils.bindParams(db, USER_INSERT_QUERY,"ss", username, hashPasswd).executeUpdate();
+            DBUtils.commit(db);
 
-                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
-                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return JsonIO.genSuccessResponse();
+        } catch (SQLException e){
+            DBUtils.rollback(db);
+            DBUtils.close(db);
+            if (e.getErrorCode() == 1062) { // That username has already been used.
+                return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
             }
 
-            db.close();
-            return JsonIO.genSuccessResponse();
+            Main.getLogger().logError("SQL error occurred: "+ e);
+            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+
         } catch (Exception e) {
-            db.close();
+            DBUtils.rollback(db);
+            DBUtils.close(db);
             Main.getLogger().logError(e.toString());
+            e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
     }

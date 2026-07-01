@@ -4,8 +4,9 @@ import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBManager;
+import we.ytc.disbordissimo.server.utils.db.DBUtils;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -29,72 +30,56 @@ public class DropGuildChannelCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        DBManager db = null;
+        Connection db = Main.getDB();
         try {
-            db = new DBManager(
-                    Main.getConfig().sqlConnectionConfig.host,
-                    Main.getConfig().sqlConnectionConfig.user,
-                    Main.getConfig().sqlConnectionConfig.password,
-                    Main.getConfig().sqlConnectionConfig.dbName
-            );
-
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
             String channelName = params[2];
 
-            try {
-                ResultSet queryResult = db.execute(IS_MEMBER_QUERY, "sl", guildName, userID);
-                queryResult.last();
-                if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
-                    return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
-                }
+            //Checks if the user is a guild member
+            ResultSet queryResult = DBUtils.bindParams(db, IS_MEMBER_QUERY, "sl", guildName, userID).executeQuery();
+            queryResult.last();
+            if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
                 queryResult.close();
-            } catch (SQLException e) {
-                db.close();
-                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
-                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+                DBUtils.close(db);
+                return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
             }
+            queryResult.close();
 
-            try {
-                ResultSet queryResult = db.execute(CHANNEL_EXIST, "ss", guildName, channelName);
-                queryResult.last();
-                if (queryResult.getRow() != 1) {
-                    db.close();
-                    return new JsonIO.Resp(ReturnCodes.CHANNEL_NOT_FOUND, MsgCodes.CHANNEL_NOT_FOUND, null);
-                }
+            //Checks if the user is the owner
+            queryResult = DBUtils.bindParams(db, IS_OWNER, "ls", userID, guildName).executeQuery();
+            queryResult.last();
+            if (queryResult.getRow() != 1 || !queryResult.getBoolean("owner")) {
                 queryResult.close();
-            } catch (SQLException e) {
-                db.close();
-                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
-                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+                DBUtils.close(db);
+                return new JsonIO.Resp(ReturnCodes.NO_PERMISSION, MsgCodes.NO_PERMISSION, null);
+            }
+            queryResult.close();
+
+            DBUtils.startTransaction(db);
+            int affectedRows = DBUtils.bindParams(db, DROP_CHANNEL, "ss", channelName, guildName).executeUpdate();
+            if(affectedRows == 0) {
+                DBUtils.rollback(db);
+                DBUtils.close(db);
+                return new JsonIO.Resp(ReturnCodes.CHANNEL_NOT_FOUND, MsgCodes.CHANNEL_NOT_FOUND, null);
+            } else if (affectedRows > 1) {
+                throw new Exception("Deleted too many rows");
             }
 
-            try {
-                ResultSet queryResult = db.execute(IS_OWNER, "ls", userID, guildName);
-                queryResult.last();
-                if (queryResult.getRow() != 1 || !queryResult.getBoolean("owner")) {
-                    return new JsonIO.Resp(ReturnCodes.NO_PERMISSION, MsgCodes.NO_PERMISSION, null);
-                }
-                queryResult.close();
-            } catch (SQLException e) {
-                db.close();
-                Main.getLogger().logError("SQL error occurred: "+e.getMessage());
-                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
-            }
+            DBUtils.commit(db);
+            DBUtils.close(db);
+            return JsonIO.genSuccessResponse();
+        } catch (SQLException e) {
+            DBUtils.rollback(db);
+            DBUtils.close(db);
+            Main.getLogger().logError("SQL error occurred: " + e);
+            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
-            try {
-                db.execute(DROP_CHANNEL, "ss", channelName, guildName);
-
-                db.close();
-                return JsonIO.genSuccessResponse();
-            } catch (SQLException e) {
-                db.close();
-                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
-                return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
-            }
         } catch (Exception e) {
-            db.close();
+            DBUtils.rollback(db);
+            DBUtils.close(db);
             Main.getLogger().logError(e.toString());
+            e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
     }

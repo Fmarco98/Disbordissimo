@@ -5,9 +5,10 @@ import we.ytc.disbordissimo.common.logger.YtcLogger;
 import we.ytc.disbordissimo.server.commands.*;
 import we.ytc.disbordissimo.server.networking.TCPServer;
 import we.ytc.disbordissimo.server.networking.UDPServer;
-import we.ytc.disbordissimo.server.utils.db.DBManager;
 import we.ytc.disbordissimo.common.logger.Logger;
+import we.ytc.disbordissimo.server.utils.db.DBUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,21 @@ public class Main {
         tcpServer.stopServer();
         udpServer.stopSever();
 
+    }
+
+    public static Connection getDB() {
+        try {
+            Connection conn = DBUtils.connect(
+                    Main.getConfig().sqlConnectionConfig.host,
+                    Main.getConfig().sqlConnectionConfig.user,
+                    Main.getConfig().sqlConnectionConfig.password,
+                    Main.getConfig().sqlConnectionConfig.dbName
+            );
+            getLogger().logDebug("DB connected");
+            return conn;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
