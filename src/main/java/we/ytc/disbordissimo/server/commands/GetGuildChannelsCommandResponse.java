@@ -3,7 +3,6 @@ package we.ytc.disbordissimo.server.commands;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-import we.ytc.disbordissimo.server.ActiveUser;
 import we.ytc.disbordissimo.server.Main;
 
 import java.sql.ResultSet;
@@ -11,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static we.ytc.disbordissimo.server.commands.JoinCommandResponse.IS_MEMBER_QUERY;
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
 public class GetGuildChannelsCommandResponse implements CommandResponse {
 

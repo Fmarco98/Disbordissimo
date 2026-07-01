@@ -9,8 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static we.ytc.disbordissimo.server.commands.JoinCommandResponse.CHANNEL_EXIST;
-import static we.ytc.disbordissimo.server.commands.JoinCommandResponse.IS_MEMBER_QUERY;
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
+import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
 public class TestVoiceChatConnectionCommandResponse implements CommandResponse{
     @Override

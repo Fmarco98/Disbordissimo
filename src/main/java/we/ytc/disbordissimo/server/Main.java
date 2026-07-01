@@ -1,6 +1,5 @@
 package we.ytc.disbordissimo.server;
 
-import we.ytc.disbordissimo.client.commands.CreateGuildCommand;
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
 import we.ytc.disbordissimo.server.commands.*;
@@ -49,12 +48,13 @@ public class Main {
         List<CommandResponse> commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new SignUpCommandResponse());
         commandsHandlers.add(new LoginCommandResponse());
-        commandsHandlers.add(new JoinCommandResponse());
-        commandsHandlers.add(new QuitCommandResponse());
+        commandsHandlers.add(new JoinChannelCommandResponse());
+        commandsHandlers.add(new QuitChannelCommandResponse());
         commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
         commandsHandlers.add(new GetGuildsCommandResponse());
         commandsHandlers.add(new GetGuildChannelsCommandResponse());
         commandsHandlers.add(new CreateGuildCommandResponse());
+        commandsHandlers.add(new CreateGuildChannelCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {

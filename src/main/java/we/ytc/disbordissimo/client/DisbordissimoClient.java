@@ -55,9 +55,11 @@ public abstract sealed class DisbordissimoClient permits Client {
     public abstract void logout();
     public abstract boolean isLoggedIn();
 
-    public abstract void join(String channel, String guild) throws CommandFailedException;
+    public abstract void joinChannel(String channel, String guild) throws CommandFailedException;
 
-    public abstract void quit(String channel, String guild) throws CommandFailedException;
+    public abstract void quitChannel(String channel, String guild) throws CommandFailedException;
+
+    public abstract void reconnectToChannel(String channel, String guild) throws CommandFailedException;
 
     //Verifica se connesso ad una voice chat
     public abstract boolean isConnectedTo(String channel, String guild) throws CommandFailedException;

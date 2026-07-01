@@ -5,7 +5,6 @@ import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.ActiveUser;
 import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 /**
  * <h1>Join / Quit command response</h1>
  */
-public class JoinCommandResponse implements CommandResponse{
+public class JoinChannelCommandResponse implements CommandResponse{
 
     protected static String IS_MEMBER_QUERY = "SELECT COUNT(member) as exist " +
                                             "FROM user_guild_byname " +

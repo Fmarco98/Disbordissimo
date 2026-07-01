@@ -74,18 +74,18 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized void join(String channel, String guild) throws CommandFailedException {
+    public synchronized void joinChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new JoinCommand().execute(guild, channel);
+        int exit = new JoinChannelCommand().execute(guild, channel);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
-    public synchronized void quit(String channel, String guild) throws CommandFailedException {
+    public synchronized void quitChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new QuitCommand().execute(guild, channel);
+        int exit = new QuitChannelCommand().execute(guild, channel);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
@@ -97,6 +97,13 @@ public final class Client extends DisbordissimoClient {
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
 
         return lastBoolResult;
+    }
+
+    @Override
+    public synchronized void reconnectToChannel(String channel, String guild) throws CommandFailedException {
+        if(isConnectedTo(channel, guild)) quitChannel(channel, guild);
+
+        joinChannel(channel, guild);
     }
 
     @Override
@@ -131,6 +138,8 @@ public final class Client extends DisbordissimoClient {
     public synchronized void createGuildChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
+        int exit = new CreateGuildChannelCommand().execute(guild, channel);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     public static void setLastBooleanResult(boolean r) {
