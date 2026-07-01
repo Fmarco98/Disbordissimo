@@ -37,7 +37,8 @@ public class Main {
 //        client.quit("voice1", "pippo's server");
 //        logger.logMsg(Arrays.toString(client.getGuilds()));
 //        client.createGuild("pipo's server");
-        client.createGuildChannel("voice3", "pippo's server");
+//        client.createGuildChannel("voice3", "pippo's server");
+//        client.joinGuild("pipo's server");
         logger.logMsg(Arrays.toString(client.getGuildChannels("pipo's server")));
     }
 }
