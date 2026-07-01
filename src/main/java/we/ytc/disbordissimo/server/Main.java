@@ -58,6 +58,8 @@ public class Main {
         commandsHandlers.add(new JoinGuildCommandResponse());
         commandsHandlers.add(new GetGuildOwnerCommandResponse());
         commandsHandlers.add(new DropGuildChannelCommandResponse());
+        commandsHandlers.add(new DropGuildCommandResponse());
+        commandsHandlers.add(new LeaveGuildCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {

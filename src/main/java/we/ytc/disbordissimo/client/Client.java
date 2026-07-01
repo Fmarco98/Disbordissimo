@@ -164,6 +164,8 @@ public final class Client extends DisbordissimoClient {
     public synchronized void leaveGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
+        int exit = new LeaveGuildCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
     @Override
