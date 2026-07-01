@@ -60,7 +60,7 @@ public class JoinChannelCommandResponse implements CommandResponse{
                 Main.getActiveVoiceChannels().join(channelID, new ActiveUser(userID));
                 return JsonIO.genSuccessResponse();
             } catch (SQLException e) {
-                Main.getLogger().logError("SQL error occurred: " + e);
+                Main.getLogger().logError("SQL error occurred: " + e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
         } catch (Exception e) {

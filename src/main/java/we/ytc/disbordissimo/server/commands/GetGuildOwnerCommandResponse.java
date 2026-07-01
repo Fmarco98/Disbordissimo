@@ -3,19 +3,25 @@ package we.ytc.disbordissimo.server.commands;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-import we.ytc.disbordissimo.server.ActiveUser;
 import we.ytc.disbordissimo.server.Main;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
-import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
 import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
-public class QuitChannelCommandResponse implements CommandResponse{
+public class GetGuildOwnerCommandResponse implements CommandResponse {
+
+    private static String GET_OWNER_NAME_QUERY = "SELECT u.username AS username " +
+                                                 "FROM users u " +
+                                                 "JOIN guilds g ON g.fk_owner = u.id_user " +
+                                                 "WHERE g.name = ?;";
+
     @Override
     public String getCommandName() {
-        return "quit";
+        return "get-owner";
     }
 
     @Override
@@ -23,7 +29,6 @@ public class QuitChannelCommandResponse implements CommandResponse{
         try {
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
-            String channelName = params[2];
 
             try {
                 ResultSet queryResult = Main.getDB().execute(IS_MEMBER_QUERY, "sl", guildName, userID);
@@ -33,16 +38,12 @@ public class QuitChannelCommandResponse implements CommandResponse{
                 }
                 queryResult.close();
 
-                queryResult = Main.getDB().execute(CHANNEL_EXIST, "ss", guildName, channelName);
-                queryResult.last();
-                if (queryResult.getRow() != 1) {
-                    return new JsonIO.Resp(ReturnCodes.CHANNEL_NOT_FOUND, MsgCodes.CHANNEL_NOT_FOUND, null);
-                }
-                long channelID = queryResult.getLong("id_channel");
+                queryResult = Main.getDB().execute(GET_OWNER_NAME_QUERY, "s", guildName);
+                queryResult.next();
+                String owner = queryResult.getString("username");
                 queryResult.close();
 
-                Main.getActiveVoiceChannels().quit(channelID, new ActiveUser(userID));
-                return JsonIO.genSuccessResponse();
+                return JsonIO.genSuccessResponse(List.of(owner));
             } catch (SQLException e) {
                 Main.getLogger().logError("SQL error occurred: " + e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);

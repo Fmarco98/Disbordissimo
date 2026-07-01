@@ -43,7 +43,7 @@ public class JoinGuildCommandResponse implements CommandResponse {
                     return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
                 }
 
-                Main.getLogger().logError("SQL error occurred: "+e);
+                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
         } catch (Exception e) {

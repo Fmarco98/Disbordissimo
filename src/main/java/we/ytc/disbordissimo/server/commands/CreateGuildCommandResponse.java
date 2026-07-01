@@ -40,7 +40,7 @@ public class CreateGuildCommandResponse implements CommandResponse {
                 return new JsonIO.Resp(ReturnCodes.GUILD_ALREADY_EXISTS, MsgCodes.GUILD_ALREADY_EXISTS, null);
             }
 
-            Main.getLogger().logError("SQL error occurred: "+e);
+            Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         } catch (Exception e) {
             Main.getLogger().logError(e.toString());

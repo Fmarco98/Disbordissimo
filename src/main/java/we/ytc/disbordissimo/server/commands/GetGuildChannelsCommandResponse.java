@@ -47,7 +47,7 @@ public class GetGuildChannelsCommandResponse implements CommandResponse {
 
                 return JsonIO.genSuccessResponse(result);
             } catch (SQLException e) {
-                Main.getLogger().logError("SQL error occurred: " + e);
+                Main.getLogger().logError("SQL error occurred: " + e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
         } catch (Exception e) {

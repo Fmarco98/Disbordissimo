@@ -39,6 +39,7 @@ public class Main {
 //        client.createGuild("pipo's server");
 //        client.createGuildChannel("voice3", "pippo's server");
 //        client.joinGuild("pipo's server");
-        logger.logMsg(Arrays.toString(client.getGuildChannels("pipo's server")));
+//        logger.logMsg(Arrays.toString(client.getGuildChannels("pipo's server")));
+        logger.logMsg(client.getGuildOwner("pipo's server"));
     }
 }

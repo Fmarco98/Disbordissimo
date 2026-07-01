@@ -37,7 +37,7 @@ public class LoginCommandResponse implements CommandResponse{
 
                 return JsonIO.genSuccessResponse(List.of(result.getString("id_user")));
             } catch (SQLException e) {
-                Main.getLogger().logError("SQL error occurred: "+e);
+                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
         } catch (Exception e) {

@@ -117,6 +117,16 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
+    public synchronized String getGuildOwner(String guild) throws CommandFailedException {
+        checksLoggedIn();
+
+        int exit = new GetGuildOwnerCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+
+        return lastStringList.get(0);
+    }
+
+    @Override
     public synchronized String[] getGuildChannels(String guild) throws CommandFailedException {
         checksLoggedIn();
 
@@ -151,13 +161,13 @@ public final class Client extends DisbordissimoClient {
     }
 
     @Override
-    public synchronized void leftGuild(String guild) throws CommandFailedException {
+    public synchronized void leaveGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
     }
 
     @Override
-    public synchronized void dropChannel(String channel, String guild) throws CommandFailedException {
+    public synchronized void dropGuildChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
     }

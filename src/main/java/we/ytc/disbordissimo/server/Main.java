@@ -56,6 +56,7 @@ public class Main {
         commandsHandlers.add(new CreateGuildCommandResponse());
         commandsHandlers.add(new CreateGuildChannelCommandResponse());
         commandsHandlers.add(new JoinGuildCommandResponse());
+        commandsHandlers.add(new GetGuildOwnerCommandResponse());
 
         Thread t = new Thread(()->{
             while(true) {

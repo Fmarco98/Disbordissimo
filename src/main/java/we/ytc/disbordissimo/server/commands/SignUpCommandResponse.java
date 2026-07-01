@@ -35,7 +35,7 @@ public class SignUpCommandResponse implements CommandResponse {
                     return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
                 }
 
-                Main.getLogger().logError("SQL error occurred: "+e);
+                Main.getLogger().logError("SQL error occurred: "+ e.getMessage());
                 return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
             }
 
