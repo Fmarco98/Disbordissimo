@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.server.utils.db.exceptions;
+package we.ytc.disbordissimo.server.internal.utils.db.exceptions;
 
 public class NotBoundParamsException extends RuntimeException {
     public NotBoundParamsException() {

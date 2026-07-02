@@ -1,7 +1,7 @@
-package we.ytc.disbordissimo.server.networking;
+package we.ytc.disbordissimo.server.internal.networking;
 
 import we.ytc.disbordissimo.common.AudioUtils;
-import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -67,7 +67,7 @@ public class UDPServer extends Thread {
                 try {
                     response.join();
                 } catch (InterruptedException e) {
-                    Main.getLogger().logError("UDPResponses joining: " + e.getMessage());
+                    DisbordissimoServer.getServer().getLogger().logError("UDPResponses joining: " + e.getMessage());
                     throw new RuntimeException(e);
                 }
             });

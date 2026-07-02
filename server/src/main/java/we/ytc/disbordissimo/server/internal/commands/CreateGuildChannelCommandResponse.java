@@ -1,36 +1,46 @@
-package we.ytc.disbordissimo.server.commands;
+package we.ytc.disbordissimo.server.internal.commands;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBUtils;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
+import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static we.ytc.disbordissimo.server.commands.CreateGuildChannelCommandResponse.IS_OWNER;
-import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
+import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
-public class DropGuildCommandResponse implements CommandResponse {
+public class CreateGuildChannelCommandResponse implements CommandResponse {
 
-    private static String DROP_GUILD_QUERY = "DELETE FROM guilds " +
-                                             "WHERE name = ? AND fk_owner = ?;";
+    protected static String IS_OWNER = "SELECT fk_owner = ? as owner " +
+                                     "FROM guilds " +
+                                     "WHERE name = ?; ";
+
+    protected static String INSERT_CHANNEL = "INSERT INTO channels(name, fk_guild) VALUES " +
+                                           "( ?, ( " +
+                                           "    SELECT id_guild " +
+                                           "    FROM guilds " +
+                                           "    WHERE name = ? " +
+                                           "))";
 
     @Override
     public String getCommandName() {
-        return "drop-guild";
+        return "create-guild-channel";
     }
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = Main.getDB();
+        Connection db = DisbordissimoServer.getServer().getDB();
+        int nQuery = 0;
         try {
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
+            String channelName = params[2];
 
             //Checks if the user is a guild member
+            nQuery = 1;
             ResultSet queryResult = DBUtils.bindParams(db, IS_MEMBER_QUERY, "sl", guildName, userID).executeQuery();
             queryResult.last();
             if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
@@ -40,7 +50,8 @@ public class DropGuildCommandResponse implements CommandResponse {
             }
             queryResult.close();
 
-            //Checks if the user is the owner
+            //Checks if the user has the permission to do the operation
+            nQuery = 2;
             queryResult = DBUtils.bindParams(db, IS_OWNER, "ls", userID, guildName).executeQuery();
             queryResult.last();
             if (queryResult.getRow() != 1 || !queryResult.getBoolean("owner")) {
@@ -51,25 +62,26 @@ public class DropGuildCommandResponse implements CommandResponse {
             queryResult.close();
 
             DBUtils.startTransaction(db);
-            int affectedRows = DBUtils.bindParams(db, DROP_GUILD_QUERY, "sl", guildName, userID).executeUpdate();
-            if (affectedRows != 1) {
-                throw new Exception("Deleted an unaspected number of rows");
-            }
-
+            DBUtils.bindParams(db, INSERT_CHANNEL, "ss", channelName, guildName).executeUpdate();
             DBUtils.commit(db);
+
             DBUtils.close(db);
             return JsonIO.genSuccessResponse();
         } catch (SQLException e) {
-            DBUtils.rollback(db);
+            if (nQuery == 3) DBUtils.rollback(db);
             DBUtils.close(db);
-            Main.getLogger().logError("SQL error occurred: " + e);
+            if (nQuery == 3 && e.getErrorCode() == 1062) { // That channel already exists.
+                return new JsonIO.Resp(ReturnCodes.CHANNEL_ALREADY_EXISTS, MsgCodes.CHANNEL_ALREADY_EXISTS, null);
+            }
+
+            DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: " + e);
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
-            DBUtils.rollback(db);
+            if (nQuery == 3) DBUtils.rollback(db);
             DBUtils.close(db);
-            Main.getLogger().logError(e.toString());
+            DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }

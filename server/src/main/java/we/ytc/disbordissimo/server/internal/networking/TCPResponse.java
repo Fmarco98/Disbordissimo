@@ -1,7 +1,7 @@
-package we.ytc.disbordissimo.server.networking;
+package we.ytc.disbordissimo.server.internal.networking;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
-import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -51,13 +51,13 @@ public class TCPResponse extends Thread {
     @Override
     public void run() {
         //Token response
-        Main.getLogger().logDebug("Responding to " + client.getInetAddress() + ":" + client.getPort());
+        DisbordissimoServer.getServer().getLogger().logDebug("Responding to " + client.getInetAddress() + ":" + client.getPort());
 
         try {
             in = new Scanner(client.getInputStream());
             out = new PrintStream(client.getOutputStream());
         } catch (IOException e) {
-            Main.getLogger().logError("An Error occurred while opening I/O streams: " + e.getMessage());
+            DisbordissimoServer.getServer().getLogger().logError("An Error occurred while opening I/O streams: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -93,7 +93,7 @@ public class TCPResponse extends Thread {
                 activeResponses.remove(this);
             }
         } catch (IOException e) {
-            Main.getLogger().logError("An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage());
+            DisbordissimoServer.getServer().getLogger().logError("An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage());
             synchronized (activeResponses) {
                 activeResponses.remove(this);
             }

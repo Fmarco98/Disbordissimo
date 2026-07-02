@@ -1,7 +1,7 @@
-package we.ytc.disbordissimo.server.networking;
+package we.ytc.disbordissimo.server.internal.networking;
 
-import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.commands.CommandResponse;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
+import we.ytc.disbordissimo.server.internal.commands.CommandResponse;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -36,7 +36,7 @@ public class TCPServer extends Thread {
             try {
                 client = server.accept();
             } catch (IOException e) {
-                Main.getLogger().logError("An Error occurred while accepting a client");
+                DisbordissimoServer.getServer().getLogger().logError("An Error occurred while accepting a client");
                 continue;
             }
 
@@ -49,7 +49,7 @@ public class TCPServer extends Thread {
                 try {
                     response.join();
                 } catch (InterruptedException e) {
-                    Main.getLogger().logError("TCPResponses joining: " + e.getMessage());
+                    DisbordissimoServer.getServer().getLogger().logError("TCPResponses joining: " + e.getMessage());
                     throw new RuntimeException(e);
                 }
             });

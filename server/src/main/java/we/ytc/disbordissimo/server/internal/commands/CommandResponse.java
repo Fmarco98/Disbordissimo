@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.server.commands;
+package we.ytc.disbordissimo.server.internal.commands;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 

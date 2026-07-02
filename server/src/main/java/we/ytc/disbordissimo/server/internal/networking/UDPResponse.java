@@ -1,8 +1,8 @@
-package we.ytc.disbordissimo.server.networking;
+package we.ytc.disbordissimo.server.internal.networking;
 
 import we.ytc.disbordissimo.common.AudioUtils;
-import we.ytc.disbordissimo.server.ActiveUser;
-import we.ytc.disbordissimo.server.Main;
+import we.ytc.disbordissimo.server.internal.ActiveUser;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -55,7 +55,7 @@ public class UDPResponse extends Thread {
 
     @Override
     public void run() {
-        Main.getLogger().logDebug("Responding to " + address + ":" + port);
+        DisbordissimoServer.getServer().getLogger().logDebug("Responding to " + address + ":" + port);
 
         ByteBuffer recvBytes = ByteBuffer.wrap(rawData);
         long userID = recvBytes.getLong();
@@ -63,14 +63,14 @@ public class UDPResponse extends Thread {
         recvBytes.position(8);
         recvBytes.get(mic_frame);
 
-        long voiceChannelID = Main.getActiveVoiceChannels().getVoiceChannel(userID);
+        long voiceChannelID = DisbordissimoServer.getServer().getActiveVoiceChannels().getVoiceChannel(userID);
         if(voiceChannelID == -1) {
-            Main.getLogger().logWarning("Responding to an NOT IN VOICE CHAT user(" + address + ":" + port + ")");
+            DisbordissimoServer.getServer().getLogger().logWarning("Responding to an NOT IN VOICE CHAT user(" + address + ":" + port + ")");
             this.closeResponse();
             return;
         }
 
-        List<ActiveUser> connectedUsers = Main.getActiveVoiceChannels().getConnectedUsers(voiceChannelID);
+        List<ActiveUser> connectedUsers = DisbordissimoServer.getServer().getActiveVoiceChannels().getConnectedUsers(voiceChannelID);
         List<byte[]> streams = new ArrayList<>();
         synchronized (connectedUsers) {
             connectedUsers.stream().forEach(user -> {

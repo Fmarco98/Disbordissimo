@@ -1,6 +1,7 @@
-package we.ytc.disbordissimo.server;
+package we.ytc.disbordissimo.server.internal;
 
 import we.ytc.disbordissimo.common.TimeUtils;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,18 +20,20 @@ public class VoiceChannelsManager {
     private HashMap<Long, LinkedList<ActiveUser>> channel_users;
     private HashMap<Long, Long> users_channel;
     private long timeOut;
+    private long sleep;
     private boolean t_running;
     private Thread cleaning;
 
-    public VoiceChannelsManager(long timeOut) {
+    public VoiceChannelsManager(long timeOut, long sleep) {
         channel_users = new HashMap<>(); //HashMap: <channel, List<ActiveUser>>
         users_channel = new HashMap<>(); //HashMap: <user, channel>
         this.timeOut = timeOut;
+        this.sleep = sleep;
 
         t_running = true;
         cleaning = new Thread(() -> {
             while(t_running) {
-                Main.getLogger().logDebug("Try to clean");
+                DisbordissimoServer.getServer().getLogger().logDebug("Try to clean");
                 synchronized (this) {
                     Set<Long> channelIDs = channel_users.keySet();
                     for(long chID : channelIDs) {
@@ -42,17 +45,17 @@ public class VoiceChannelsManager {
                             // Checks if last recv is timed out (: recv timed out => user is no longer connected)
                             if (TimeUtils.currentTimestamp() - user.getLastRecvTimestamp() > timeOut) {
                                 this.quit(chID, user);
-                                Main.getLogger().logDebug("Cleaned user: " + user.getUserID());
+                                DisbordissimoServer.getServer().getLogger().logDebug("Cleaned user: " + user.getUserID());
                             } else {
                                 i++;
                             }
                         }
                     }
                 }
-                Main.getLogger().logDebug("cleaning finished");
+                DisbordissimoServer.getServer().getLogger().logDebug("cleaning finished");
 
                 try {
-                    Thread.sleep(Main.getConfig().activeClassCleanerConfig.cleaningSleep);
+                    Thread.sleep(sleep);
                 } catch (InterruptedException e) {}
             }
         }, "ActiveUser-Cleaner");

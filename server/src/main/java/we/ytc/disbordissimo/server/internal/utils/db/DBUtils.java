@@ -1,6 +1,6 @@
-package we.ytc.disbordissimo.server.utils.db;
+package we.ytc.disbordissimo.server.internal.utils.db;
 
-import we.ytc.disbordissimo.server.utils.db.exceptions.NotBoundParamsException;
+import we.ytc.disbordissimo.server.internal.utils.db.exceptions.NotBoundParamsException;
 
 import java.sql.*;
 

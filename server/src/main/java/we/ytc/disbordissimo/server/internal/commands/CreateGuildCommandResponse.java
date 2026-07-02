@@ -1,16 +1,13 @@
-package we.ytc.disbordissimo.server.commands;
+package we.ytc.disbordissimo.server.internal.commands;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBUtils;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
+import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
 public class CreateGuildCommandResponse implements CommandResponse {
 
@@ -29,7 +26,7 @@ public class CreateGuildCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = Main.getDB();
+        Connection db = DisbordissimoServer.getServer().getDB();
         try {
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
@@ -48,14 +45,14 @@ public class CreateGuildCommandResponse implements CommandResponse {
                 return new JsonIO.Resp(ReturnCodes.GUILD_ALREADY_EXISTS, MsgCodes.GUILD_ALREADY_EXISTS, null);
             }
 
-            Main.getLogger().logError("SQL error occurred: " + e);
+            DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: " + e);
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
             DBUtils.rollback(db);
             DBUtils.close(db);
-            Main.getLogger().logError(e.toString());
+            DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }

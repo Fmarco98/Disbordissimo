@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.server;
+package we.ytc.disbordissimo.server.internal;
 
 import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.AudioUtils;

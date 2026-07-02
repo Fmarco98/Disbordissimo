@@ -1,34 +1,33 @@
-package we.ytc.disbordissimo.server.commands;
+package we.ytc.disbordissimo.server.internal.commands;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-import we.ytc.disbordissimo.server.Main;
-import we.ytc.disbordissimo.server.utils.db.DBUtils;
+import we.ytc.disbordissimo.server.DisbordissimoServer;
+import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-import static we.ytc.disbordissimo.server.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
+import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
-public class GetGuildChannelsCommandResponse implements CommandResponse {
+public class GetGuildOwnerCommandResponse implements CommandResponse {
 
-    private final String GET_GUILD_CHANNELS = "SELECT channelname " +
-                                              "FROM channel_guild_byname " +
-                                              "WHERE guildname = ? " +
-                                              "GROUP BY channelname;";
+    private static String GET_OWNER_NAME_QUERY = "SELECT u.username AS username " +
+                                                 "FROM users u " +
+                                                 "JOIN guilds g ON g.fk_owner = u.id_user " +
+                                                 "WHERE g.name = ?;";
 
     @Override
     public String getCommandName() {
-        return "get-guild-channel";
+        return "get-owner";
     }
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = Main.getDB();
+        Connection db = DisbordissimoServer.getServer().getDB();
         try {
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
@@ -43,24 +42,22 @@ public class GetGuildChannelsCommandResponse implements CommandResponse {
             }
             queryResult.close();
 
-            queryResult = DBUtils.bindParams(db, GET_GUILD_CHANNELS, "s", guildName).executeQuery();
-            List<String> result = new ArrayList<>();
-            while(queryResult.next()) {
-                result.add(queryResult.getString("channelname"));
-            }
+            queryResult = DBUtils.bindParams(db, GET_OWNER_NAME_QUERY, "s", guildName).executeQuery();
+            queryResult.next();
+            String owner = queryResult.getString("username");
             queryResult.close();
 
             DBUtils.close(db);
-            return JsonIO.genSuccessResponse(result);
+            return JsonIO.genSuccessResponse(List.of(owner));
         } catch (SQLException e) {
             DBUtils.close(db);
-            Main.getLogger().logError("SQL error occurred: " + e);
+            DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: " + e);
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
             DBUtils.close(db);
-            Main.getLogger().logError(e.toString());
+            DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
         }
