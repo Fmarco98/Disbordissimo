@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>CreateGuild Command</h1>
+ * Creates a guild.
+ */
 public class CreateGuildCommand extends Command {
 
     public CreateGuildCommand() {

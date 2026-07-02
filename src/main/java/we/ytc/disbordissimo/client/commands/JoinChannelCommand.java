@@ -13,7 +13,8 @@ import java.util.List;
 //TODO: documentation
 
 /**
- * <H1>Join Command</h1>
+ * <H1>JoinChannel Command</h1>
+ * Joins a voice channel.
  */
 public class JoinChannelCommand extends Command {
 

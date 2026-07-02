@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>TestVoiceChatConnection Command</h1>
+ * Tests if the user is connected to a specific voice channel.
+ */
 public class TestVoiceChatConnectionCommand extends Command {
 
     public TestVoiceChatConnectionCommand() {

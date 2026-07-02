@@ -7,6 +7,12 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>Login Command</h1>
+ * Login.<br>
+ * <br>
+ * Important: All password are hash before they are sent to the server.
+ */
 public class LoginCommand extends Command {
 
     public LoginCommand() {

@@ -9,9 +9,8 @@ import java.util.List;
 //TODO: documentation
 
 /**
- * <H1>Quit Command</h1>
- *
- *
+ * <H1>QuitChannel Command</h1>
+ * Quits from a voice channel.
  */
 public class QuitChannelCommand extends Command {
     public QuitChannelCommand() {
@@ -57,26 +56,5 @@ public class QuitChannelCommand extends Command {
                 Client.getLogger().logWarning("Unknown response code; response="+response.toString());
                 return ReturnCodes.ERROR;
         }
-    }
-
-    public int osnActionPerformed(String... params) {
-        String userID = params[0];
-        String channel = params[1];
-
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, channel));
-        super.send(JsonIO.serializeReq(request));
-
-        String jsonResponse = super.recv();
-        JsonIO.Resp response = JsonIO.deserializeResp(jsonResponse);
-
-        if(response.code != ReturnCodes.SUCCESS) {
-            String err = "Command:Quit -> response"+jsonResponse;
-            Client.getLogger().logError(err);
-            throw new RuntimeException(err);
-        }
-
-
-
-        return ReturnCodes.SUCCESS;
     }
 }

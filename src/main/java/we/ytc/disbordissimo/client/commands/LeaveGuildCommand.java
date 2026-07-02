@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>LeaveGuild Command</h1>
+ * Leaves the guild.
+ */
 public class LeaveGuildCommand extends Command {
 
     public LeaveGuildCommand() {

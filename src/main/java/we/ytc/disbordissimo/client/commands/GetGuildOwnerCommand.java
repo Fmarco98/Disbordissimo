@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>GetGuildOwner Command</h1>
+ * Gets the owner username of a specific guild.
+ */
 public class GetGuildOwnerCommand extends Command {
 
     public GetGuildOwnerCommand() {

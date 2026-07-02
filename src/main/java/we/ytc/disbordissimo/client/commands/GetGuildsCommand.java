@@ -10,6 +10,10 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
+/**
+ * <H1>GetGuilds Command</h1>
+ * Gets all guilds where the logged user is member.
+ */
 public class GetGuildsCommand extends Command{
 
     public GetGuildsCommand() {

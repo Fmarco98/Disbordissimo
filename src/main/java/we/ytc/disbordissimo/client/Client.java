@@ -9,9 +9,12 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
 
 import java.net.DatagramSocket;
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * <h1>Client class</h1>
+ * It's an implementation of {@link DisbordissimoClient}
+ */
 public final class Client extends DisbordissimoClient {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
 

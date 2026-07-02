@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>DropGuild Command</h1>
+ * Deletes a guild.
+ */
 public class DropGuildCommand extends Command {
 
     public DropGuildCommand() {

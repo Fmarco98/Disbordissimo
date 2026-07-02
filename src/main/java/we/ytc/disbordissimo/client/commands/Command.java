@@ -10,26 +10,26 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 /**
- * <h1>Abstract Command</h1>
+ * <h1>Abstract Command class</h1>
  * This class represents a generic command. <br>
- * Every "real" command must be a child of this class. <br>
+ * Every "effective" command must be a child of this class. <br>
  * <br>
- * Commands can use TCP sockets by default. To init a socket you can call
- * {@code openSocket(host, port)} method or you can set up the socket from the
- * {@code SocketManager} using a {@code SocketManager.SocketContainer}. <br>
+ * Commands can use TCP sockets by default. The request can be sent by calling
+ * {@doce send(..)} method. The response can be caught by calling {@code recv()} method.<br>
+ * Important: The architecture is base on the concept of token server. This means that is possible
+ * calling {@code send(..)} and {@code recv} methods only one time each.<br>
  * <br>
- * Is required to implement the {@code onPerform} method to define the "logic"
+ * It's required to implement the {@code onActionPerform} method to define the "logic"
  * of the relative command. <br>
+ * Calling the {@code execute} method will perform the command.<br>
  * <br>
  * Child only visible methods:<br>
- *  - getSocketManager()<br>
- *  - openSocket(..)<br>
  *  - send(..)<br>
  *  - recv()<br>
- *  - closeSocket()<br>
+ *  - onActionPerform(..)<br>
  *  <br>
  *  Publics methods:<br>
- *  - onPerformed(..)<br>
+ *  - execute(..)<br>
  *  - getCommandName()<br>
  */
 public abstract class Command {
@@ -57,21 +57,25 @@ public abstract class Command {
         return this.commandName;
     }
 
-    /** //TODO: documentation
-     * Logic of the command. <br>
-     * This function will be implemented into the specific command
+    /**
+     * The Command logic. <br>
+     * <br>
+     * This method must be implemented by the developer.
      *
      * @param params
      *        Calling params
      *
-     * @return exit code
+     * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
      */
     public abstract int onActionPerformed(String ...params);
 
-    /** //TODO: documentation
+    /**
+     * Executes the command.
      *
      * @param params
-     * @return exit code
+     *        Calling params
+     *
+     * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
      */
     public int execute(String ...params) {
         try {

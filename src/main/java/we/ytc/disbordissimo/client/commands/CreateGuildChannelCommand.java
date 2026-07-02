@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>CreateGuildChannel Command</h1>
+ * Creates a voice channel into a specific guild.
+ */
 public class CreateGuildChannelCommand extends Command {
 
     public CreateGuildChannelCommand() {

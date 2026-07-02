@@ -11,7 +11,7 @@ import java.util.List;
  * <H1>SignUp Command</h1>
  * Creates a user.<br>
  * <br>
- * {@code onPerformed(..)} implemented with {@code ReturnType} as {@link java.lang.Void}
+ * Important: All password are hash before they are sent to the server.
  */
 public class SignUpCommand extends Command {
 

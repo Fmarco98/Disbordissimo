@@ -9,6 +9,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+/**
+ * <h1>UDPSender class</h1>
+ *
+ * UDP Sender Thread. It sends UDP Packets through UDP socket.
+ * Every time that a packet must be sent, the {@link PacketSendingHandler} function is called before.
+ */
 public class UDPSender extends Thread {
 
     private boolean running;
@@ -18,6 +24,16 @@ public class UDPSender extends Thread {
 
     private int sleep = 500;
 
+    /**
+     * Constructor.
+     *
+     * @param socket
+     *        The UDP socket
+     * @param address
+     *        The UDP Server address
+     * @param port
+     *        The UDP Server port
+     */
     public UDPSender(DatagramSocket socket, InetAddress address, int port) {
         running = true;
         this.socket = socket;
@@ -59,6 +75,9 @@ public class UDPSender extends Thread {
         }
     }
 
+    /**
+     * Stops the Thread.
+     */
     public void stopThread() {
         running = false;
 

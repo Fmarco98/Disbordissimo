@@ -6,7 +6,7 @@ import we.ytc.disbordissimo.common.logger.YtcLogger;
 import java.net.InetAddress;
 import java.util.Arrays;
 
-public class Main {
+public class TestMain {
 
     //Test
     public static void main(String[] args) throws Exception {

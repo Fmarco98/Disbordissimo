@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>DropGuildChannel Command</h1>
+ * Deletes a voice channel of a specific guild.
+ */
 public class DropGuildChannelCommand extends Command {
 
     public DropGuildChannelCommand() {

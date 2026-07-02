@@ -9,13 +9,24 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
+/**
+ * <h1>UDPReceiver class</h1>
+ *
+ * UDP Receiver Thread. It listens the UDP socket.
+ * Every time that a packet is received call the {@link PacketReceivedHandler} function.
+ */
 public class UDPReceiver extends Thread {
 
     private boolean running;
     private DatagramSocket socket;
 
+    /**
+     * Constructor.
+     *
+     * @param socket
+     *        UDP socket
+     */
     public UDPReceiver(DatagramSocket socket) {
         running = true;
         this.socket = socket;
@@ -55,6 +66,9 @@ public class UDPReceiver extends Thread {
         }
     }
 
+    /**
+     * Stops the Thread.
+     */
     public void stopThread() {
         running = false;
 

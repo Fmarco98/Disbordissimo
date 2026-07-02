@@ -121,12 +121,12 @@ public final class YtcLogger implements Logger {
             switch (level) {
                 case INFO:
                 case DEBUG:
-                    System.out.print(color + line);
+                    System.out.print(color + line + ConsoleColors.RESET);
                     break;
 
                 case WARNING:
                 case ERROR:
-                    System.err.print(color + line);
+                    System.err.print(color + line + ConsoleColors.RESET);
                     break;
             }
         }

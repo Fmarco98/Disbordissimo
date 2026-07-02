@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>JoinGuild Command</h1>
+ * Joins a guild.
+ */
 public class JoinGuildCommand extends Command {
 
     public JoinGuildCommand() {

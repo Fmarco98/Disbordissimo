@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <H1>GetGuildChannels Command</h1>
+ * Gets all voice channels of a specific guild.
+ */
 public class GetGuildChannelsCommand extends Command {
 
     public GetGuildChannelsCommand() {
