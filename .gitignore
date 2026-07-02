@@ -2,7 +2,7 @@
 .idea
 logs/
 config/
-src/main/java/we/ytc/disbordissimo/TempConfig.java
+out/
 
 ### Auto gen ###
 
