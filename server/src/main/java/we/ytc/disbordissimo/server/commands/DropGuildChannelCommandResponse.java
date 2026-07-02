@@ -73,6 +73,7 @@ public class DropGuildChannelCommandResponse implements CommandResponse {
             DBUtils.rollback(db);
             DBUtils.close(db);
             Main.getLogger().logError("SQL error occurred: " + e);
+            e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {

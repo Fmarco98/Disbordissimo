@@ -73,6 +73,7 @@ public class JoinChannelCommandResponse implements CommandResponse{
         } catch (SQLException e) {
             DBUtils.close(db);
             Main.getLogger().logError("SQL error occurred: " + e);
+            e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {

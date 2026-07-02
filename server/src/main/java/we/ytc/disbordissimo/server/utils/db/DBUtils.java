@@ -54,7 +54,11 @@ public class DBUtils {
             throw new NotBoundParamsException();
         }
 
-        PreparedStatement stmt = con.prepareStatement(query);
+        PreparedStatement stmt = con.prepareStatement(
+                query,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_READ_ONLY
+        );
         char[] varTypes = types.toCharArray();
 
         for(int i=0; i < varTypes.length; i++) {
