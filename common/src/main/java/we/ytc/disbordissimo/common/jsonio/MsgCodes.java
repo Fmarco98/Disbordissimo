@@ -3,6 +3,7 @@ package we.ytc.disbordissimo.common.jsonio;
 public class MsgCodes {
     private MsgCodes() {}
 
+    public static final String SERVER_UNREACHABLE = "The Disbordissimo server is unreachable";
     //generics
     public static final String SUCCESS = "Ok";
     public static final String NO_PERMISSION = "Forbidden";

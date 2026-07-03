@@ -32,9 +32,11 @@ public class CreateGuildChannelCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = DisbordissimoServer.getServer().getDB();
+        Connection db = null;
         int nQuery = 0;
         try {
+            db = DisbordissimoServer.getServer().getDB();
+
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
             String channelName = params[2];
@@ -79,8 +81,8 @@ public class CreateGuildChannelCommandResponse implements CommandResponse {
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
-            if (nQuery == 3) DBUtils.rollback(db);
-            DBUtils.close(db);
+            if (nQuery == 3 && db != null) DBUtils.rollback(db);
+            if (db != null) DBUtils.close(db);
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);

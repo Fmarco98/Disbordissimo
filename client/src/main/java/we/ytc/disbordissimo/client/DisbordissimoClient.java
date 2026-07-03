@@ -53,6 +53,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      *  - serverPort<br>
      *  - UDP sockets Timeout<br>
      *  - Kbps TargetRate<br>
+     *  - Ping inteval<br>
      * <br>
      * Methods:<br>
      *  - getters<br>
@@ -62,6 +63,7 @@ public abstract sealed class DisbordissimoClient permits Client {
         private int serverPort;
         private int UDPTimeOut;
         private int kbps;
+        private int pingInterval;
 
         /**
          * Contract Constructor. The {@code kbps} and {@code UDPTimeOut} values are set to their default.
@@ -72,7 +74,7 @@ public abstract sealed class DisbordissimoClient permits Client {
          *        Disbordissimo Server port
          */
         public Config(InetAddress serverAddress, int serverPort) {
-            this(serverAddress, serverPort, 64, 500);
+            this(serverAddress, serverPort, 64, 500, 180000 /*3min*/);
         }
 
         /**
@@ -86,12 +88,15 @@ public abstract sealed class DisbordissimoClient permits Client {
          *        kbps target
          * @param UDPTimeOut
          *        Receiving socket time out
+         * @param pingInterval
+         *        Ping interval
          */
-        public Config(InetAddress serverAddress, int serverPort, int kbps , int UDPTimeOut) {
+        public Config(InetAddress serverAddress, int serverPort, int kbps , int UDPTimeOut, int pingInterval) {
             this.serverAddress = serverAddress;
             this.serverPort = serverPort;
             this.UDPTimeOut = UDPTimeOut;
             this.kbps = kbps;
+            this.pingInterval = pingInterval;
         }
 
         /**
@@ -124,6 +129,14 @@ public abstract sealed class DisbordissimoClient permits Client {
          */
         public int getServerPort() {
             return serverPort;
+        }
+
+        /**
+         * Gets the Ping interval.
+         * @return {@code pingInterval}
+         */
+        public int getPingInterval() {
+            return pingInterval;
         }
     }
 
@@ -213,6 +226,8 @@ public abstract sealed class DisbordissimoClient permits Client {
      *         {@code false} otherwise;
      */
     public abstract boolean isLoggedIn();
+
+    public abstract int getPing();
 
     /**
      * Joins the given voice channel ({@code guild.channel}).

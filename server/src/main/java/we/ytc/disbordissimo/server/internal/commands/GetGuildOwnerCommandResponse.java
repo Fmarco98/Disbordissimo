@@ -27,8 +27,10 @@ public class GetGuildOwnerCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = DisbordissimoServer.getServer().getDB();
+        Connection db = null;
         try {
+            db = DisbordissimoServer.getServer().getDB();
+
             long userID = Long.valueOf(params[0]);
             String guildName = params[1];
 
@@ -56,7 +58,7 @@ public class GetGuildOwnerCommandResponse implements CommandResponse {
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
-            DBUtils.close(db);
+            if(db != null) DBUtils.close(db);
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);

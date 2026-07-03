@@ -2,6 +2,7 @@ package we.ytc.disbordissimo.client.internal.commands;
 
 import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.client.DisbordissimoClient;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -83,22 +84,17 @@ public abstract class Command {
             socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        int exit = this.onActionPerformed(params);
+            int exit = this.onActionPerformed(params);
 
-        try {
             in.close();
             out.close();
             socket.close();
+
+            return exit;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ReturnCodes.SERVER_UNREACHABLE;
         }
-        return exit;
     }
 
     /**

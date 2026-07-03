@@ -3,6 +3,9 @@ package we.ytc.disbordissimo.common.jsonio;
 public class ReturnCodes {
     private ReturnCodes() {}
 
+    //
+    public static final int SERVER_UNREACHABLE = -1;
+
     //generics (0 <= err < 1000)
     public static final int SUCCESS = 0;
     public static final int NO_PERMISSION = 403;

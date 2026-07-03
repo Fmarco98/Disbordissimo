@@ -26,8 +26,10 @@ public class SignUpCommandResponse implements CommandResponse {
 
     @Override
     public JsonIO.Resp onPerformed(String... params) {
-        Connection db = DisbordissimoServer.getServer().getDB();
+        Connection db = null;
         try {
+            db = DisbordissimoServer.getServer().getDB();
+
             String username = params[0];
             String hashPasswd = params[1];
 
@@ -36,7 +38,7 @@ public class SignUpCommandResponse implements CommandResponse {
             DBUtils.commit(db);
 
             return JsonIO.genSuccessResponse();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             DBUtils.rollback(db);
             DBUtils.close(db);
             if (e.getErrorCode() == 1062) { // That username has already been used.
@@ -48,8 +50,10 @@ public class SignUpCommandResponse implements CommandResponse {
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
 
         } catch (Exception e) {
-            DBUtils.rollback(db);
-            DBUtils.close(db);
+            if(db != null) {
+                DBUtils.rollback(db);
+                DBUtils.close(db);
+            }
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
             return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);

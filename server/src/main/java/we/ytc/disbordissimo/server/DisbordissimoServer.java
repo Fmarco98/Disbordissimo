@@ -46,6 +46,7 @@ public class DisbordissimoServer extends Thread {
         );
 
         commandsHandlers = new ArrayList<>();
+        commandsHandlers.add(new PingCommandResponse());
         commandsHandlers.add(new SignUpCommandResponse());
         commandsHandlers.add(new LoginCommandResponse());
         commandsHandlers.add(new JoinChannelCommandResponse());

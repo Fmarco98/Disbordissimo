@@ -30,6 +30,7 @@ public final class Client extends DisbordissimoClient {
     private DatagramSocket socket;
     private UDPReceiver receiverThread;
     private UDPSender senderThread;
+    private PingThread pingThread;
     private PacketReceivedHandler onReceived;
     private PacketSendingHandler onSending;
 
@@ -41,10 +42,15 @@ public final class Client extends DisbordissimoClient {
             throw new AlreadyLaunchedException();
         }
         INSTANCE = this;
+
         config = conf;
         this.logger = logger;
         onSending = null;
         onReceived = null;
+
+        pingThread = new PingThread(conf.getPingInterval());
+        pingThread.start();
+        getPing();
     }
 
     @Override
@@ -72,11 +78,17 @@ public final class Client extends DisbordissimoClient {
     @Override
     public synchronized void logout() {
         this.userID = -1;
+        this.pingThread.stopThread();
     }
 
     @Override
     public synchronized boolean isLoggedIn() {
         return userID != -1;
+    }
+
+    @Override
+    public int getPing() {
+        return pingThread.getMediumPing();
     }
 
     @Override
@@ -197,6 +209,9 @@ public final class Client extends DisbordissimoClient {
         INSTANCE.lastStringList = r;
     }
 
+    public static PingThread getPingThread() {
+        return INSTANCE.pingThread;
+    }
     public static PacketReceivedHandler getOnReceived() {
         return INSTANCE.onReceived;
     }
