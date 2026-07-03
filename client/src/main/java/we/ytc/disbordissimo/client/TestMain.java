@@ -45,7 +45,8 @@ public class TestMain {
 //            logger.logMsg(client.getGuildOwner("pipo's server"));
 //            client.leaveGuild("pippo's server");
 
-            logger.logMsg(Arrays.toString(client.getGuildMemers("pippo's server")));
+//            logger.logMsg(Arrays.toString(client.getGuildMemers("pippo's server")));
+            logger.logMsg(Arrays.toString(client.getChannelConnectedMembers("voice1", "pippo's server")));
 
         } catch (Exception e) {
             e.printStackTrace();

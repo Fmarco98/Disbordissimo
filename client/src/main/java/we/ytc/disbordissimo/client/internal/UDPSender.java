@@ -41,7 +41,7 @@ public class UDPSender extends Thread {
         this.address = address;
         this.port = port;
 
-        sleep = 1000 / Client.getConfig().getKbps();
+        sleep = (1000 * AudioUtils.MIC_FRAME_LENGTH) / (Client.getConfig().getKbps() * 1024);
     }
 
     @Override
