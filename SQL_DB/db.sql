@@ -56,7 +56,7 @@ CREATE VIEW channel_guild_byname AS (
 );
 
 CREATE VIEW user_guild_byname AS (
-    SELECT g.id_guild, g.name as guildname, u.id_user as member
+    SELECT g.id_guild, g.name as guildname, u.id_user as id_member, u.username as member
     FROM guilds g
     JOIN users_guilds ug ON g.id_guild = ug.fk_guild
     JOIN users u ON u.id_user = ug.fk_user

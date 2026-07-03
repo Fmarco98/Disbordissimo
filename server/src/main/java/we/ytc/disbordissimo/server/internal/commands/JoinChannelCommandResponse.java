@@ -18,9 +18,9 @@ import java.sql.SQLException;
  */
 public class JoinChannelCommandResponse implements CommandResponse{
 
-    protected static String IS_MEMBER_QUERY = "SELECT COUNT(member) as exist " +
+    protected static String IS_MEMBER_QUERY = "SELECT COUNT(id_member) as exist " +
                                             "FROM user_guild_byname " +
-                                            "WHERE guildname = ? AND member = ? " +
+                                            "WHERE guildname = ? AND id_member = ? " +
                                             "GROUP BY id_guild;";
 
     protected static String CHANNEL_EXIST = "SELECT id_guild, id_channel " +

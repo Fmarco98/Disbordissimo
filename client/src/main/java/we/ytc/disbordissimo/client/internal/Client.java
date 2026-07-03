@@ -220,6 +220,22 @@ public final class Client extends DisbordissimoClient {
         INSTANCE = null;
     }
 
+    @Override
+    public synchronized String[] getGuildMemers(String guild) throws CommandFailedException {
+        checksLoggedIn();
+
+        int exit = new GetGuildMembersCommand().execute(guild);
+        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+
+        return lastStringList.toArray(new String[]{});
+    }
+
+    @Override
+    public synchronized String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException {
+//        return lastStringList.toArray(new String[]{});
+        return null;
+    }
+
     public static void setLastBooleanResult(boolean r) {
         INSTANCE.lastBoolResult = r;
     }

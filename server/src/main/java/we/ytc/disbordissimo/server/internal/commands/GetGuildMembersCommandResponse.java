@@ -12,16 +12,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetGuildsCommandResponse implements CommandResponse{
+import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
-    private final String GET_GUILDS = "SELECT guildname " +
-                                      "FROM user_guild_byname " +
-                                      "WHERE id_member = ? " +
-                                      "GROUP BY guildname;";
+public class GetGuildMembersCommandResponse implements CommandResponse {
+
+    private static String GET_GUILD_MEMEBERS_QUERY = "SELECT member " +
+                                                     "FROM user_guild_byname " +
+                                                     "WHERE guildname = ? " +
+                                                     "GROUP BY member";
 
     @Override
     public String getCommandName() {
-        return "get-guilds";
+        return "get-guild-member";
     }
 
     @Override
@@ -31,12 +33,23 @@ public class GetGuildsCommandResponse implements CommandResponse{
             db = DisbordissimoServer.getServer().getDB();
 
             long userID = Long.valueOf(params[0]);
+            String guildName = params[1];
 
-            ResultSet queryResult = DBUtils.bindParams(db, GET_GUILDS, "l", userID).executeQuery();
+            //Checks if the user is a guild member
+            ResultSet queryResult = DBUtils.bindParams(db, IS_MEMBER_QUERY, "sl", guildName, userID).executeQuery();
+            queryResult.last();
+            if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
+                queryResult.close();
+                DBUtils.close(db);
+                return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
+            }
+            queryResult.close();
+
+            queryResult = DBUtils.bindParams(db, GET_GUILD_MEMEBERS_QUERY, "s", guildName).executeQuery();
+
             List<String> result = new ArrayList<>();
-
             while(queryResult.next()) {
-                result.add(queryResult.getString("guildname"));
+                result.add(queryResult.getString("member"));
             }
             queryResult.close();
 

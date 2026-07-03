@@ -28,7 +28,7 @@ public class TestMain {
             logger.logMsg(client.isServerReachable()+"");
 
 //            client.signUp("gigio", "123456");
-//            client.login("mariaDB", "troppodifficile");
+            client.login("pippo", "123456");
 //            client.join("voice1", "pippo's server");
 //            boolean f = client.isConnectedTo("voice1", "pippo's server");
 //            logger.logMsg(String.valueOf(f));
@@ -45,6 +45,7 @@ public class TestMain {
 //            logger.logMsg(client.getGuildOwner("pipo's server"));
 //            client.leaveGuild("pippo's server");
 
+            logger.logMsg(Arrays.toString(client.getGuildMemers("pippo's server")));
 
         } catch (Exception e) {
             e.printStackTrace();

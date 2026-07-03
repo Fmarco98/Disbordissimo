@@ -396,4 +396,23 @@ public abstract sealed class DisbordissimoClient permits Client {
      *         {@code false} otherwise;
      */
     public abstract boolean isServerReachable();
+
+    /**
+     * Gets all members of the given {@code guild}.
+     *
+     * @return String array that contains the username of all members.
+     */
+    public abstract String[] getGuildMemers(String guild) throws CommandFailedException;
+
+    /**
+     * Gets all member of the {@code guild} connected to {@code channel}.
+     *
+     * @param channel
+     *        Voice channel name
+     * @param guild
+     *        Guild name
+     *
+     * @return String array that contains the username of all members connected to {@code channel}
+     */
+    public abstract String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException;
 }

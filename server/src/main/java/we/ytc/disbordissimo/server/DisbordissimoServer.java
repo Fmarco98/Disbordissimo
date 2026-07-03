@@ -61,6 +61,7 @@ public class DisbordissimoServer extends Thread {
         commandsHandlers.add(new DropGuildChannelCommandResponse());
         commandsHandlers.add(new DropGuildCommandResponse());
         commandsHandlers.add(new LeaveGuildCommandResponse());
+        commandsHandlers.add(new GetGuildMembersCommandResponse());
 
         udpServer = new UDPServer(config.udpServerConfig.port);
         tcpServer = new TCPServer(config.tcpServerConfig.port, commandsHandlers);
