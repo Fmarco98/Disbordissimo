@@ -24,7 +24,8 @@ public class TestMain {
                 return new byte[1024];
             });
 
-            logger.logMsg(client.getPing() +"");
+//            logger.logMsg(client.getPing() +"");
+            logger.logMsg(client.isServerReachable()+"");
 
 //            client.signUp("gigio", "123456");
 //            client.login("mariaDB", "troppodifficile");
@@ -43,10 +44,12 @@ public class TestMain {
 //            logger.logMsg(Arrays.toString(client.getGuildChannels("pipo's server")));
 //            logger.logMsg(client.getGuildOwner("pipo's server"));
 //            client.leaveGuild("pippo's server");
+
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            client.logout();
+            client.destroy();
         }
     }
 }

@@ -3,6 +3,7 @@ package we.ytc.disbordissimo.client.internal;
 import we.ytc.disbordissimo.client.DisbordissimoClient;
 import we.ytc.disbordissimo.client.PacketReceivedHandler;
 import we.ytc.disbordissimo.client.PacketSendingHandler;
+import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.client.internal.commands.*;
 import we.ytc.disbordissimo.client.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
@@ -50,7 +51,6 @@ public final class Client extends DisbordissimoClient {
 
         pingThread = new PingThread(conf.getPingInterval());
         pingThread.start();
-        getPing();
     }
 
     @Override
@@ -78,17 +78,11 @@ public final class Client extends DisbordissimoClient {
     @Override
     public synchronized void logout() {
         this.userID = -1;
-        this.pingThread.stopThread();
     }
 
     @Override
     public synchronized boolean isLoggedIn() {
         return userID != -1;
-    }
-
-    @Override
-    public int getPing() {
-        return pingThread.getMediumPing();
     }
 
     @Override
@@ -200,6 +194,30 @@ public final class Client extends DisbordissimoClient {
 
         int exit = new DropGuildChannelCommand().execute(guild);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+    }
+
+    @Override
+    public synchronized int getPing() {
+        return pingThread.getMediumPing();
+    }
+
+    @Override
+    public synchronized boolean isServerReachable() {
+        try {
+            pingThread.makePing();
+            getPing();
+            return true;
+        } catch (UnreachableServerException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public synchronized void destroy() {
+        this.logout();
+
+        this.pingThread.stopThread();
+        INSTANCE = null;
     }
 
     public static void setLastBooleanResult(boolean r) {

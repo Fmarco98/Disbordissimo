@@ -12,7 +12,7 @@ public class PingThread extends Thread {
 
     private boolean running;
     private boolean serverReachable;
-    private boolean firstPing;
+    private boolean waitPing;
 
     private int lastPing;
 
@@ -26,7 +26,7 @@ public class PingThread extends Thread {
 
         running = true;
         serverReachable = true;
-        firstPing = true;
+        waitPing = true;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PingThread extends Thread {
             }
 
             synchronized (this) {
-                firstPing = false;
+                waitPing = false;
                 this.notify();
             }
 
@@ -60,7 +60,7 @@ public class PingThread extends Thread {
         }
     }
 
-    public void stopThread() {
+    public synchronized void stopThread() {
         running = false;
         this.interrupt();
         try {
@@ -68,35 +68,33 @@ public class PingThread extends Thread {
         } catch (InterruptedException e) {}
     }
 
-    public void setLastPing(int ping) {
+    public synchronized void setLastPing(int ping) {
         this.lastPing = ping;
     }
 
-    public int getMediumPing() {
-        //Waits the first ping result
-        synchronized (this) {
-            if(firstPing) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {}
-            }
-        }
+    public synchronized int getMediumPing() {
+        waitPing();
 
         if(!serverReachable) throw new UnreachableServerException();
         return Math.round( (float)sumPings / nPings );
     }
 
-    public int getLastPing() {
-        //Waits the first ping result
-        synchronized (this) {
-            if(firstPing) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {}
-            }
-        }
+    public synchronized int getLastPing() {
+        waitPing();
 
         if(!serverReachable) throw new UnreachableServerException();
         return lastPing;
+    }
+
+    public synchronized void makePing() {
+        waitPing = true;
+        this.interrupt();
+    }
+
+    private void waitPing() {
+        if(waitPing)
+            try {
+                this.wait();
+            } catch (InterruptedException e) {}
     }
 }

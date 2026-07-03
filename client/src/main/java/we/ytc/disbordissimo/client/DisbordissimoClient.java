@@ -227,8 +227,6 @@ public abstract sealed class DisbordissimoClient permits Client {
      */
     public abstract boolean isLoggedIn();
 
-    public abstract int getPing();
-
     /**
      * Joins the given voice channel ({@code guild.channel}).
      *
@@ -380,4 +378,22 @@ public abstract sealed class DisbordissimoClient permits Client {
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
     public abstract void dropGuild(String guild) throws CommandFailedException;
+
+    /**
+     * Destroys the client.
+     */
+    public abstract void destroy();
+
+    /**
+     * Gets the server medium ping.
+     * @return {@code ping}
+     */
+    public abstract int getPing();
+
+    /**
+     * Checks if the server is reachable.
+     * @return {@code true} if server is reachable;
+     *         {@code false} otherwise;
+     */
+    public abstract boolean isServerReachable();
 }
