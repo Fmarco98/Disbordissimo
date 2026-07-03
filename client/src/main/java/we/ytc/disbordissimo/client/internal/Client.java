@@ -37,6 +37,8 @@ public final class Client extends DisbordissimoClient {
 
     private boolean lastBoolResult = false;
     private List<String> lastStringList = null;
+    private String lastJoinedChannelCh = "";
+    private String lastJoinedChannelGuild = "";
 
     public Client(Config conf, Logger logger) {
         if(INSTANCE != null) {
@@ -91,6 +93,9 @@ public final class Client extends DisbordissimoClient {
 
         int exit = new JoinChannelCommand().execute(guild, channel);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
+
+        lastJoinedChannelCh = channel;
+        lastJoinedChannelGuild = guild;
     }
 
     @Override
@@ -214,9 +219,15 @@ public final class Client extends DisbordissimoClient {
 
     @Override
     public synchronized void destroy() {
-        this.logout();
-
+        if(this.senderThread != null) this.senderThread.stopThread();
+        if(this.receiverThread != null) this.receiverThread.stopThread();
         this.pingThread.stopThread();
+
+        try {
+            quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
+        } catch (CommandFailedException e) {}
+
+        this.logout();
         INSTANCE = null;
     }
 

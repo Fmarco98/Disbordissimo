@@ -72,7 +72,7 @@ public class UDPReceiver extends Thread {
      */
     public void stopThread() {
         running = false;
-
+        this.interrupt();
         try {
             this.join();
         } catch (InterruptedException e) {}

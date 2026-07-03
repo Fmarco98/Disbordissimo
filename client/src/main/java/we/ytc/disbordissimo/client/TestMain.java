@@ -29,7 +29,7 @@ public class TestMain {
 
 //            client.signUp("gigio", "123456");
             client.login("pippo", "123456");
-//            client.join("voice1", "pippo's server");
+            client.joinChannel("voice1", "pippo's server");
 //            boolean f = client.isConnectedTo("voice1", "pippo's server");
 //            logger.logMsg(String.valueOf(f));
 //

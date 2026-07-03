@@ -54,7 +54,6 @@ public class GetGuildChannelConnectedMembersCommandResponse implements CommandRe
             long channelID = queryResult.getLong("id_channel");
             queryResult.close();
 
-            DBUtils.close(db);
             List<Long> ids = new ArrayList<>();
             List<ActiveUser> activeUsers = DisbordissimoServer.getServer().getActiveVoiceChannels().getConnectedUsers(channelID);
 
@@ -66,7 +65,6 @@ public class GetGuildChannelConnectedMembersCommandResponse implements CommandRe
             }
 //            if(ids.size() == 0) return JsonIO.genSuccessResponse(List.of());
 
-
             final String[] GET_MEMBER_NAMES = prepareQuery(ids.size());
 
             queryResult = DBUtils.bindParams(db, GET_MEMBER_NAMES[0], GET_MEMBER_NAMES[1], ids.toArray()).executeQuery();
@@ -76,6 +74,7 @@ public class GetGuildChannelConnectedMembersCommandResponse implements CommandRe
             }
             queryResult.close();
 
+            DBUtils.close(db);
             return JsonIO.genSuccessResponse(result);
         } catch (SQLException e) {
             DBUtils.close(db);
@@ -99,7 +98,7 @@ public class GetGuildChannelConnectedMembersCommandResponse implements CommandRe
         String params = "";
 
         for (int i = 0; i < size; i++) {
-            query += "?, ";
+            query += (i != size-1 ? "?, " : "?");
             params += "l";
         }
         query += " );";
