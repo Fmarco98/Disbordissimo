@@ -12,7 +12,8 @@ public interface PacketReceivedHandler {
      * The handler function.
      *
      * @param audioFrame
-     *        The {@code audioFrame} received from the server. It contains the mix of all channel connected user {@code micFrams}.
+     *        The {@code audioFrame} received from the server.
+     *        It contains the mix of all channel connected users' {@code micFrames}.
      */
     void onPacketReceived(byte[] audioFrame);
 }

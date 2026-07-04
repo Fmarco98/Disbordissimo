@@ -21,7 +21,9 @@ public class TestVoiceChatConnectionCommand extends Command {
         String channelName = params[0];
         String guildName = params[1];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(String.valueOf(Client.getUserID()), channelName, guildName));
+        JsonIO.Req request = new JsonIO.Req(
+                super.getCommandName(), List.of(String.valueOf(Client.getUserID()), channelName, guildName)
+        );
         super.send(JsonIO.serializeReq(request));
 
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
@@ -47,7 +49,7 @@ public class TestVoiceChatConnectionCommand extends Command {
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                Client.getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

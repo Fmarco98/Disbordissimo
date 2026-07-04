@@ -51,13 +51,17 @@ public class TCPResponse extends Thread {
     @Override
     public void run() {
         //Token response
-        DisbordissimoServer.getServer().getLogger().logDebug("Responding to " + client.getInetAddress() + ":" + client.getPort());
+        DisbordissimoServer.getServer().getLogger().logDebug(
+                "Responding to " + client.getInetAddress() + ":" + client.getPort()
+        );
 
         try {
             in = new Scanner(client.getInputStream());
             out = new PrintStream(client.getOutputStream());
         } catch (IOException e) {
-            DisbordissimoServer.getServer().getLogger().logError("An Error occurred while opening I/O streams: " + e.getMessage());
+            DisbordissimoServer.getServer().getLogger().logError(
+                    "An Error occurred while opening I/O streams: " + e.getMessage()
+            );
             throw new RuntimeException(e);
         }
 
@@ -93,7 +97,9 @@ public class TCPResponse extends Thread {
                 activeResponses.remove(this);
             }
         } catch (IOException e) {
-            DisbordissimoServer.getServer().getLogger().logError("An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage());
+            DisbordissimoServer.getServer().getLogger().logError(
+                    "An Error occurred while closing the client socket("+address+":"+port+") : " + e.getMessage()
+            );
             synchronized (activeResponses) {
                 activeResponses.remove(this);
             }

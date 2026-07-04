@@ -65,7 +65,9 @@ public class UDPResponse extends Thread {
 
         long voiceChannelID = DisbordissimoServer.getServer().getActiveVoiceChannels().getVoiceChannel(userID);
         if(voiceChannelID == -1) {
-            DisbordissimoServer.getServer().getLogger().logWarning("Responding to an NOT IN VOICE CHAT user(" + address + ":" + port + ")");
+            DisbordissimoServer.getServer().getLogger().logWarning(
+                    "Responding to an NOT IN VOICE CHAT user(" + address + ":" + port + ")"
+            );
             this.closeResponse();
             return;
         }

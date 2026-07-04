@@ -79,6 +79,10 @@ public final class Client extends DisbordissimoClient {
 
     @Override
     public synchronized void logout() {
+        try {
+            quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
+        } catch (CommandFailedException e) {}
+
         this.userID = -1;
     }
 
@@ -197,7 +201,7 @@ public final class Client extends DisbordissimoClient {
     public synchronized void dropGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new DropGuildChannelCommand().execute(guild);
+        int exit = new DropGuildCommand().execute(guild);
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
     }
 
@@ -219,15 +223,9 @@ public final class Client extends DisbordissimoClient {
 
     @Override
     public synchronized void destroy() {
-        if(this.senderThread != null) this.senderThread.stopThread();
-        if(this.receiverThread != null) this.receiverThread.stopThread();
-        this.pingThread.stopThread();
-
-        try {
-            quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
-        } catch (CommandFailedException e) {}
-
         this.logout();
+
+        this.pingThread.stopThread();
         INSTANCE = null;
     }
 
@@ -287,9 +285,6 @@ public final class Client extends DisbordissimoClient {
     }
     public static Config getConfig() {
         return INSTANCE.config;
-    }
-    public static void setLogger(Logger logger) {
-        INSTANCE.logger = logger;
     }
     public static Logger getLogger() {
         return INSTANCE.logger;

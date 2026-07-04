@@ -53,7 +53,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      *  - serverPort<br>
      *  - UDP sockets Timeout<br>
      *  - Kbps TargetRate<br>
-     *  - Ping inteval<br>
+     *  - Ping interval<br>
      * <br>
      * Methods:<br>
      *  - getters<br>

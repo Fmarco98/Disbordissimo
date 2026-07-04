@@ -23,7 +23,7 @@ public class UDPSender extends Thread {
     private InetAddress address;
     private int port;
 
-    private int sleep = 500;
+    private int sleep;
 
     /**
      * Constructor.
@@ -50,9 +50,7 @@ public class UDPSender extends Thread {
 
         ByteBuffer packetBuffer = ByteBuffer.allocate(Client.DATAGRAM_PACKET_SIZE);
         while(running) {
-            byte[] micRaw = new byte[AudioUtils.MIC_FRAME_LENGTH];
-
-            micRaw = Client.getOnSending().onPacketSending();
+            byte[] micRaw = Client.getOnSending().onPacketSending();
             if(micRaw.length != AudioUtils.MIC_FRAME_LENGTH) {
                 throw new IllegalMicFrameSize(micRaw.length);
             }

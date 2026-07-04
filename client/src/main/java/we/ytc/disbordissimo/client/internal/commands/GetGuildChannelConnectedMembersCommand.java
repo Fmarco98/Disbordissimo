@@ -44,7 +44,7 @@ public class GetGuildChannelConnectedMembersCommand extends Command {
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                Client.getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

@@ -19,9 +19,9 @@ public class GetGuildChannelsCommand extends Command {
     @Override
     public int onActionPerformed(String... params) {
         String userID = String.valueOf(Client.getUserID());
-        String guildname = params[0];
+        String guildName = params[0];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, guildname));
+        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, guildName));
         super.send(JsonIO.serializeReq(request));
 
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
@@ -43,7 +43,7 @@ public class GetGuildChannelsCommand extends Command {
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                Client.getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

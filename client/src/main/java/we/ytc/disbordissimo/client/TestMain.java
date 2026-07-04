@@ -14,15 +14,17 @@ public class TestMain {
         try {
             Logger logger = new YtcLogger();
 
-            DisbordissimoClient.Config config = new DisbordissimoClient.Config(InetAddress.getByName("localhost"), 6969);
+            DisbordissimoClient.Config config = new DisbordissimoClient.Config(
+                    InetAddress.getByName("localhost"), 6969
+            );
             client = DisbordissimoClient.create(config, logger);
 
-            client.setPacketReceivedHandler((audio) -> {
-                System.out.println(Arrays.toString(audio));
-            });
-            client.setPacketSendingHandler(() -> {
-                return new byte[1024];
-            });
+//            client.setPacketReceivedHandler((audio) -> {
+//                System.out.println(Arrays.toString(audio));
+//            });
+//            client.setPacketSendingHandler(() -> {
+//                return new byte[1024];
+//            });
 
 //            logger.logMsg(client.getPing() +"");
             logger.logMsg(client.isServerReachable()+"");
@@ -47,6 +49,8 @@ public class TestMain {
 
 //            logger.logMsg(Arrays.toString(client.getGuildMemers("pippo's server")));
             logger.logMsg(Arrays.toString(client.getChannelConnectedMembers("voice1", "pippo's server")));
+
+            Thread.sleep(5000);
 
         } catch (Exception e) {
             e.printStackTrace();

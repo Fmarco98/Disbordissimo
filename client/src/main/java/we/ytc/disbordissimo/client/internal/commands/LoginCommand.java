@@ -24,7 +24,9 @@ public class LoginCommand extends Command {
         String username = params[0];
         String passwd = params[1];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(username, HashUtils.fromStringToHashedHex(passwd)));
+        JsonIO.Req request = new JsonIO.Req(
+                super.getCommandName(), List.of(username, HashUtils.fromStringToHashedHex(passwd))
+        );
         super.send(JsonIO.serializeReq(request));
 
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
@@ -47,7 +49,7 @@ public class LoginCommand extends Command {
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response="+response.toString());
+                Client.getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

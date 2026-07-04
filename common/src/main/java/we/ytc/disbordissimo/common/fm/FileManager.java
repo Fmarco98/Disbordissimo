@@ -140,7 +140,8 @@ public class FileManager {
      */
     public void write(String msg) throws IOException {
         this.checkIsClosed();
-        if (!(this.openType == OpenType.WRITE || this.openType == OpenType.READAPPEND || this.openType == OpenType.READWRITE || this.openType == OpenType.APPEND)) {
+        if (!(this.openType == OpenType.WRITE || this.openType == OpenType.READAPPEND
+                || this.openType == OpenType.READWRITE || this.openType == OpenType.APPEND)) {
             throw new NoPermissionException();
         }
 
@@ -161,7 +162,8 @@ public class FileManager {
      */
     public void clear() {
         this.checkIsClosed();
-        if (!(this.openType == OpenType.WRITE || this.openType == OpenType.READAPPEND || this.openType == OpenType.READWRITE || this.openType == OpenType.APPEND)) {
+        if (!(this.openType == OpenType.WRITE || this.openType == OpenType.READAPPEND
+                || this.openType == OpenType.READWRITE || this.openType == OpenType.APPEND)) {
             throw new NoPermissionException();
         }
 

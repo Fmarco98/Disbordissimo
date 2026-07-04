@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * <h1>Logger class</h1>
- * A simple Logger. It writes into serr and sout stream based on the log message level. <br>
+ * A simple Logger. It writes into {@code System.err} or {@code System.out} stream based on the log message level. <br>
  * Feature: <br>
  *  - Write into a logfile (if is set up) <br>
  *  - In-Console colors <br>

@@ -7,7 +7,6 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Scanner;
  * Every "effective" command must be a child of this class. <br>
  * <br>
  * Commands can use TCP sockets by default. The request can be sent by calling
- * {@doce send(..)} method. The response can be caught by calling {@code recv()} method.<br>
+ * {@code send(..)} method. The response can be caught by calling {@code recv()} method.<br>
  * Important: The architecture is base on the concept of token server. This means that is possible
  * calling {@code send(..)} and {@code recv} methods only one time each.<br>
  * <br>
@@ -36,7 +35,7 @@ import java.util.Scanner;
 public abstract class Command {
 
     private String commandName;
-    private Socket socket;
+
     private Scanner in;
     private PrintStream out;
 
@@ -81,7 +80,7 @@ public abstract class Command {
     public int execute(String ...params) {
         try {
             DisbordissimoClient.Config conf = Client.getConfig();
-            socket = new Socket(conf.getServerAddress(), conf.getServerPort());
+            Socket socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());
 

@@ -3,10 +3,7 @@ package we.ytc.disbordissimo.server.internal;
 import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 //TODO: documentation
 
@@ -17,7 +14,7 @@ import java.util.Set;
  */
 public class VoiceChannelsManager {
 
-    private HashMap<Long, LinkedList<ActiveUser>> channel_users;
+    private HashMap<Long, List<ActiveUser>> channel_users;
     private HashMap<Long, Long> users_channel;
     private long timeOut;
     private long sleep;
@@ -34,11 +31,18 @@ public class VoiceChannelsManager {
         cleaning = new Thread(() -> {
             while(t_running) {
                 DisbordissimoServer.getServer().getLogger().logDebug("Try to clean");
-                synchronized (this) {
-                    Set<Long> channelIDs = channel_users.keySet();
-                    for(long chID : channelIDs) {
-                        List<ActiveUser> activeUsers = channel_users.get(chID);
 
+                Map<Long, List<ActiveUser>> activeChannels = new HashMap<>();
+                synchronized (this) {
+                    for( Long chID : channel_users.keySet()) {
+                        activeChannels.put(chID, channel_users.get(chID));
+                    }
+                }
+
+                for( Long chID : activeChannels.keySet() ) {
+                    List<ActiveUser> activeUsers = activeChannels.get(chID);
+
+                    synchronized (activeUsers) {
                         int i=0;
                         while (i < activeUsers.size()) {
                             ActiveUser user = activeUsers.get(i);
@@ -52,6 +56,7 @@ public class VoiceChannelsManager {
                         }
                     }
                 }
+
                 DisbordissimoServer.getServer().getLogger().logDebug("cleaning finished");
 
                 try {

@@ -63,6 +63,7 @@ public class CreateGuildChannelCommandResponse implements CommandResponse {
             }
             queryResult.close();
 
+            nQuery = 3;
             DBUtils.startTransaction(db);
             DBUtils.bindParams(db, INSERT_CHANNEL, "ss", channelName, guildName).executeUpdate();
             DBUtils.commit(db);
