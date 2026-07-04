@@ -79,6 +79,8 @@ public final class Client extends DisbordissimoClient {
 
     @Override
     public synchronized void logout() {
+        if(!this.isLoggedIn()) return;
+
         try {
             quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
         } catch (CommandFailedException e) {}
