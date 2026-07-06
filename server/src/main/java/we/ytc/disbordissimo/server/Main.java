@@ -1,6 +1,6 @@
 package we.ytc.disbordissimo.server;
 
-import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
+import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpException;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
 
@@ -56,7 +56,7 @@ public class Main {
             } else {
                 logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, false);
             }
-        } catch (FileSetUpError e) {
+        } catch (FileSetUpException e) {
             throw new RuntimeException(e);
         }
     }

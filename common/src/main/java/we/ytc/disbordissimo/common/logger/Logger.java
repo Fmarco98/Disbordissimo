@@ -1,5 +1,18 @@
 package we.ytc.disbordissimo.common.logger;
 
+/**
+ * <h1>Logger interface</h1>
+ *
+ * Log message level are defined in {@link Logger.Type}
+ * <br><br>
+ * Methods:<br>
+ *  - log(..)<br>
+ *  - logln(..)<br>
+ *  - logMsg(..)<br>
+ *  - logDebug(..)<br>
+ *  - logWarning(..)<br>
+ *  - logError(..)<br>
+ */
 public interface Logger {
     /**
      * <h1>Log Types enum</h1>

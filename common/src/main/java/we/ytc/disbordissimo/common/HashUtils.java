@@ -7,18 +7,21 @@ import java.security.NoSuchAlgorithmException;
 //TODO: documentation
 
 /**
- * <h1>Hash utilities class</h1>
+ * <h1>Hash utilities static class</h1>
  *
- *
+ * Functions:<br>
+ *  - fromStringToHashedHex()
  */
 public class HashUtils {
     private HashUtils() {}
 
-    /** //TODO: documentation
-     * Generates the SHA3-256 hash
+    /**
+     * Generates the SHA3-256 hash of {@code toHash} string.
      *
      * @param toHash
-     * @return
+     *        String to hash
+     *
+     * @return the hash (in HEX form)
      */
     public static String fromStringToHashedHex(String toHash) {
         try {
@@ -30,12 +33,8 @@ public class HashUtils {
         }
     }
 
-    /** //TODO: documentation
-     * Converts {@code hash} from a byte array to an HEX String
-     *
-     * @param hash
-     * @return
-     */
+
+
     private static String bytesToHex(byte[] hash) {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (byte b : hash) {

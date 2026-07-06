@@ -2,7 +2,7 @@ package we.ytc.disbordissimo.common.logger;
 
 import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.fm.FileManager;
-import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
+import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpException;
 import we.ytc.disbordissimo.common.logger.exceptions.ClosedException;
 
 import java.time.LocalDateTime;
@@ -12,21 +12,12 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * <h1>Logger class</h1>
+ * It's an implementation of {@link Logger}.<br>
  * A simple Logger. It writes into {@code System.err} or {@code System.out} stream based on the log message level. <br>
  * Feature: <br>
  *  - Write into a logfile (if is set up) <br>
  *  - In-Console colors <br>
  *  - Thread safe <br>
- * <br>
- * Log message level are defined in {@link Logger.Type}
- * <br><br>
- * Functions:<br>
- *  - log(..)<br>
- *  - logln(..)<br>
- *  - logMsg(..)<br>
- *  - logDebug(..)<br>
- *  - logWarning(..)<br>
- *  - logError(..)<br>
  *
  */
 public final class YtcLogger implements Logger {
@@ -43,13 +34,27 @@ public final class YtcLogger implements Logger {
     private FileManager fm;
     private boolean open;
 
+    /**
+     * Constructor.
+     */
     public YtcLogger() {
         this.isConsolePrintingEnabled = true;
         this.isFileSetUp = false;
         this.open = true;
     }
 
-    public YtcLogger(boolean inConsolePrint, boolean inLogfilePrint) throws FileSetUpError {
+    /**
+     * Constructor.
+     *
+     * @param inConsolePrint
+     *        Allow in console printing
+     *
+     * @param inLogfilePrint
+     *        Allow in logfile printing
+     *
+     * @throws FileSetUpException
+     */
+    public YtcLogger(boolean inConsolePrint, boolean inLogfilePrint) throws FileSetUpException {
         this.isConsolePrintingEnabled = inConsolePrint;
         if(inLogfilePrint) {
             this.setUpFile("logs/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))+".log");
@@ -59,7 +64,18 @@ public final class YtcLogger implements Logger {
         this.open = true;
     }
 
-    public YtcLogger(boolean inConsolePrint, String filepath) throws FileSetUpError {
+    /**
+     * Constructor.
+     *
+     * @param inConsolePrint
+     *        Allow in console printing
+     *
+     * @param filepath
+     *        logfile path
+     *
+     * @throws FileSetUpException
+     */
+    public YtcLogger(boolean inConsolePrint, String filepath) throws FileSetUpException {
         this.isConsolePrintingEnabled = inConsolePrint;
         this.setUpFile(filepath);
         this.open = true;
@@ -143,11 +159,16 @@ public final class YtcLogger implements Logger {
         if(fm != null) fm.close();
     }
 
+    /**
+     * Gets the {@code logfilepath}.
+     *
+     * @return filepath
+     */
     public synchronized String getLogFilepath() {
         return filepath;
     }
 
-    private void setUpFile(String filepath) throws FileSetUpError {
+    private void setUpFile(String filepath) throws FileSetUpException {
         this.isFileSetUp = true;
         this.filepath = filepath;
         this.fm = new FileManager(filepath, FileManager.OpenType.APPEND);

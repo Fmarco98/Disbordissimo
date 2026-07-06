@@ -1,10 +1,8 @@
 package we.ytc.disbordissimo.common.logger;
 
 /**
- * <h1>Colors</h1>
+ * <h1>ConsoleColors static class</h1>
  * <p>ANSI console color codes</p><br>
- *
- * <h6>File: ConsoleColors.java</h6>
  */
 public class ConsoleColors {
     // Reset

@@ -2,11 +2,32 @@ package we.ytc.disbordissimo.common;
 
 import java.util.List;
 
+/**
+ * <h1>AudioUtils static class</h1>
+ *
+ * Constants:<br>
+ *  - MIC_FRAME_LENGTH<br>
+ * <br>
+ * Functions:<br>
+ *  - mixListOfStreams(..)<br>
+ *  - mixSteams(..)<br>
+ */
 public class AudioUtils {
     private AudioUtils() {}
 
+    /**
+     * Length of a MIC_FRAME.
+     */
     public static final int MIC_FRAME_LENGTH = 1024;
 
+    /**
+     * Mix all input PCM {@code streams} into a single stream.
+     *
+     * @param streams
+     *        List of PCM streams
+     *
+     * @return mixed stream
+     */
     public static byte[] mixListOfStreams(List<byte[]> streams) {
         byte[] finalBuffer = streams.get(0);
 
@@ -17,6 +38,17 @@ public class AudioUtils {
         return finalBuffer;
     }
 
+    /**
+     * Mix {@code streamA} and {@code streamB} into a single stream.
+     *
+     * @param streamA
+     *        PCM stream A
+     *
+     * @param streamB
+     *        PCM stream B
+     *
+     * @return mixed stream
+     */
     public static byte[] mixSteams(byte[] streamA, byte[] streamB) {
         int bytesToProcess = Math.min(streamA.length, streamB.length);
         byte[] mixedBuffer = new byte[bytesToProcess];

@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: MILO
+
 /** //TODO: documentation
  * <h1>Json I/O class</h1>
  *
@@ -14,17 +16,32 @@ import java.util.List;
  */
 public class JsonIO {
     private JsonIO() {}
-
     private static final Gson gson = new GsonBuilder().create();
 
+    /**
+     * Command not found response.
+     */
     public static final String CMD_NOT_FOUND_RESPONSE = serializeResp(
             new JsonIO.Resp(ReturnCodes.COMMAND_NOT_FOUND, MsgCodes.COMMAND_NOT_FOUND, null)
     );
 
+    /**
+     * Generates a SUCCESS Response with no payload.
+     *
+     * @return A SUCCESS {@link JsonIO.Resp}.
+     */
     public static Resp genSuccessResponse() {
         return genSuccessResponse(null);
     }
 
+    /**
+     * Generates a SUCCESS Response with payload.
+     *
+     * @param params
+     *        Payload
+     *
+     * @return A SUCCESS {@link JsonIO.Resp}.
+     */
     public static Resp genSuccessResponse(List<String> params) {
         return new Resp(ReturnCodes.SUCCESS, MsgCodes.SUCCESS, params);
     }
@@ -35,7 +52,7 @@ public class JsonIO {
      *
      */
     public static class Req {
-        private Req() {}
+        Req() {}
 
         public Req(String cmdName, List<String> params) {
             this.cmdName = cmdName;
@@ -60,7 +77,7 @@ public class JsonIO {
      *
      */
     public static class Resp {
-        private Resp() {}
+        Resp() {}
 
         public Resp(int code, String msgCode, List<String> result) {
             this.code = code;

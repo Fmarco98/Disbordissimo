@@ -1,9 +1,17 @@
 package we.ytc.disbordissimo.common.logger;
 
+/**
+ * <h1>NullLogger class</h1>
+ * It's an implementation of {@link Logger}.<br>
+ * This logger do nothing.
+ */
 public class NullLogger implements Logger {
 
     private boolean open;
 
+    /**
+     * Constructor.
+     */
     public NullLogger() {
         open = true;
     }

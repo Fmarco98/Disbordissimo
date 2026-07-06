@@ -1,7 +1,7 @@
 package we.ytc.disbordissimo.common.fm;
 
 import we.ytc.disbordissimo.common.fm.exceptions.ClosedException;
-import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpError;
+import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpException;
 import we.ytc.disbordissimo.common.fm.exceptions.NoPermissionException;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.Scanner;
 /**
  * <h1>FileManager class</h1>
  * An interaction Interface to ASCII files only.<br>
- * A file can be opened with all {@code FileManager.OpenType} <br><br>
+ * A file can be opened with {@code FileManager.OpenType} <br><br>
  * Methods:<br>
  *  - constructor(..)<br>
  *  - readAll(..)<br>
@@ -58,9 +58,9 @@ public class FileManager {
      * @param openType
      *        File open method
      *
-     * @throws FileSetUpError
+     * @throws FileSetUpException
      */
-    public FileManager(String filepath, OpenType openType) throws FileSetUpError {
+    public FileManager(String filepath, OpenType openType) throws FileSetUpException {
         this.filepath = filepath;
         this.openType = openType;
 
@@ -70,7 +70,7 @@ public class FileManager {
                 this.file.getParentFile().mkdirs();
                 this.file.createNewFile();
             } catch (IOException e) {
-                throw new FileSetUpError();
+                throw new FileSetUpException();
             }
         }
     }
@@ -102,13 +102,12 @@ public class FileManager {
 
     /**
      * Reads the {@code index} line of the file.
-     * If you call this function multiple times, maybe you should consider to call {@code readAll} (Efficiency suggestion).
      *
      * @param index
      *        Line index (the first one is 0)
      *
      * @return the line if it exists;
-     *         otherwise null
+     *         {@code null} otherwise
      */
     public String readLine(int index) {
         this.checkIsClosed();
