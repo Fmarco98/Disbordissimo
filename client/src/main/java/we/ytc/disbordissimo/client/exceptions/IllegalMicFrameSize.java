@@ -8,6 +8,12 @@ package we.ytc.disbordissimo.client.exceptions;
  */
 public class IllegalMicFrameSize extends RuntimeException {
 
+    /**
+     * Constructor.
+     *
+     * @param size
+     *        MicFrame size
+     */
     public IllegalMicFrameSize(int size) {
         super("The mic frame has an invalid size (size="+size+")");
     }

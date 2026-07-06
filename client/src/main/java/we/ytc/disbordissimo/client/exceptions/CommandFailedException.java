@@ -10,6 +10,11 @@ public class CommandFailedException extends Exception {
 
     private int errCode;
 
+    /**
+     * Constructor.
+     * @param errCode
+     *        The command exit code
+     */
     public CommandFailedException(int errCode) {
         super("Command failed (err="+errCode+")");
         this.errCode = errCode;

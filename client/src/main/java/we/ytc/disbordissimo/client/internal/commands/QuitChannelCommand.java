@@ -6,8 +6,6 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
-//TODO: documentation
-
 /**
  * <H1>QuitChannel Command</h1>
  * Quits from a voice channel.

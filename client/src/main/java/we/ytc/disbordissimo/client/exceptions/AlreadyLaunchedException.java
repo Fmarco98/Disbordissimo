@@ -7,6 +7,10 @@ package we.ytc.disbordissimo.client.exceptions;
  * Important: Only one instance of {@link we.ytc.disbordissimo.client.DisbordissimoClient} is allowed for each process.
  */
 public class AlreadyLaunchedException extends RuntimeException {
+
+    /**
+     * Constructor.
+     */
     public AlreadyLaunchedException() {
         super("Disbordissimo client has already been launched");
     }

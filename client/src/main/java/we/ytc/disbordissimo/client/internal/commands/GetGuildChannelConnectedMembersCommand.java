@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <h1>GetGuildChannelConnectedMembers Command</h1>
+ * Gets the list of users connected to {@code guild.channel}.
+ */
 public class GetGuildChannelConnectedMembersCommand extends Command {
 
     public GetGuildChannelConnectedMembersCommand() {

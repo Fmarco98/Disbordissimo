@@ -5,6 +5,10 @@ import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
+/**
+ * <h1>Ping Command</h1>
+ * Makes a ping to the server.
+ */
 public class PingCommand extends Command {
 
     public PingCommand() {

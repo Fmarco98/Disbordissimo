@@ -10,8 +10,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-//TODO: documentation
-
 /**
  * <H1>JoinChannel Command</h1>
  * Joins a voice channel.

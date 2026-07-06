@@ -6,6 +6,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.util.List;
 
+/**
+ * <h1>GetGuildMembers Command</h1>
+ * Gets a list of all {@code guild} members.
+ */
 public class GetGuildMembersCommand extends Command {
 
     public GetGuildMembersCommand() {
