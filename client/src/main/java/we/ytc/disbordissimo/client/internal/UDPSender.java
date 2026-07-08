@@ -23,8 +23,6 @@ public class UDPSender extends Thread {
     private InetAddress address;
     private int port;
 
-    private int sleep;
-
     /**
      * Constructor.
      *
@@ -40,8 +38,6 @@ public class UDPSender extends Thread {
         this.socket = socket;
         this.address = address;
         this.port = port;
-
-        sleep = (1000 * AudioUtils.MIC_FRAME_LENGTH) / (Client.getConfig().getKbps() * 1024);
     }
 
     @Override
@@ -67,10 +63,6 @@ public class UDPSender extends Thread {
             }
             packetBuffer.flip();
             packetBuffer.clear();
-
-            try {
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {}
         }
     }
 

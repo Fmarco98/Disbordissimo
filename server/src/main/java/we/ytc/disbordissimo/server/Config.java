@@ -7,6 +7,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.*;
 
+// TODO: MILO
+
+/**
+ * <h1>Config class</h1>
+ */
 public class Config {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final String CONFIG_FILE_PATH = "config/config.json";

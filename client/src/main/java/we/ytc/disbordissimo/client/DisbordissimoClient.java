@@ -62,8 +62,10 @@ public abstract sealed class DisbordissimoClient permits Client {
         private InetAddress serverAddress;
         private int serverPort;
         private int UDPTimeOut;
-        private int kbps;
         private int pingInterval;
+
+        //non implementato attualmente
+        private int kbps;
 
         /**
          * Contract Constructor. The {@code kbps} and {@code UDPTimeOut} values are set to their default.

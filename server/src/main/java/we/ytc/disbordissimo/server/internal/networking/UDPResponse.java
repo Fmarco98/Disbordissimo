@@ -17,44 +17,9 @@ import java.util.List;
  *
  *
  */
-public class UDPResponse extends Thread {
+public class UDPResponse {
 
-    private byte[] rawData;
-    private List<UDPResponse> activeResponses;
-    private UDPServer server;
-    private InetAddress address;
-    private int port;
-
-    /**
-     * Constructor.
-     *
-     * @param address
-     *        Client address
-     *
-     * @param port
-     *        Client port
-     *
-     * @param rawData
-     *        Data received from client
-     *
-     * @param server
-     *        UDP server
-     */
-    public UDPResponse(InetAddress address, int port, byte[] rawData, UDPServer server) {
-        super("UDP-Response");
-
-        this.activeResponses = server.getActiveResponses();
-        synchronized (this.activeResponses) {
-            this.activeResponses.add(this);
-        }
-        this.rawData = rawData;
-        this.address = address;
-        this.port = port;
-        this.server = server;
-    }
-
-    @Override
-    public void run() {
+    public static DatagramPacket response(InetAddress address, int port, byte[] rawData) {
         DisbordissimoServer.getServer().getLogger().logDebug("Responding to " + address + ":" + port);
 
         ByteBuffer recvBytes = ByteBuffer.wrap(rawData);
@@ -68,8 +33,7 @@ public class UDPResponse extends Thread {
             DisbordissimoServer.getServer().getLogger().logWarning(
                     "Responding to an NOT IN VOICE CHAT user(" + address + ":" + port + ")"
             );
-            this.closeResponse();
-            return;
+            return null;
         }
 
         List<ActiveUser> connectedUsers = DisbordissimoServer.getServer().getActiveVoiceChannels().getConnectedUsers(voiceChannelID);
@@ -85,7 +49,6 @@ public class UDPResponse extends Thread {
         }
 
         //Mix audio
-
         byte[] mixed_audio = streams.size() > 0 ? AudioUtils.mixListOfStreams(streams) : new byte[AudioUtils.MIC_FRAME_LENGTH];
 
         ByteBuffer responsePacket = ByteBuffer.allocate(UDPServer.DATAGRAM_PACKET_SIZE);
@@ -93,15 +56,6 @@ public class UDPResponse extends Thread {
         responsePacket.put(mixed_audio);
         responsePacket.flip();
 
-        DatagramPacket packet = new DatagramPacket(responsePacket.array(), responsePacket.array().length, address, port);
-        server.send(packet);
-
-        this.closeResponse();
-    }
-
-    private void closeResponse() {
-        synchronized (this.activeResponses) {
-            this.activeResponses.remove(this);
-        }
+        return new DatagramPacket(responsePacket.array(), responsePacket.array().length, address, port);
     }
 }

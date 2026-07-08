@@ -18,7 +18,7 @@ public class AudioUtils {
     /**
      * Length of a MIC_FRAME.
      */
-    public static final int MIC_FRAME_LENGTH = 1024;
+    public static final int MIC_FRAME_LENGTH = 480 * 2;
 
     /**
      * Mix all input PCM {@code streams} into a single stream.

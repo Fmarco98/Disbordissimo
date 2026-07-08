@@ -10,6 +10,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 //TODO: documentation
 
@@ -19,10 +21,12 @@ import java.util.List;
  */
 public class UDPServer extends Thread {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
+    public static final int nThreadPool = 8;
 
     private boolean running;
     private DatagramSocket server;
-    private List<UDPResponse> activeResponses;
+
+    private ExecutorService threadPool;
 
     /**
      * Constructor.
@@ -38,7 +42,8 @@ public class UDPServer extends Thread {
         server = new DatagramSocket(port);
         server.setSoTimeout(100); // Sett a timeout to avoid deadlocks cause by line.35
         running = true;
-        activeResponses = new ArrayList<>();
+
+        threadPool = Executors.newFixedThreadPool(nThreadPool);
     }
 
     @Override
@@ -58,21 +63,14 @@ public class UDPServer extends Thread {
                 throw new RuntimeException(e);
             }
 
-            UDPResponse response = new UDPResponse(packet.getAddress(), packet.getPort(), packet.getData().clone(), this);
-            response.start();
-        }
+            threadPool.submit(() -> {
+                DatagramPacket resp = UDPResponse.response(packet.getAddress(), packet.getPort(), packet.getData().clone());
 
-        synchronized (activeResponses) {
-            activeResponses.stream().forEach(response -> {
-                try {
-                    response.join();
-                } catch (InterruptedException e) {
-                    DisbordissimoServer.getServer().getLogger().logError("UDPResponses joining: " + e.getMessage());
-                    throw new RuntimeException(e);
-                }
+                if(resp != null) this.send(resp);
             });
         }
 
+        threadPool.close();
         server.close();
     }
 
@@ -99,14 +97,5 @@ public class UDPServer extends Thread {
         try {
             this.join();
         } catch (InterruptedException e) {}
-    }
-
-    /**
-     * Gets the list of UDP active responses
-     *
-     * @return UDP active responses
-     */
-    public synchronized List<UDPResponse> getActiveResponses() {
-        return activeResponses;
     }
 }

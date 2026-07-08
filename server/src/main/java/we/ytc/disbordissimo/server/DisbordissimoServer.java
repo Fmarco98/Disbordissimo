@@ -17,7 +17,8 @@ import java.util.List;
 //TODO: documentation
 
 /**
- * Server launcher class
+ * <h1>Disbordissimo Server class</h1>
+ *
  */
 public class DisbordissimoServer extends Thread {
     private static DisbordissimoServer INSTANCE = null;
