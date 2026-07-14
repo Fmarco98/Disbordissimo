@@ -27,9 +27,7 @@ public class QuitChannelCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.getSenderThread().stopThread();
-                Client.getReceiverThread().stopThread();
-                Client.getSocket().close();
+                Client.getKCPClient().close();
 
                 Client.getLogger().logDebug("quit ok");
                 return ReturnCodes.SUCCESS;

@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.cli;
 
+import we.ytc.disbordissimo.client.ClientFactory;
 import we.ytc.disbordissimo.client.DisbordissimoClient;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
@@ -11,7 +12,7 @@ import java.util.Scanner;
 
 public class MainCli {
     protected static String PROMPT = "disbordissimo> ";
-    protected static DisbordissimoClient.Config config;
+    protected static ClientFactory.Config config;
     protected static DisbordissimoClient client;
     protected static Scanner sc;
     protected static int guild;
@@ -23,87 +24,83 @@ public class MainCli {
     protected static OutManager om = new OutManager();
 
     public static void main(String[] args) {
-        try {
-            config = new DisbordissimoClient.Config(InetAddress.getByName("192.168.1.2"), 10469);
-            client = DisbordissimoClient.create(config);
-            sc = new Scanner(System.in);
-            guild = -1;
+        config = new ClientFactory.Config("localhost", 6969);
+        client = ClientFactory.create(config);
+        sc = new Scanner(System.in);
+        guild = -1;
 
-            isMainRunning = isServerRunning();
+        isMainRunning = isServerRunning();
 
-            client.setPacketReceivedHandler(bArr -> om.sound(bArr));
-            client.setPacketSendingHandler(mm::getMicBytes);
+        client.setPacketReceivedHandler(bArr -> om.sound(bArr));
+        client.setPacketSendingHandler(mm::getMicBytes);
 
-            if (isMainRunning) {
-                printGreeting();
-            }
-
-            while (isMainRunning) {
-                System.out.print(PROMPT);
-                String cmd = sc.nextLine().strip().toLowerCase();
-
-                switch (cmd) {
-                    case "login":
-                        try {
-                            login();
-                            System.out.println();
-                            LoggedInCli.loggedIn();
-                            continue;
-                        } catch (CommandFailedException e) {
-                            if (e.getErrCode() == ReturnCodes.USER_NOT_FOUND) {
-                                printErr("Err 1001: Incorrect username or password");
-                            } else {
-                                defaultErrHandling(e.getErrCode());
-                            }
-                        } catch (UnreachableServerException ex) {
-                            unreachbleServerHandling();
-                        }
-                        break;
-
-                    case "signup":
-                        try {
-                            signup();
-                        } catch (CommandFailedException e) {
-                            if (e.getErrCode() == ReturnCodes.USER_ALREADY_EXISTS) {
-                                printErr("Err 1002: User Already Exists");
-                            } else {
-                                defaultErrHandling(e.getErrCode());
-                            }
-                        } catch (UnreachableServerException ex) {
-                            unreachbleServerHandling();
-                        }
-                        break;
-
-                    case "q":
-                    case "quit":
-                    case "exit":
-                        if (client.isLoggedIn()) {
-                            client.logout();
-                        }
-                        client.destroy();
-
-                        isMainRunning = false;
-
-                        System.out.println("Goodbye!");
-                        break;
-
-                    case "ping":
-                        ping();
-                        break;
-
-                    default:
-                        if (!cmd.isBlank()) {
-                            printErr("Err: Command Not Recognized or not authorized");
-                        }
-                        continue;
-                }
-                System.out.println();
-            }
-
-            client.destroy();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+        if (isMainRunning) {
+            printGreeting();
         }
+
+        while (isMainRunning) {
+            System.out.print(PROMPT);
+            String cmd = sc.nextLine().strip().toLowerCase();
+
+            switch (cmd) {
+                case "login":
+                    try {
+                        login();
+                        System.out.println();
+                        LoggedInCli.loggedIn();
+                        continue;
+                    } catch (CommandFailedException e) {
+                        if (e.getErrCode() == ReturnCodes.USER_NOT_FOUND) {
+                            printErr("Err 1001: Incorrect username or password");
+                        } else {
+                            defaultErrHandling(e.getErrCode());
+                        }
+                    } catch (UnreachableServerException ex) {
+                        unreachbleServerHandling();
+                    }
+                    break;
+
+                case "signup":
+                    try {
+                        signup();
+                    } catch (CommandFailedException e) {
+                        if (e.getErrCode() == ReturnCodes.USER_ALREADY_EXISTS) {
+                            printErr("Err 1002: User Already Exists");
+                        } else {
+                            defaultErrHandling(e.getErrCode());
+                        }
+                    } catch (UnreachableServerException ex) {
+                        unreachbleServerHandling();
+                    }
+                    break;
+
+                case "q":
+                case "quit":
+                case "exit":
+                    if (client.isLoggedIn()) {
+                        client.logout();
+                    }
+                    client.destroy();
+
+                    isMainRunning = false;
+
+                    System.out.println("Goodbye!");
+                    break;
+
+                case "ping":
+                    ping();
+                    break;
+
+                default:
+                    if (!cmd.isBlank()) {
+                        printErr("Err: Command Not Recognized or not authorized");
+                    }
+                    continue;
+            }
+            System.out.println();
+        }
+
+        client.destroy();
     }
 
     private static boolean isServerRunning() {

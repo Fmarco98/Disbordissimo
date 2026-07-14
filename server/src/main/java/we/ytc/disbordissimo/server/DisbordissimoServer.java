@@ -3,8 +3,8 @@ package we.ytc.disbordissimo.server;
 import we.ytc.disbordissimo.server.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.server.internal.VoiceChannelsManager;
 import we.ytc.disbordissimo.server.internal.commands.*;
+import we.ytc.disbordissimo.server.internal.networking.KCPServer;
 import we.ytc.disbordissimo.server.internal.networking.TCPServer;
-import we.ytc.disbordissimo.server.internal.networking.UDPServer;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
@@ -29,7 +29,7 @@ public class DisbordissimoServer extends Thread {
 
     private VoiceChannelsManager voiceChannels;
     private List<CommandResponse> commandsHandlers;
-    private UDPServer udpServer;
+    private KCPServer kcpServer;
     private TCPServer tcpServer;
 
     public DisbordissimoServer(Config config, Logger logger) throws IOException {
@@ -65,28 +65,25 @@ public class DisbordissimoServer extends Thread {
         commandsHandlers.add(new GetGuildMembersCommandResponse());
         commandsHandlers.add(new GetGuildChannelConnectedMembersCommandResponse());
 
-        udpServer = new UDPServer(config.udpServerConfig.port);
+        kcpServer = new KCPServer(config.kcpServerConfig.port);
         tcpServer = new TCPServer(config.tcpServerConfig.port, commandsHandlers);
     }
 
     @Override
     public void run() {
-        udpServer.start();
-        getLogger().logDebug("UDP server opened on: %:" + config.udpServerConfig.port);
+        kcpServer.start();
+        getLogger().logDebug("KCP server opened on: %:" + config.kcpServerConfig.port);
         tcpServer.start();
-        getLogger().logDebug("UDP server opened on: %:" + config.tcpServerConfig.port);
+        getLogger().logDebug("TCP server opened on: %:" + config.tcpServerConfig.port);
 
         try {
             tcpServer.join();
         } catch (InterruptedException e) {}
-        try {
-            udpServer.join();
-        } catch (InterruptedException e) {}
     }
 
     public void stopServer() {
+        kcpServer.close();
         tcpServer.stopServer();
-        udpServer.stopSever();
         try {
             this.join();
         } catch (InterruptedException e) {}

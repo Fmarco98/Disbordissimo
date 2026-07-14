@@ -18,63 +18,63 @@ import java.nio.ByteBuffer;
  */
 public class UDPSender extends Thread {
 
-    private boolean running;
-    private DatagramSocket socket;
-    private InetAddress address;
-    private int port;
-
-    /**
-     * Constructor.
-     *
-     * @param socket
-     *        The UDP socket
-     * @param address
-     *        The UDP Server address
-     * @param port
-     *        The UDP Server port
-     */
-    public UDPSender(DatagramSocket socket, InetAddress address, int port) {
-        running = true;
-        this.socket = socket;
-        this.address = address;
-        this.port = port;
-    }
-
-    @Override
-    public void run() {
-        if(Client.getOnSending() == null) return;
-
-        ByteBuffer packetBuffer = ByteBuffer.allocate(Client.DATAGRAM_PACKET_SIZE);
-        while(running) {
-            byte[] micRaw = Client.getOnSending().onPacketSending();
-            if(micRaw.length != AudioUtils.MIC_FRAME_LENGTH) {
-                throw new IllegalMicFrameSize(micRaw.length);
-            }
-
-            packetBuffer.putLong(Client.getUserID());
-            packetBuffer.put(micRaw);
-
-            packetBuffer.flip();
-            try {
-                DatagramPacket p = new DatagramPacket(packetBuffer.array(), packetBuffer.array().length, address, port);
-                socket.send(p);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            packetBuffer.flip();
-            packetBuffer.clear();
-        }
-    }
-
-    /**
-     * Stops the Thread.
-     */
-    public void stopThread() {
-        running = false;
-        this.interrupt();
-        try {
-            this.join();
-        } catch (InterruptedException e) {}
-    }
+//    private boolean running;
+//    private DatagramSocket socket;
+//    private InetAddress address;
+//    private int port;
+//
+//    /**
+//     * Constructor.
+//     *
+//     * @param socket
+//     *        The UDP socket
+//     * @param address
+//     *        The UDP Server address
+//     * @param port
+//     *        The UDP Server port
+//     */
+//    public UDPSender(DatagramSocket socket, InetAddress address, int port) {
+//        running = true;
+//        this.socket = socket;
+//        this.address = address;
+//        this.port = port;
+//    }
+//
+//    @Override
+//    public void run() {
+//        if(Client.getOnSending() == null) return;
+//
+//        ByteBuffer packetBuffer = ByteBuffer.allocate(Client.DATAGRAM_PACKET_SIZE);
+//        while(running) {
+//            byte[] micRaw = Client.getOnSending().onPacketSending();
+//            if(micRaw.length != AudioUtils.MIC_FRAME_LENGTH) {
+//                throw new IllegalMicFrameSize(micRaw.length);
+//            }
+//
+//            packetBuffer.putLong(Client.getUserID());
+//            packetBuffer.put(micRaw);
+//
+//            packetBuffer.flip();
+//            try {
+//                DatagramPacket p = new DatagramPacket(packetBuffer.array(), packetBuffer.array().length, address, port);
+//                socket.send(p);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//            packetBuffer.flip();
+//            packetBuffer.clear();
+//        }
+//    }
+//
+//    /**
+//     * Stops the Thread.
+//     */
+//    public void stopThread() {
+//        running = false;
+//        this.interrupt();
+//        try {
+//            this.join();
+//        } catch (InterruptedException e) {}
+//    }
 }
 

@@ -41,132 +41,7 @@ import java.net.InetAddress;
  *  - dropGuildChannel(..)<br>
  *  - dropGuild(..)<br>
  */
-public abstract sealed class DisbordissimoClient permits Client {
-
-    /**
-     * <h1>Config class</h1>
-     *
-     * It represents the {@link DisbordissimoClient} config. <br>
-     * <br>
-     * Contains:<br>
-     *  - serverAddress<br>
-     *  - serverPort<br>
-     *  - UDP sockets Timeout<br>
-     *  - Kbps TargetRate<br>
-     *  - Ping interval<br>
-     * <br>
-     * Methods:<br>
-     *  - getters<br>
-     */
-    public static class Config {
-        private InetAddress serverAddress;
-        private int serverPort;
-        private int UDPTimeOut;
-        private int pingInterval;
-
-        //non implementato attualmente
-        private int kbps;
-
-        /**
-         * Contract Constructor. The {@code kbps} and {@code UDPTimeOut} values are set to their default.
-         *
-         * @param serverAddress
-         *        Disbordissimo Server address
-         * @param serverPort
-         *        Disbordissimo Server port
-         */
-        public Config(InetAddress serverAddress, int serverPort) {
-            this(serverAddress, serverPort, 64, 500, 180000 /*3min*/);
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param serverAddress
-         *        Disbordissimo Server address
-         * @param serverPort
-         *        Disbordissimo Server port
-         * @param kbps
-         *        kbps target
-         * @param UDPTimeOut
-         *        Receiving socket time out
-         * @param pingInterval
-         *        Ping interval
-         */
-        public Config(InetAddress serverAddress, int serverPort, int kbps , int UDPTimeOut, int pingInterval) {
-            this.serverAddress = serverAddress;
-            this.serverPort = serverPort;
-            this.UDPTimeOut = UDPTimeOut;
-            this.kbps = kbps;
-            this.pingInterval = pingInterval;
-        }
-
-        /**
-         * Gets the kbps target rate.
-         * @return {@code kbps}
-         */
-        public int getKbps() {
-            return kbps;
-        }
-
-        /**
-         * Gets the UDP receiving socket time out.
-         * @return {@code UDPTimeOut}
-         */
-        public int getUDPTimeOut() {
-            return UDPTimeOut;
-        }
-
-        /**
-         * Gets the DisbordissimoServer address.
-         * @return {@code serverAddress}
-         */
-        public InetAddress getServerAddress() {
-            return serverAddress;
-        }
-
-        /**
-         * Gets the DisbordissimoServer port.
-         * @return {@code serverPort}
-         */
-        public int getServerPort() {
-            return serverPort;
-        }
-
-        /**
-         * Gets the Ping interval.
-         * @return {@code pingInterval}
-         */
-        public int getPingInterval() {
-            return pingInterval;
-        }
-    }
-
-    /**
-     * Creates a {@link DisbordissimoClient}. The default associated {@link Logger} is {@link NullLogger}.
-     *
-     * @param config
-     *        The {@link Config}.
-     *
-     * @return client instance
-     */
-    public static DisbordissimoClient create(Config config) {
-        return create(config, new NullLogger());
-    }
-
-    /**
-     * Creates a {@link DisbordissimoClient}.
-     *
-     * @param config
-     *        The {@link Config}.
-     * @param logger
-     *        A {@link Logger}
-     *
-     * @return client instance
-     */
-    public static DisbordissimoClient create(Config config, Logger logger) {
-        return new Client(config, logger);
-    }
+public interface DisbordissimoClient {
 
     /**
      * Sets the {@link PacketSendingHandler}. It defines all operation that will be performed
@@ -177,7 +52,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @param sending
      *        The function
      */
-    public abstract void setPacketSendingHandler(PacketSendingHandler sending);
+    void setPacketSendingHandler(PacketSendingHandler sending);
 
     /**
      * Sets the {@link PacketReceivedHandler}. It defines all operation that will be performed
@@ -188,7 +63,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @param received
      *        The function
      */
-    public abstract void setPacketReceivedHandler(PacketReceivedHandler received);
+    void setPacketReceivedHandler(PacketReceivedHandler received);
 
     /**
      * Signs up the user.
@@ -201,7 +76,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void signUp(String username, String password) throws CommandFailedException;
+    void signUp(String username, String password) throws CommandFailedException;
 
     /**
      * Logs in the user.
@@ -214,12 +89,12 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void login(String username, String password) throws CommandFailedException;
+    void login(String username, String password) throws CommandFailedException;
 
     /**
      * Logs out the user.
      */
-    public abstract void logout();
+    void logout();
 
     /**
      * Checks if the user is logged in.
@@ -227,7 +102,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @return {@code true} if a user logged in;
      *         {@code false} otherwise;
      */
-    public abstract boolean isLoggedIn();
+    boolean isLoggedIn();
 
     /**
      * Joins the given voice channel ({@code guild.channel}).
@@ -240,7 +115,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void joinChannel(String channel, String guild) throws CommandFailedException;
+    void joinChannel(String channel, String guild) throws CommandFailedException;
 
     /**
      * Quits the given voice channel ({@code guild.channel}).
@@ -253,7 +128,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void quitChannel(String channel, String guild) throws CommandFailedException;
+    void quitChannel(String channel, String guild) throws CommandFailedException;
 
     /**
      * Reconnects to the given voice channel ({@code guild.channel}).
@@ -266,7 +141,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void reconnectToChannel(String channel, String guild) throws CommandFailedException;
+    void reconnectToChannel(String channel, String guild) throws CommandFailedException;
 
     /**
      * Checks if the user is connected to the given voice channel ({@code guild.channel}).
@@ -279,7 +154,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract boolean isConnectedTo(String channel, String guild) throws CommandFailedException;
+    boolean isConnectedTo(String channel, String guild) throws CommandFailedException;
 
     /**
      * Gets all {@code guilds} where the logged user is member.
@@ -287,7 +162,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract String[] getGuilds() throws CommandFailedException;
+    String[] getGuilds() throws CommandFailedException;
 
     /**
      * Gets all voice channel of the given {@code guild}.
@@ -298,7 +173,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract String[] getGuildChannels(String guild) throws CommandFailedException;
+    String[] getGuildChannels(String guild) throws CommandFailedException;
 
     /**
      * Gets the owner username of the given {@code guild}
@@ -309,7 +184,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract String getGuildOwner(String guild) throws CommandFailedException;
+    String getGuildOwner(String guild) throws CommandFailedException;
 
     /**
      * Creates a new {@code guild}
@@ -320,7 +195,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void createGuild(String guild) throws CommandFailedException;
+    void createGuild(String guild) throws CommandFailedException;
 
     /**
      * Creates a new voice channel in the given {@code guild}.
@@ -333,7 +208,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void createGuildChannel(String channel, String guild) throws CommandFailedException;
+    void createGuildChannel(String channel, String guild) throws CommandFailedException;
 
     /**
      * Joins the given {@code guild}
@@ -344,7 +219,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void joinGuild(String guild) throws CommandFailedException;
+    void joinGuild(String guild) throws CommandFailedException;
 
     /**
      * Leaves the given {@code guild}
@@ -355,7 +230,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void leaveGuild(String guild) throws CommandFailedException;
+    void leaveGuild(String guild) throws CommandFailedException;
 
     /**
      * Drops {@code guild.channel}.
@@ -368,7 +243,7 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void dropGuildChannel(String channel, String guild) throws CommandFailedException;
+    void dropGuildChannel(String channel, String guild) throws CommandFailedException;
 
     /**
      * Drops {@code guild}.
@@ -379,32 +254,32 @@ public abstract sealed class DisbordissimoClient permits Client {
      * @throws CommandFailedException
      *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
      */
-    public abstract void dropGuild(String guild) throws CommandFailedException;
+    void dropGuild(String guild) throws CommandFailedException;
 
     /**
      * Destroys the client.
      */
-    public abstract void destroy();
+    void destroy();
 
     /**
      * Gets the server medium ping.
      * @return {@code ping}
      */
-    public abstract int getPing();
+    int getPing();
 
     /**
      * Checks if the server is reachable.
      * @return {@code true} if server is reachable;
      *         {@code false} otherwise;
      */
-    public abstract boolean isServerReachable();
+    boolean isServerReachable();
 
     /**
      * Gets all members of the given {@code guild}.
      *
      * @return String array that contains the username of all members.
      */
-    public abstract String[] getGuildMemers(String guild) throws CommandFailedException;
+    String[] getGuildMemers(String guild) throws CommandFailedException;
 
     /**
      * Gets all member of the {@code guild} connected to {@code channel}.
@@ -416,5 +291,5 @@ public abstract sealed class DisbordissimoClient permits Client {
      *
      * @return String array that contains the username of all members connected to {@code channel}
      */
-    public abstract String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException;
+    String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException;
 }

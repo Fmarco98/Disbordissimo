@@ -1,5 +1,6 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.ClientFactory;
 import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.client.DisbordissimoClient;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
@@ -79,7 +80,7 @@ public abstract class Command {
      */
     public int execute(String ...params) {
         try {
-            DisbordissimoClient.Config conf = Client.getConfig();
+            ClientFactory.Config conf = Client.getConfig();
             Socket socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());

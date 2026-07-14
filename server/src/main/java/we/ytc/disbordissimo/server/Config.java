@@ -22,8 +22,8 @@ public class Config {
 
     @SerializedName("tcpServer")
     public TcpServerConfig tcpServerConfig;
-    @SerializedName("udpServer")
-    public UdpServerConfig udpServerConfig;
+    @SerializedName("kcpServer")
+    public KcpServerConfig kcpServerConfig;
     @SerializedName("sqlConn")
     public SqlConnectionConfig sqlConnectionConfig;
     @SerializedName("activeUserCleaner")
@@ -33,12 +33,12 @@ public class Config {
 
     private Config() {}
 
-    private Config(String version, TcpServerConfig tcpServerConfig, UdpServerConfig udpServerConfig,
+    private Config(String version, TcpServerConfig tcpServerConfig, KcpServerConfig udpServerConfig,
                    SqlConnectionConfig sqlConnectionConfig, ActiveClassCleanerConfig activeClassCleanerConfig,
                    LoggerConfig loggerConfig) {
         this.version = version;
         this.tcpServerConfig = tcpServerConfig;
-        this.udpServerConfig = udpServerConfig;
+        this.kcpServerConfig = udpServerConfig;
         this.sqlConnectionConfig = sqlConnectionConfig;
         this.activeClassCleanerConfig = activeClassCleanerConfig;
         this.loggerConfig = loggerConfig;
@@ -59,10 +59,10 @@ public class Config {
         public int port;
     }
     
-    public static class UdpServerConfig {
-        private UdpServerConfig() {}
+    public static class KcpServerConfig {
+        private KcpServerConfig() {}
 
-        public UdpServerConfig(String host, int port) {
+        public KcpServerConfig(String host, int port) {
             this.host = host;
             this.port = port;
         }
@@ -156,7 +156,7 @@ public class Config {
     public static Config defaultConfig() {
         String ver = "1.0-alpha";
         TcpServerConfig tcp = new TcpServerConfig("localhost", 6969);
-        UdpServerConfig udp = new UdpServerConfig("localhost", 6969);
+        KcpServerConfig udp = new KcpServerConfig("localhost", 6969);
         SqlConnectionConfig sql = new SqlConnectionConfig("localhost", "", "", "");
         ActiveClassCleanerConfig accc = new ActiveClassCleanerConfig(150000, 150000);
         LoggerConfig log = new LoggerConfig(false, false, "", true);

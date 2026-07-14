@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
 import we.ytc.disbordissimo.client.internal.Client;
+import we.ytc.disbordissimo.client.internal.KCPClient;
 import we.ytc.disbordissimo.client.internal.UDPReceiver;
 import we.ytc.disbordissimo.client.internal.UDPSender;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
@@ -32,16 +33,11 @@ public class JoinChannelCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                try {
-                    Client.setSocket(new DatagramSocket());
-                    Client.setReceiverThread(new UDPReceiver(Client.getSocket()));
-                    Client.setSenderThread(new UDPSender(Client.getSocket(), Client.getConfig().getServerAddress(),
-                                           Client.getConfig().getServerPort()));
-                    Client.getReceiverThread().start();
-                    Client.getSenderThread().start();
-                } catch (SocketException e) {
-                    throw new RuntimeException(e);
-                }
+                Client.setKCPClient(new KCPClient(
+                    Client.getConfig().getServerAddress(),
+                    Client.getConfig().getServerPort()
+                ));
+
                 Client.getLogger().logDebug("join ok");
                 return ReturnCodes.SUCCESS;
 

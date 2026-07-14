@@ -12,8 +12,9 @@ import we.ytc.disbordissimo.common.AudioUtils;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
 
-import java.net.DatagramSocket;
 import java.util.List;
+
+import static we.ytc.disbordissimo.client.ClientFactory.Config;
 
 /**
  * <h1>Client class</h1>
@@ -22,7 +23,7 @@ import java.util.List;
  * Features:<br>
  *  - Thread-safe
  */
-public final class Client extends DisbordissimoClient {
+public final class Client implements DisbordissimoClient {
     public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
 
     private static Client INSTANCE = null;
@@ -31,9 +32,7 @@ public final class Client extends DisbordissimoClient {
     private long userID = -1;
     private Logger logger;
 
-    private DatagramSocket socket;
-    private UDPReceiver receiverThread;
-    private UDPSender senderThread;
+    private KCPClient kcpClient;
     private PingThread pingThread;
     private PacketReceivedHandler onReceived;
     private PacketSendingHandler onSending;
@@ -292,7 +291,12 @@ public final class Client extends DisbordissimoClient {
     public static void setLastStringList(List<String> r) {
         INSTANCE.lastStringList = r;
     }
-
+    public static void setKCPClient(KCPClient client) {
+        INSTANCE.kcpClient = client;
+    }
+    public static KCPClient getKCPClient() {
+        return INSTANCE.kcpClient;
+    }
     public static PingThread getPingThread() {
         return INSTANCE.pingThread;
     }
@@ -301,24 +305,6 @@ public final class Client extends DisbordissimoClient {
     }
     public static PacketSendingHandler getOnSending() {
         return INSTANCE.onSending;
-    }
-    public static UDPSender getSenderThread() {
-        return INSTANCE.senderThread;
-    }
-    public static void setSenderThread(UDPSender senderThread) {
-        INSTANCE.senderThread = senderThread;
-    }
-    public static DatagramSocket getSocket() {
-        return INSTANCE.socket;
-    }
-    public static void setSocket(DatagramSocket socket) {
-        INSTANCE.socket = socket;
-    }
-    public static UDPReceiver getReceiverThread() {
-        return INSTANCE.receiverThread;
-    }
-    public static void setReceiverThread(UDPReceiver receiverThread) {
-        INSTANCE.receiverThread = receiverThread;
     }
     public static Config getConfig() {
         return INSTANCE.config;
