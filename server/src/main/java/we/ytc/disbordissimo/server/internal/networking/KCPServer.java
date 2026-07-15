@@ -53,16 +53,17 @@ public class KCPServer implements KcpListener {
     @Override
     public void handleClose(Ukcp kcp) {
         System.out.println("Connessione chiusa con: " + kcp.user().getRemoteAddress());
+
+        kcp.getConv();
     }
 
 
     private KcpServer configServer(int port) {
         KcpConfig kcpConfig = new KcpConfig();
-        kcpConfig.nodelay(true,40,2,true);
+        kcpConfig.nodelay(true,10,2,true);
         kcpConfig.setSndwnd(512);
         kcpConfig.setRcvwnd(512);
-        kcpConfig.setMtu(512);
-//        kcpConfig.setMtu(1536); //1,5kB
+        kcpConfig.setMtu(1024);
         kcpConfig.setAckNoDelay(true);
 
         ChannelConfig channelConfig = new ChannelConfig(kcpConfig);

@@ -19,13 +19,14 @@ public class KCPClient implements KcpListener {
     private Queue<byte[]> frameQueue = new LinkedList<>();
     private Ukcp myUkcp;
 
+    private boolean t_senderRunning;
     private Thread sender = new Thread(() -> {
         if(Client.getOnSending() == null) return;
 
         ByteBuf byteBuf = Unpooled.buffer(Client.DATAGRAM_PACKET_SIZE);
         long userID = Client.getUserID();
 
-        while(!Thread.currentThread().isInterrupted()) {
+        while(t_senderRunning) {
 
             byte[] micRaw = Client.getOnSending().onPacketSending();
             if(micRaw.length != AudioUtils.MIC_FRAME_LENGTH) {
@@ -40,12 +41,14 @@ public class KCPClient implements KcpListener {
             byteBuf.clear();
         }
         byteBuf.release();
+
     }, "sender");
 
+    private boolean t_playerRunning;
     private Thread player = new Thread(() -> {
         if(Client.getOnReceived() == null) return;
 
-        while(!Thread.currentThread().isInterrupted()) {
+        while(t_playerRunning) {
             byte[] buffer = null;
             synchronized (frameQueue) {
                 buffer = frameQueue.poll();
@@ -63,13 +66,14 @@ public class KCPClient implements KcpListener {
 
     public KCPClient(String host, int port) {
         KcpConfig kcpConfig = new KcpConfig();
-        kcpConfig.nodelay(true,40,2,true);
+        kcpConfig.nodelay(true,10,2,true);
         kcpConfig.setSndwnd(512);
         kcpConfig.setRcvwnd(512);
-        kcpConfig.setMtu(512);
-//        kcpConfig.setMtu(1536); //1,5kB
+        kcpConfig.setMtu(1024);
         kcpConfig.setAckNoDelay(true);
-        kcpConfig.setConv(56);
+
+        //TODO: trovare identificatore (int) migliore, rischio collisione su long
+        kcpConfig.setConv((int) Client.getUserID());
 
         ChannelConfig channelConfig = new ChannelConfig(kcpConfig);
         channelConfig.setFecAdapt(new FecAdapt(3,1));
@@ -93,6 +97,8 @@ public class KCPClient implements KcpListener {
     @Override
     public void onConnected(Ukcp ukcp) {
         myUkcp = ukcp;
+        t_senderRunning = true;
+        t_playerRunning = true;
         sender.start();
         player.start();
     }
@@ -102,7 +108,6 @@ public class KCPClient implements KcpListener {
         byte[] bufff = new byte[AudioUtils.MIC_FRAME_LENGTH];
         byteBuf.getBytes(8, bufff);
 
-        System.out.println("dsadsadadadadadasdasd");
         synchronized (frameQueue) {
             frameQueue.offer(bufff);
         }
@@ -113,6 +118,8 @@ public class KCPClient implements KcpListener {
 
     @Override
     public void handleClose(Ukcp kcp) {
+        t_senderRunning = false;
+        t_playerRunning = false;
         sender.interrupt();
         player.interrupt();
 

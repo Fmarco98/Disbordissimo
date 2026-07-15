@@ -6,8 +6,9 @@ import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class MainCli {
@@ -24,6 +25,8 @@ public class MainCli {
     protected static OutManager om = new OutManager();
 
     public static void main(String[] args) {
+        sysErrRedirection();
+
         config = new ClientFactory.Config("localhost", 6969);
         client = ClientFactory.create(config);
         sc = new Scanner(System.in);
@@ -168,5 +171,12 @@ public class MainCli {
         printErr("Err -1: Server Unreachable");
         printErr("The connection will be closed!");
         System.exit(-1);
+    }
+
+    private static void sysErrRedirection() {
+        System.setErr(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {}
+        }));
     }
 }
