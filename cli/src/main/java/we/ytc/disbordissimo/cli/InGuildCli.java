@@ -7,6 +7,10 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import static we.ytc.disbordissimo.cli.MainCli.*;
 
 class InGuildCli {
+    /**
+     * Method called by {@link LoggedInCli} when a user selects a guild. Handles all che commands that a logged user
+     * can do when in a guild.
+     */
     protected static void inGuild() {
         boolean isInGuildRunning = true;
 
@@ -78,6 +82,8 @@ class InGuildCli {
                     } catch (CommandFailedException e) {
                         if (e.getErrCode() == ReturnCodes.CHANNEL_NOT_FOUND) {
                             printErr("Err 1201: Channel not found");
+                        } else if (e.getErrCode() == ReturnCodes.CHANNEL_ALREADY_JOINED) {
+                            printErr("Err 1210: Already Joined");
                         } else {
                             defaultErrHandling(e.getErrCode());
                         }
@@ -106,6 +112,11 @@ class InGuildCli {
         }
     }
 
+    /**
+     * Makes the logged user join a channel. When executed the user is redirected to {@link InChannelCli}'s main method
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static String joinChannel() throws CommandFailedException {
         listGuildChannels();
         System.out.print("Select the channel to join: ");
@@ -118,11 +129,21 @@ class InGuildCli {
         return client.getGuildChannels(guildOfChan)[chanIndex];
     }
 
+    /**
+     * Prints the guild's owner
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void guildOwner() throws CommandFailedException {
         System.out.println("----------- Guild Owner -----------");
         System.out.println(client.getGuildOwner(client.getGuilds()[guild]));
     }
 
+    /**
+     * Makes the logged user drop an existing channel if he has permission to do so.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void dropChannel() throws CommandFailedException {
         System.out.println("----------- Delete Channel -----------");
         listGuildChannels();
@@ -146,12 +167,23 @@ class InGuildCli {
         }
     }
 
+    /**
+     * Makes the logged user deselect the current guild. When executed the user is redirected to {@link LoggedInCli}'s
+     * main method
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static boolean deselGuild() {
         guild = -1;
         PROMPT = user + "@disbordissimo> ";
         return false;
     }
 
+    /**
+     * Prints a list of existing channels
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void listGuildChannels() throws CommandFailedException {
         System.out.println("----------- List Guild Channels -----------");
         String[] channels = client.getGuildChannels(client.getGuilds()[guild]);
@@ -160,6 +192,11 @@ class InGuildCli {
         }
     }
 
+    /**
+     * Makes the logged user create a new channel.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void createChannel() throws CommandFailedException {
         System.out.println("----------- Create Guild Channel -----------");
         System.out.print("Insert a name for your channel: ");

@@ -6,7 +6,13 @@ import javax.sound.sampled.LineUnavailableException;
 
 import static we.ytc.disbordissimo.cli.MainCli.*;
 
-public class InChannelCli {
+class InChannelCli {
+    /**
+     * Method called by {@link InGuildCli} when a user joins a channel. Handles all audio communications and commands
+     * that a logged user in a channel can do
+     *
+     * @param channelName the channel's name
+     */
     protected static void inChannel(String channelName) {
         boolean isInChannel = true;
 
@@ -28,6 +34,7 @@ public class InChannelCli {
                 case "exit":
                 case "quit":
                 case "leave":
+                    // Handles the exit from a channel and closes all audio sinks.
                     try {
                         client.quitChannel(channelName, client.getGuilds()[guild]);
                         mm.close();
@@ -39,6 +46,7 @@ public class InChannelCli {
                     break;
 
                 case "users":
+                    // Prints a list of users currently in the channel
                     try {
                         String[] users = client.getChannelConnectedMembers(channelName, client.getGuilds()[guild]);
                         System.out.println("----------- Users In Channel -----------");

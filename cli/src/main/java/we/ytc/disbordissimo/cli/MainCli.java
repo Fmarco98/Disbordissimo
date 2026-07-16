@@ -11,6 +11,11 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+/**
+ * <h1>MainCli</h1>
+ *
+ * Starter class of the cli interface for Disbordissimo
+ */
 public class MainCli {
     protected static String PROMPT = "disbordissimo> ";
     protected static ClientFactory.Config config;
@@ -24,17 +29,21 @@ public class MainCli {
     protected static MicManager mm = new MicManager();
     protected static OutManager om = new OutManager();
 
+    /**
+     * Main method of the program that handles all the commands that a not logged user can do.
+     */
     public static void main(String[] args) {
         sysErrRedirection();
 
-        config = new ClientFactory.Config("100.86.192.125", 6969);
+        // TODO: Make client config based off a file
+        config = new ClientFactory.Config("localhost", 10469);
         client = ClientFactory.create(config);
         sc = new Scanner(System.in);
         guild = -1;
 
         isMainRunning = isServerRunning();
 
-        client.setPacketReceivedHandler(bArr -> om.sound(bArr));
+        client.setPacketReceivedHandler(bArr -> om.write(bArr));
         client.setPacketSendingHandler(mm::getMicBytes);
 
         if (isMainRunning) {
@@ -48,10 +57,11 @@ public class MainCli {
             switch (cmd) {
                 case "login":
                     try {
-                        login();
-                        System.out.println();
-                        LoggedInCli.loggedIn();
-                        continue;
+                        if (login() != -1) {
+                            System.out.println();
+                            LoggedInCli.loggedIn();
+                            continue;
+                        }
                     } catch (CommandFailedException e) {
                         if (e.getErrCode() == ReturnCodes.USER_NOT_FOUND) {
                             printErr("Err 1001: Incorrect username or password");
@@ -106,6 +116,11 @@ public class MainCli {
         client.destroy();
     }
 
+    /**
+     * Checks if the server is running based off the client's ping
+     *
+     * @return {@code true} if the server is running, otherwise {@code false}
+     */
     private static boolean isServerRunning() {
         try {
             int ping = client.getPing();
@@ -124,42 +139,121 @@ public class MainCli {
 
     }
 
+    /**
+     * Signs up a new user. Also fails if many attempts have been made
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void signup() throws CommandFailedException {
+        int tries = 0;
+
         System.out.println("----------- Signup -----------");
         System.out.print("Insert a username: ");
         String user = sc.nextLine();
+        while (tries != 5 && user.isEmpty()) {
+            tries++;
+            printErr("Err: Empty Username. Please re-enter it.");
+            System.out.print("Insert your username: ");
+            user = sc.nextLine();
+        }
+        if (tries == 5) {
+            printErr("Err: Too many attempts.");
+            return;
+        }
+
+        tries = 0;
+
         System.out.print("Insert a password: ");
         String pswd = sc.nextLine();
+        while (tries != 5 && pswd.isEmpty()) {
+            tries++;
+            printErr("Err: Empty Password. Please re-enter it.");
+            System.out.print("Insert your password: ");
+            pswd = sc.nextLine();
+        }
+        if (tries == 5) {
+            printErr("Err: Too many attempts.");
+            return;
+        }
 
         client.signUp(user, pswd);
 
         System.out.println("Successfully signed up user: " + user);
     }
 
-    private static void login() throws CommandFailedException {
+    /**
+     * Logs in an existing user. Also fails if many attempts have been made
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
+    private static int login() throws CommandFailedException {
+        int tries = 0;
+
         System.out.println("----------- Login -----------");
         System.out.print("Insert your username: ");
         user = sc.nextLine();
+        while (tries != 5 && user.isEmpty()) {
+            tries++;
+            printErr("Err: Empty Username. Please re-enter it.");
+            System.out.print("Insert your username: ");
+            user = sc.nextLine();
+        }
+        if (tries == 5) {
+            printErr("Err: Too many attempts.");
+            return -1;
+        }
+
+        tries = 0;
+
         System.out.print("Insert your password: ");
         String pswd = sc.nextLine();
+        while (tries != 5 && pswd.isEmpty()) {
+            tries++;
+            printErr("Err: Empty Password. Please re-enter it.");
+            System.out.print("Insert your password: ");
+            pswd = sc.nextLine();
+        }
+        if (tries == 5) {
+            printErr("Err: Too many attempts.");
+            return -1;
+        }
 
         client.login(user, pswd);
 
         PROMPT = user + "@disbordissimo> ";
         System.out.println("Successfully logged in as " + user);
+        return 0;
     }
 
+    /**
+     * Only used once to print the program's greeting
+     */
     private static void printGreeting() {
         System.out.println("Welcome to Disbordissimo's CLI!");
         System.out.println("Type \"help\" to print a list of commands");
     }
 
+    /**
+     * Prints an error message with the right color. Necessary because {@code System.out} and {@code System.err} have
+     * different buffers.
+     *
+     * @param err usually the {@code Exception} error message
+     */
     protected static void printErr(Object err) {
         System.out.println("\033[0;31m" + err + "\033[0m");
     }
+
+    /**
+     * Prints the current ping to the server.
+     */
     protected static void ping() {
         System.out.println("Current Ping: " + client.getPing() + " ms");
     }
+
+    /**
+     * Handles common error codes.
+     * @param errCode the {@code Exception} error code
+     */
     protected static void defaultErrHandling(int errCode) {
         switch (errCode) {
             case ReturnCodes.NO_PERMISSION -> printErr("Err 403: Forbidden");
@@ -167,12 +261,19 @@ public class MainCli {
             case ReturnCodes.ERROR -> printErr("Err 500: Generic Server Error");
         }
     }
+
+    /**
+     * Handles what to do if the server is unreachble.
+     */
     protected static void unreachbleServerHandling() {
         printErr("Err -1: Server Unreachable");
         printErr("The connection will be closed!");
         System.exit(-1);
     }
 
+    /**
+     * Redirects the default error stream into a dummy stream
+     */
     private static void sysErrRedirection() {
         System.setErr(new PrintStream(new OutputStream() {
             @Override

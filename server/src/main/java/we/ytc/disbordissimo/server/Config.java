@@ -7,10 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.*;
 
-// TODO: MILO
-
 /**
  * <h1>Config class</h1>
+ * Used to read and write the server's config with the help of {@link com.google.gson.Gson}
  */
 public class Config {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -44,41 +43,43 @@ public class Config {
         this.loggerConfig = loggerConfig;
     }
 
+    /**
+     * Class that represents the tcpServer JSON object
+     */
     public static class TcpServerConfig {
         private TcpServerConfig() {}
 
-        public TcpServerConfig(String host, int port) {
-            this.host = host;
+        public TcpServerConfig(int port) {
             this.port = port;
         }
-        
-        @SerializedName("host")
-        public String host;
 
         @SerializedName("port")
         public int port;
     }
-    
+
+    /**
+     * Class that represents the kcpServer JSON object
+     */
     public static class KcpServerConfig {
         private KcpServerConfig() {}
 
-        public KcpServerConfig(String host, int port) {
-            this.host = host;
+        public KcpServerConfig(int port) {
             this.port = port;
         }
-
-        @SerializedName("host")
-        public String host;
 
         @SerializedName("port")
         public int port;
     }
 
+    /**
+     * Class that represents the sqlConn JSON object
+     */
     public static class SqlConnectionConfig {
         private SqlConnectionConfig() {}
 
-        public SqlConnectionConfig(String host, String user, String password, String dbName) {
+        public SqlConnectionConfig(String host, int port, String user, String password, String dbName) {
             this.host = host;
+            this.port = port;
             this.user = user;
             this.password = password;
             this.dbName = dbName;
@@ -86,6 +87,9 @@ public class Config {
 
         @SerializedName("host")
         public String host;
+
+        @SerializedName("port")
+        public int port;
 
         @SerializedName("user")
         public String user;
@@ -97,6 +101,9 @@ public class Config {
         public String dbName;
     }
 
+    /**
+     * Class that represents the activeUserCleaner JSON object
+     */
     public static class ActiveClassCleanerConfig {
         private ActiveClassCleanerConfig() {}
 
@@ -112,6 +119,9 @@ public class Config {
         public int userTimeout;
     }
 
+    /**
+     * Class that represents the logger JSON object
+     */
     public static class LoggerConfig {
         private LoggerConfig() {}
 
@@ -135,6 +145,14 @@ public class Config {
         public boolean isConsoleEnabled;
     }
 
+    /**
+     * Loads the config from the JSON config file usually located in
+     * <pre>
+     *     {@code $SERVER_ROOT/config/config.json}
+     * </pre>
+     *
+     * @return the {@link Config} class loaded from the JSON file
+     */
     public static Config loadConfig() {
         try {
             FileReader fr = new FileReader(configFile);
@@ -153,11 +171,16 @@ public class Config {
         }
     }
 
+    /**
+     * Creates and loads a new config file with some default settings
+     *
+     * @return the {@link Config} class loaded from the JSON file just created
+     */
     public static Config defaultConfig() {
         String ver = "1.0-alpha";
-        TcpServerConfig tcp = new TcpServerConfig("localhost", 6969);
-        KcpServerConfig udp = new KcpServerConfig("localhost", 6969);
-        SqlConnectionConfig sql = new SqlConnectionConfig("localhost", "", "", "");
+        TcpServerConfig tcp = new TcpServerConfig(10469);
+        KcpServerConfig udp = new KcpServerConfig(10469);
+        SqlConnectionConfig sql = new SqlConnectionConfig("localhost", 3306, "", "", "");
         ActiveClassCleanerConfig accc = new ActiveClassCleanerConfig(150000, 150000);
         LoggerConfig log = new LoggerConfig(false, false, "", true);
 
@@ -181,6 +204,10 @@ public class Config {
         }
     }
 
+    /**
+     * Public method to check if the config file already exists
+     * @return {@code true} if the file exists, otherwise {@code false}
+     */
     public static boolean configFileExists() {
         return configFile.exists();
     }

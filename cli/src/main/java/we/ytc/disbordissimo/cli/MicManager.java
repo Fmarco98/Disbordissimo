@@ -6,14 +6,22 @@ import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class MicManager {
+/**
+ * <h1>MicManager</h1>
+ *
+ * Class that handles all of the client's audio input communications
+ */
+class MicManager {
     private AudioInputStream convertedMicStream;
     private TargetDataLine micLine;
     private Denoiser deno;
 
     private final AudioFormat FORMAT = new AudioFormat(48000.0f, 16, 1, true, false); // Mono, 16-bit, Little Endian
 
-    public MicManager() {
+    /**
+     * This constructor takes the default Audio Input Device of the system and prepares a compatible audio stream
+     */
+    protected MicManager() {
         try {
             DataLine.Info micInfo = new DataLine.Info(TargetDataLine.class, FORMAT);
             micLine = (TargetDataLine) AudioSystem.getLine(micInfo);
@@ -27,16 +35,27 @@ public class MicManager {
         }
     }
 
-    public void open() throws LineUnavailableException {
+    /**
+     * Opens the Audio Input Device
+     * @throws LineUnavailableException
+     */
+    protected void open() throws LineUnavailableException {
         micLine.open(FORMAT);
         micLine.start();
     }
 
-    public void close() {
+    /**
+     * Closes the Audio Input Device
+     */
+    protected void close() {
         micLine.close();
     }
 
-    public byte[] getMicBytes() {
+    /**
+     * Reads and denoises the audio coming from the Audio Input Device
+     * @return the audio as a {@code byte[]}
+     */
+    protected byte[] getMicBytes() {
         try {
             int packetSize = deno.getFrameSize() * 2;
             byte[] micBuffer = new byte[packetSize];
@@ -52,7 +71,13 @@ public class MicManager {
         }
     }
 
-    public static short[] toShortArrayLittleEndian(byte[] byteArray) {
+    /**
+     * Using {@link ByteBuffer}, converts a {@code byte[]} into a {@code short[]}
+     *
+     * @param byteArray a generic byte array
+     * @return the converted {@code short[]}
+     */
+    protected static short[] toShortArrayLittleEndian(byte[] byteArray) {
         ByteBuffer buffer = ByteBuffer.wrap(byteArray);
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -63,7 +88,13 @@ public class MicManager {
         return shortArray;
     }
 
-    public static void toByteArray(short[] shortArr, byte[] destination) {
+    /**
+     * Using <a href="https://en.wikipedia.org/wiki/Bitwise_operation">bitwise operations</a>, converts a {@code short[]} into a {@code byte[]}
+     *
+     * @param shortArr a generic short array
+     * @param destination the destination {@code byte[]}
+     */
+    protected static void toByteArray(short[] shortArr, byte[] destination) {
         for (int i = 0; i < shortArr.length; i++) {
             destination[i * 2]     = (byte) (shortArr[i] & 0xFF);
             destination[i * 2 + 1] = (byte) ((shortArr[i] >> 8) & 0xFF);

@@ -9,7 +9,11 @@ import static we.ytc.disbordissimo.cli.MainCli.*;
 
 class LoggedInCli {
     protected static boolean isLoggedInRunning;
-    
+
+    /**
+     * Method called by {@link MainCli} when a user logs in. Handles all the commands that a logged user can do when
+     * not in a guild.
+     */
     protected static void loggedIn() {
         isLoggedInRunning = true;
 
@@ -136,6 +140,11 @@ class LoggedInCli {
         }
     }
 
+    /**
+     * Makes the logged user leave a guild.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void leaveGuild() throws CommandFailedException {
         System.out.println("----------- Leave Guild -----------");
         listGuilds();
@@ -149,16 +158,31 @@ class LoggedInCli {
         System.out.println("Successfully left guild: " + guildToLeave);
     }
 
+    /**
+     * Makes the logged user join a guild.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void joinGuild() throws CommandFailedException {
         System.out.println("----------- Join Guild -----------");
         System.out.print("Insert the name of the guild to join to: ");
         String guildToJoin = sc.nextLine();
+        while (guildToJoin.isEmpty()) {
+            printErr("Err: Empty GuildName. Please re-enter it.");
+            System.out.print("Insert the name of the guild to join to: ");
+            guildToJoin = sc.nextLine();
+        }
 
         client.joinGuild(guildToJoin);
 
         System.out.println("Successfully joined into " + guildToJoin);
     }
 
+    /**
+     * Makes the logged user drop a guild if he has permission to do so.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void dropGuild() throws CommandFailedException {
         listGuilds();
         System.out.print("Select the guild to drop: ");
@@ -181,6 +205,11 @@ class LoggedInCli {
         }
     }
 
+    /**
+     * Makes the logged user select a guild. When executed the user is redirected to {@link InGuildCli}'s main method
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static int selectGuild() throws CommandFailedException {
         listGuilds();
         System.out.print("Select the guild: ");
@@ -192,6 +221,11 @@ class LoggedInCli {
         return guild;
     }
 
+    /**
+     * Prints a list of existing guilds
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void listGuilds() throws CommandFailedException {
         System.out.println("----------- Current Guilds -----------");
         String[] guilds = client.getGuilds();
@@ -200,10 +234,20 @@ class LoggedInCli {
         }
     }
 
+    /**
+     * Makes the logged user create a new guild.
+     *
+     * @throws CommandFailedException refer to {@link ReturnCodes} for error codes
+     */
     private static void createGuild() throws CommandFailedException {
         System.out.println("----------- Create Guild -----------");
         System.out.print("Insert a name for your guild: ");
         String guildName = sc.nextLine();
+        while (guildName.isEmpty()) {
+            printErr("Err: Empty GuildName. Please re-enter it.");
+            System.out.print("Insert a name for your guild: ");
+            guildName = sc.nextLine();
+        }
 
         client.createGuild(guildName);
 
