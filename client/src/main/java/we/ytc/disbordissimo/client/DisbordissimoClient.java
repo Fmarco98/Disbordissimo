@@ -8,18 +8,8 @@ import we.ytc.disbordissimo.common.logger.NullLogger;
 import java.net.InetAddress;
 
 /**
- * <h1>Disbordissimo Client class</h1>
+ * <h1>Disbordissimo Client interface</h1>
  *
- * This is the Disbordissimo Client API class. <br>
- * <br>
- * A {@link DisbordissimoClient} is created by invoking the {@code DisbordissimoClient.create(..)} methods.<br>
- * <br>
- * Inner classes:<br>
- *  - Config<br>
- * <br>
- * Functions:<br>
- *  - create(..)<br>
- * <br>
  * Client's methods: <br>
  *  - setPacketSendingHandler(..)<br>
  *  - setPacketReceivedHandler(..)<br>

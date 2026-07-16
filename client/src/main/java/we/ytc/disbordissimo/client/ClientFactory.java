@@ -4,6 +4,18 @@ import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.NullLogger;
 
+/**
+ * <h1>ClientFactory static class</h1>
+ *
+ * This class represents the {@link DisbordissimoClient} factory.<br>
+ * To create a {@link DisbordissimoClient}, the {@code create(..)} methods must be invoked.<br>
+ * <br>
+ * Inner classes:<br>
+ *  - Config<br>
+ * <br>
+ * Functions:<br>
+ *  - create(..)<br>
+ */
 public class ClientFactory {
     private ClientFactory() {}
 

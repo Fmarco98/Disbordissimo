@@ -22,11 +22,12 @@ public class PingCommand extends Command {
 
         long t0 = TimeUtils.currentTimestamp();
         super.send(jsonRequest);
+        String r = super.recv();
+        long t1 = TimeUtils.currentTimestamp();
 
-        JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
+        JsonIO.Resp response = JsonIO.deserializeResp(r);
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                long t1 = Long.valueOf(response.result.get(0));
                 Client.getPingThread().setLastPing((int)(t1 - t0));
                 return ReturnCodes.SUCCESS;
 

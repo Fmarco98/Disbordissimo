@@ -27,7 +27,7 @@ public class MainCli {
     public static void main(String[] args) {
         sysErrRedirection();
 
-        config = new ClientFactory.Config("localhost", 6969);
+        config = new ClientFactory.Config("100.86.192.125", 6969);
         client = ClientFactory.create(config);
         sc = new Scanner(System.in);
         guild = -1;

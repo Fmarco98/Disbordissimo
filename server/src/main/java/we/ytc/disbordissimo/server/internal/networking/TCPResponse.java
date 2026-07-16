@@ -9,13 +9,10 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
-//TODO: documentation
-
 /**
  * <h1>TCP Response class</h1>
  *
- *
- *
+ * This class represents the core logic of a TCP Response.<br>
  */
 public class TCPResponse extends Thread {
     private static Long ResponseID = 0L;
@@ -48,12 +45,12 @@ public class TCPResponse extends Thread {
         }
     }
 
+    //Token response
     @Override
     public void run() {
-        //Token response
-        DisbordissimoServer.getServer().getLogger().logDebug(
-                "Responding to " + client.getInetAddress() + ":" + client.getPort()
-        );
+//        DisbordissimoServer.getServer().getLogger().logDebug(
+//                "Responding to " + client.getInetAddress() + ":" + client.getPort()
+//        );
 
         try {
             in = new Scanner(client.getInputStream());

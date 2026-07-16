@@ -32,6 +32,17 @@ public class DisbordissimoServer extends Thread {
     private KCPServer kcpServer;
     private TCPServer tcpServer;
 
+    /**
+     * Constructor.
+     *
+     * @param config
+     *        The {@link Config}
+     *
+     * @param logger
+     *        The {@link Logger}
+     *
+     * @throws IOException
+     */
     public DisbordissimoServer(Config config, Logger logger) throws IOException {
         super("Disbordissimo-Server");
 
@@ -81,14 +92,23 @@ public class DisbordissimoServer extends Thread {
         } catch (InterruptedException e) {}
     }
 
+    /**
+     * Stops the Disbordissimo Server.
+     */
     public void stopServer() {
         kcpServer.close();
         tcpServer.stopServer();
         try {
             this.join();
         } catch (InterruptedException e) {}
+
+        INSTANCE = null;
     }
 
+    /**
+     * Gets a DB connection.
+     * @return
+     */
     public Connection getDB() {
         try {
             Connection conn = DBUtils.connect(
@@ -131,6 +151,12 @@ public class DisbordissimoServer extends Thread {
         return voiceChannels;
     }
 
+    /**
+     * Gets the active instance of {@link DisbordissimoServer}
+     *
+     * @return The {@link DisbordissimoServer} instance if the server is created;
+     *         {@code null} otherwise;
+     */
     public static DisbordissimoServer getServer() {
         return INSTANCE;
     }

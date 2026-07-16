@@ -9,6 +9,10 @@ import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * <h1>CreateGuild CommandResponse</h1>
+ * Logic to respond to the command "create-guild".
+ */
 public class CreateGuildCommandResponse implements CommandResponse {
 
     private static String GUILD_INSERT_QUERY = "INSERT INTO guilds(name, fk_owner) VALUES (?, ?);";

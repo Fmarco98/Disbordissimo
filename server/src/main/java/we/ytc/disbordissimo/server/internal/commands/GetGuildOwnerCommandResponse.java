@@ -13,6 +13,10 @@ import java.util.List;
 
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>GetGuildOwner CommandResponse</h1>
+ * Logic to respond to the command "get-owner".
+ */
 public class GetGuildOwnerCommandResponse implements CommandResponse {
 
     private static String GET_OWNER_NAME_QUERY = "SELECT u.username AS username " +

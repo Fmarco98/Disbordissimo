@@ -4,6 +4,19 @@ import we.ytc.disbordissimo.server.internal.utils.db.exceptions.NotBoundParamsEx
 
 import java.sql.*;
 
+/**
+ * <h1>DBUtils static class </h1>
+ *
+ * This class offers the basic functions to manage a {@link Connection} to any SQL DB.<br>
+ * <br>
+ * Functions:<br>
+ *  - connect(..)<br>
+ *  - bindParams(..)<br>
+ *  - startTransaction(..)<br>
+ *  - commit(..)<br>
+ *  - rollback(..)<br>
+ *  - close(..)<br>
+ */
 public class DBUtils {
     private static final String PROTOCOL = "jdbc";
     private static final String SUBPROTOCOL = "mysql";
@@ -13,14 +26,59 @@ public class DBUtils {
         protected static final int PORT = 3306;
     }
 
+    /**
+     * Creates a {@link Connection} to the DB using the default host and port.
+     *
+     * @param user
+     *        DB user
+     * @param pwd
+     *        DB password, if the password isn't set up in the DBMS, use ""
+     * @param db
+     *        DB name
+     *
+     * @return {@link Connection}
+     * @throws SQLException
+     */
     public static Connection connect(String user, String pwd, String db) throws SQLException {
         return connect(Default.HOST, user, pwd, db);
     }
 
+    /**
+     * Creates a {@link Connection} to the DB using the default port.
+     *
+     * @param host
+     *        DB host
+     * @param user
+     *        DB user
+     * @param pwd
+     *        DB password, if the password isn't set up in the DBMS, use ""
+     * @param db
+     *        DB name
+     *
+     * @return {@link Connection}
+     * @throws SQLException
+     */
     public static Connection connect(String host, String user, String pwd, String db) throws SQLException {
         return connect(host, Default.PORT, user, pwd, db);
     }
 
+    /**
+     * Creates a {@link Connection} to the DB.
+     *
+     * @param host
+     *        DB host
+     * @param port
+     *        DB port
+     * @param user
+     *        DB user
+     * @param pwd
+     *        DB password, if the password isn't set up in the DBMS, use ""
+     * @param db
+     *        DB name
+     *
+     * @return {@link Connection}
+     * @throws SQLException
+     */
     public static Connection connect(String host, int port, String user, String pwd, String db) throws SQLException {
         String url = PROTOCOL+":"+SUBPROTOCOL+"://"+host+":"+port+"/"+db+"?";
 
@@ -28,7 +86,7 @@ public class DBUtils {
     }
 
     /**
-     * Binds the query params. The {@code query} must be a prepared statement, the query params are into the {@code params} argument.<br>
+     * Binds the query params. The {@code query} must be written according to prepared statement format.<br>
      * <br>
      * Data formats:<br>
      *  - s -> string<br>
@@ -41,13 +99,13 @@ public class DBUtils {
      *  - T -> time<br>
      *
      * @param query
-     *        A prepared statement query
+     *        The query
      * @param types
-     *        A string of query params types
+     *        String of query params types
      * @param params
      *        Actual query params
      *
-     * @return the DB's response
+     * @return The {@link PreparedStatement} query.
      */
     public static PreparedStatement bindParams(Connection con, String query, String types, Object... params) throws SQLException {
         if(types.length() != params.length) {
@@ -95,6 +153,12 @@ public class DBUtils {
         return stmt;
     }
 
+    /**
+     * Makes a transaction starts.
+     *
+     * @param con
+     *        DB {@link Connection}
+     */
     public static void startTransaction(Connection con) {
         try {
             con.createStatement().execute("START TRANSACTION;");
@@ -103,6 +167,12 @@ public class DBUtils {
         }
     }
 
+    /**
+     * Commits the transaction.
+     *
+     * @param con
+     *        DB {@link Connection}
+     */
     public static void commit(Connection con) {
         try {
             con.createStatement().execute("COMMIT; ");
@@ -111,6 +181,12 @@ public class DBUtils {
         }
     }
 
+    /**
+     * Rollbacks the transaction.
+     *
+     * @param con
+     *        DB {@link Connection}
+     */
     public static void rollback(Connection con){
         try {
             con.createStatement().execute("ROLLBACK; ");
@@ -119,6 +195,12 @@ public class DBUtils {
         }
     }
 
+    /**
+     * Closes the DB {@link Connection}.
+     *
+     * @param con
+     *        DB {@link Connection}
+     */
     public static void close(Connection con) {
         try {
             con.close();

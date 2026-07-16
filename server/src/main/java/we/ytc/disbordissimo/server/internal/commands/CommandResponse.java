@@ -2,11 +2,11 @@ package we.ytc.disbordissimo.server.internal.commands;
 
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 
-//TODO: documentatio
-
 /**
  * <h1>Command response interface</h1>
  *
+ * This interface represents every TCP command response. Each command is defined by a name,
+ * to handle the command the method {@code getCommandName} must be equal.
  */
 public interface CommandResponse {
 
@@ -16,11 +16,13 @@ public interface CommandResponse {
      */
     String getCommandName();
 
-    /** //TODO: documentatio
-     * Command response action
+    /**
+     * Performs the command response.
      *
      * @param params
-     * @return
+     *        {@link JsonIO.Req} params
+     *
+     * @return {@link JsonIO.Resp}
      */
     JsonIO.Resp onPerformed(String ...params);
 }

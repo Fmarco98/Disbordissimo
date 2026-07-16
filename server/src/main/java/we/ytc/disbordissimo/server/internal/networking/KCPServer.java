@@ -8,8 +8,12 @@ import we.ytc.disbordissimo.common.AudioUtils;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * <h1>KCPServer class</h1>
+ * The KCPServer manages the VoIP data passing.
+ */
 public class KCPServer implements KcpListener {
-    public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
+    public static final int KCP_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
     public static final int nThreadPool = 8;
 
     private KcpServer server;
@@ -17,16 +21,28 @@ public class KCPServer implements KcpListener {
 
     private int port;
 
+    /**
+     * Constructor.
+     *
+     * @param port
+     *        Server port
+     */
     public KCPServer(int port) {
         this.port = port;
 
         threadPool = Executors.newFixedThreadPool(nThreadPool);
     }
 
+    /**
+     * Starts the KCP Server.
+     */
     public void start() {
         server = this.configServer(port);
     }
 
+    /**
+     * Closes the KCP Server.
+     */
     public void close() {
         server.stop();
     }

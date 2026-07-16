@@ -9,9 +9,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/** //TODO: documentation
+/**
+ * <h1>TCP Server class</h1>
  *
+ * The class is a TCP Server, the server runs on its own thread after the construction.<br>
+ * The TCP server is implemented as a Token server. It aims to response the DisbordissimoClient API Requests.<br>
+ * <br>
+ * Request structure: {@link we.ytc.disbordissimo.common.jsonio.JsonIO.Req}<br>
+ * Response structure: {@link we.ytc.disbordissimo.common.jsonio.JsonIO.Resp}<br>
  */
 public class TCPServer extends Thread {
 
@@ -20,6 +25,13 @@ public class TCPServer extends Thread {
     private List<TCPResponse> activeResponses;
     private List<CommandResponse> commandsHandlers;
 
+    /**
+     * Constructor.
+     *
+     * @param port
+     * @param commandHandlers
+     * @throws IOException
+     */
     public TCPServer(int port, List<CommandResponse> commandHandlers) throws IOException {
         super("TCP-Server");
         server = new ServerSocket(port);
@@ -64,16 +76,24 @@ public class TCPServer extends Thread {
     /**
      * Gets the list of TCP active responses
      *
-     * @return TCO active responses
+     * @return TCP active responses
      */
     public synchronized List<TCPResponse> getActiveResponses() {
         return activeResponses;
     }
 
+    /**
+     * Gets the list of Commands Handlers.
+     *
+     * @return {@code commandsHandlers}
+     */
     public synchronized List<CommandResponse> getCommandHandlers() {
         return commandsHandlers;
     }
 
+    /**
+     * Stops the TCP server.
+     */
     public synchronized void stopServer() {
         running = false;
         try {

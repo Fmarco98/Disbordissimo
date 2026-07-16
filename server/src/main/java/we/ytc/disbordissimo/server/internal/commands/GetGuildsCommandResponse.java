@@ -12,6 +12,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <h1>GetGuilds CommandResponse</h1>
+ * Logic to respond to the command "get-guilds".
+ */
 public class GetGuildsCommandResponse implements CommandResponse{
 
     private final String GET_GUILDS = "SELECT guildname " +

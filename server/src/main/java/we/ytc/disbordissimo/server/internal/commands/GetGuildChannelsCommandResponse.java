@@ -14,6 +14,10 @@ import java.util.List;
 
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>GetGuildChannels CommandResponse</h1>
+ * Logic to respond to the command "get-guild-channel".
+ */
 public class GetGuildChannelsCommandResponse implements CommandResponse {
 
     private final String GET_GUILD_CHANNELS = "SELECT channelname " +

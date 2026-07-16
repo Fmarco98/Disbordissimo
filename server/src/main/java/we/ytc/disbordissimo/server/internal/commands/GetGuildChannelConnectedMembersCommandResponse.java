@@ -16,6 +16,10 @@ import java.util.List;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>GetGuildChannelConnectedMembers CommandResponse</h1>
+ * Logic to respond to the command "get-guild-channel-connected-members".
+ */
 public class GetGuildChannelConnectedMembersCommandResponse implements CommandResponse {
 
     @Override

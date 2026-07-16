@@ -14,6 +14,10 @@ import java.sql.SQLException;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>QuitChannel CommandResponse</h1>
+ * Logic to respond to the command "quit".
+ */
 public class QuitChannelCommandResponse implements CommandResponse {
     @Override
     public String getCommandName() {

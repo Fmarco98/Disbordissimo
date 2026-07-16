@@ -14,7 +14,8 @@ import java.sql.SQLException;
 //TODO: documentatio
 
 /**
- * <h1>Join / Quit command response</h1>
+ * <h1>JoinChannel CommandResponse</h1>
+ * Logic to respond to the command "join".
  */
 public class JoinChannelCommandResponse implements CommandResponse{
 

@@ -12,6 +12,10 @@ import java.sql.SQLException;
 
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>CreateGuildChannel CommandResponse</h1>
+ * Logic to respond to the command "create-guild-channel".
+ */
 public class CreateGuildChannelCommandResponse implements CommandResponse {
 
     protected static String IS_OWNER = "SELECT fk_owner = ? as owner " +

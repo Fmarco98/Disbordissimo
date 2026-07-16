@@ -35,7 +35,7 @@ public class KCPResponse {
         //Mix audio
         byte[] mixed_audio = streams.size() > 0 ? AudioUtils.mixListOfStreams(streams) : new byte[AudioUtils.MIC_FRAME_LENGTH];
 
-        ByteBuf resp = Unpooled.buffer(KCPServer.DATAGRAM_PACKET_SIZE);
+        ByteBuf resp = Unpooled.buffer(KCPServer.KCP_PACKET_SIZE);
         resp.writeLong(voiceChannelID);
         resp.writeBytes(mixed_audio);
 

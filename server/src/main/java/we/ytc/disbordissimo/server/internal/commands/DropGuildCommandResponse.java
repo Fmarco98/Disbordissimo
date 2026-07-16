@@ -13,6 +13,10 @@ import java.sql.SQLException;
 import static we.ytc.disbordissimo.server.internal.commands.CreateGuildChannelCommandResponse.IS_OWNER;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>DropGuild CommandResponse</h1>
+ * Logic to respond to the command "drop-guild".
+ */
 public class DropGuildCommandResponse implements CommandResponse {
 
     private static String DROP_GUILD_QUERY = "DELETE FROM guilds " +

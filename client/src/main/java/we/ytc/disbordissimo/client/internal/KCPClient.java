@@ -12,6 +12,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.*;
 
+/**
+ * <h1>KCPClient class</h1>
+ *
+ * It manages the sending of KCP packets to allow the VoIP communication.<br>
+ * The client will call the {@link we.ytc.disbordissimo.client.PacketReceivedHandler} and {@link we.ytc.disbordissimo.client.PacketSendingHandler}
+ * handlers.
+ */
 public class KCPClient implements KcpListener {
 
     private KcpClient client;
@@ -20,6 +27,9 @@ public class KCPClient implements KcpListener {
     private Ukcp myUkcp;
 
     private boolean t_senderRunning;
+    /**
+     * KCP packets sender thread.
+     */
     private Thread sender = new Thread(() -> {
         if(Client.getOnSending() == null) return;
 
@@ -45,6 +55,9 @@ public class KCPClient implements KcpListener {
     }, "sender");
 
     private boolean t_playerRunning;
+    /**
+     * Audio player Thread.
+     */
     private Thread player = new Thread(() -> {
         if(Client.getOnReceived() == null) return;
 
@@ -64,6 +77,16 @@ public class KCPClient implements KcpListener {
         }
     }, "player");
 
+    /**
+     * Constructor.<br>
+     * The object construction makes start a KCP connection.
+     *
+     * @param host
+     *        KCP Server host
+     *
+     * @param port
+     *        KCP Server port
+     */
     public KCPClient(String host, int port) {
         KcpConfig kcpConfig = new KcpConfig();
         kcpConfig.nodelay(true,10,2,true);
@@ -78,13 +101,14 @@ public class KCPClient implements KcpListener {
         ChannelConfig channelConfig = new ChannelConfig(kcpConfig);
         channelConfig.setFecAdapt(new FecAdapt(3,1));
         channelConfig.setCrc32Check(true);
-        //channelConfig.setTimeoutMillis(10000);
-        //channelConfig.setAckMaskSize(32);
-        client = new KcpClient(channelConfig);
 
+        client = new KcpClient(channelConfig);
         client.connect(new InetSocketAddress(host,port),this);
     }
 
+    /**
+     * Closes the KCPClient. <br>
+     */
     public void close() {
         client.stop();
 

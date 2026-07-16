@@ -1,12 +1,14 @@
 package we.ytc.disbordissimo.server.internal.commands;
 
-import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.MsgCodes;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
-import java.util.List;
 
+/**
+ * <h1>Ping CommandResponse</h1>
+ * Logic to respond to the command "ping".
+ */
 public class PingCommandResponse implements CommandResponse {
     @Override
     public String getCommandName() {
@@ -16,7 +18,7 @@ public class PingCommandResponse implements CommandResponse {
     @Override
     public JsonIO.Resp onPerformed(String... params) {
         try {
-            return JsonIO.genSuccessResponse(List.of(String.valueOf(TimeUtils.currentTimestamp())));
+            return JsonIO.genSuccessResponse();
 
         } catch (Exception e) {
             DisbordissimoServer.getServer().getLogger().logError(e.toString());

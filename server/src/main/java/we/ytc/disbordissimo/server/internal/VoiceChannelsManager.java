@@ -10,7 +10,8 @@ import java.util.*;
 /**
  * <h1>Voice Channels Manager class</h1>
  *
- * Manages the status of all active channels, it tracks which user is connected.
+ * Manages the status of all active channels and tracks which user is connected.
+ * For each connected user it stores the last audio received information.
  */
 public class VoiceChannelsManager {
 
@@ -19,6 +20,8 @@ public class VoiceChannelsManager {
     private long timeOut;
     private long sleep;
     private boolean t_running;
+
+    @Deprecated(forRemoval = true)
     private Thread cleaning;
 
     public VoiceChannelsManager(long timeOut, long sleep) {
@@ -29,6 +32,7 @@ public class VoiceChannelsManager {
 
         t_running = true;
         cleaning = new Thread(() -> {
+            //TODO: migrare questo a KCPServer.handleClose()
             while(t_running) {
                 DisbordissimoServer.getServer().getLogger().logDebug("Try to clean");
 
@@ -67,11 +71,14 @@ public class VoiceChannelsManager {
         cleaning.start();
     }
 
-    /** //TODO
-     * Join into a channel
+    /**
+     * Makes the {@code user} joins to the voice-channel which ID equals to {@code channelID}.
      *
      * @param channelID
+     *        Voice-channel ID
+     *
      * @param user
+     *        The user.
      */
     public synchronized void join(long channelID, ActiveUser user) {
         List<ActiveUser> users = channel_users.get(channelID);
@@ -86,11 +93,14 @@ public class VoiceChannelsManager {
         users_channel.put(user.getUserID(), channelID);
     }
 
-    /** //TODO
-     * quit from a channel
+    /**
+     * Makes the {@code user} quits form the voice-channel which ID equals to {@code channelID}.
      *
      * @param channelID
+     *        Voice-channel ID
+     *
      * @param user
+     *        The user.
      */
     public synchronized void quit(long channelID, ActiveUser user) {
         List<ActiveUser> users = channel_users.get(channelID);
@@ -130,17 +140,14 @@ public class VoiceChannelsManager {
         return channel_users.get(channelID);
     }
 
+    /**
+     * Stops the Cleaner Thread
+     * @throws InterruptedException
+     */
+    @Deprecated(forRemoval = true)
     public void stopCleaning() throws InterruptedException {
         t_running = false;
         cleaning.join();
-    }
-
-    /** //TODO: documentation
-     *
-     * @return
-     */
-    public long getTimeOut() {
-        return timeOut;
     }
 
     @Override

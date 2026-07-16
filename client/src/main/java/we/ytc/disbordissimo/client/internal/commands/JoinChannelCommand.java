@@ -2,13 +2,9 @@ package we.ytc.disbordissimo.client.internal.commands;
 
 import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.client.internal.KCPClient;
-import we.ytc.disbordissimo.client.internal.UDPReceiver;
-import we.ytc.disbordissimo.client.internal.UDPSender;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.List;
 
 /**

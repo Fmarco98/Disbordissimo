@@ -11,6 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * <h1>Login CommandResponse</h1>
+ * Logic to respond to the command "login".
+ */
 public class LoginCommandResponse implements CommandResponse{
 
     private static String USER_REQUEST_QUERY = "SELECT id_user " +

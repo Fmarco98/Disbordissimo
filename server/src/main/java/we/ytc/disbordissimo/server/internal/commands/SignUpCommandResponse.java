@@ -9,12 +9,9 @@ import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-//TODO: documentation
-
 /**
- * <h1>Sign up command response</h1>
- *
- *
+ * <h1>SignUp CommandResponse</h1>
+ * Logic to respond to the command "sign-up".
  */
 public class SignUpCommandResponse implements CommandResponse {
     private static String USER_INSERT_QUERY = "INSERT INTO users(username, passwd) VALUES (?, ?);";

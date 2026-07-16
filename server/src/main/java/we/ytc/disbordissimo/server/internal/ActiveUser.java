@@ -7,11 +7,11 @@ import we.ytc.disbordissimo.common.AudioUtils;
 
 /**
  * <h1>Active user data class</h1>
- *
+ * The data class represents a user connected to any voice-channel.
  */
 public class ActiveUser {
-
     private long userID;
+
     private byte[] micFrame;
     private long lastRecvTime;
 
@@ -43,9 +43,11 @@ public class ActiveUser {
         return micFrame;
     }
 
-    /** //TODO: documentation
+    /**
+     * Gets the {@code LastRecvTimestamp}. That timestamp is the time when the last {@code microphone frame}
+     * of the represented user arrived.
      *
-     * @return
+     * @return {@code LastRecvTimestamp}
      */
     public long getLastRecvTimestamp() {
         return lastRecvTime;

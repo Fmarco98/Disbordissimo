@@ -14,6 +14,10 @@ import java.util.List;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.CHANNEL_EXIST;
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
+/**
+ * <h1>TestVoiceChatConnection CommandResponse</h1>
+ * Logic to respond to the command "test-voice-chat-connection".
+ */
 public class TestVoiceChatConnectionCommandResponse implements CommandResponse{
     @Override
     public String getCommandName() {
