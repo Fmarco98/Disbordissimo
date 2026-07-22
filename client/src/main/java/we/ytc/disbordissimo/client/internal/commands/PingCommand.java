@@ -17,6 +17,7 @@ public class PingCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
+
         JsonIO.Req request = new JsonIO.Req(super.getCommandName(), null);
         String jsonRequest = JsonIO.serializeReq(request);
 
@@ -28,19 +29,19 @@ public class PingCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(r);
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.getPingThread().setLastPing((int)(t1 - t0));
+                getClient().getPingThread().setLastPing((int)(t1 - t0));
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logWarning("An invalid command was sent.");
+                getClient().getLogger().logWarning("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

@@ -22,34 +22,34 @@ public class TestVoiceChatConnectionCommand extends Command {
         String guildName = params[1];
 
         JsonIO.Req request = new JsonIO.Req(
-                super.getCommandName(), List.of(String.valueOf(Client.getUserID()), channelName, guildName)
+                super.getCommandName(), List.of(String.valueOf(getClient().getUserID()), channelName, guildName)
         );
         super.send(JsonIO.serializeReq(request));
 
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.setLastBooleanResult(Boolean.valueOf(response.result.get(0)));
+                getClient().setLastBooleanResult(Boolean.valueOf(response.result.get(0)));
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.GUILD_NOT_FOUND:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.GUILD_NOT_FOUND;
 
             case ReturnCodes.CHANNEL_NOT_FOUND:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.CHANNEL_NOT_FOUND;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logWarning("An invalid command was sent.");
+                getClient().getLogger().logWarning("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

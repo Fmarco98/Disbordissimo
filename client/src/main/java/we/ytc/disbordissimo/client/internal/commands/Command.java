@@ -36,6 +36,7 @@ import java.util.Scanner;
 public abstract class Command {
 
     private String commandName;
+    private Client myClient = null;
 
     private Scanner in;
     private PrintStream out;
@@ -80,7 +81,7 @@ public abstract class Command {
      */
     public int execute(String ...params) {
         try {
-            ClientFactory.Config conf = Client.getConfig();
+            ClientFactory.Config conf = getClient().getConfig();
             Socket socket = new Socket(conf.getServerAddress(), conf.getServerPort());
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());
@@ -95,6 +96,19 @@ public abstract class Command {
         } catch (IOException e) {
             return ReturnCodes.SERVER_UNREACHABLE;
         }
+    }
+
+    /**
+     * Sets the current client.
+     *
+     * @param client
+     *        Current {@link Client}
+     *
+     * @return {@link Command} itself
+     */
+    public Command setCurrentClient(Client client) {
+        this.myClient = client;
+        return this;
     }
 
     /**
@@ -114,5 +128,14 @@ public abstract class Command {
      */
     protected String recv() {
         return in.nextLine();
+    }
+
+    /**
+     * Gets the client.
+     *
+     * @return {@link Client}
+     */
+    protected Client getClient() {
+        return myClient;
     }
 }

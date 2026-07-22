@@ -35,23 +35,23 @@ public class SignUpCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.getLogger().logDebug("user{"+username+"} signed up successfully.");
+                getClient().getLogger().logDebug("user{"+username+"} signed up successfully.");
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.USER_ALREADY_EXISTS:
-                Client.getLogger().logDebug("That user already exists");
+                getClient().getLogger().logDebug("That user already exists");
                 return ReturnCodes.USER_ALREADY_EXISTS;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logWarning("An invalid command was sent.");
+                getClient().getLogger().logWarning("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

@@ -3,8 +3,7 @@ package we.ytc.disbordissimo.server;
 import we.ytc.disbordissimo.server.exceptions.AlreadyLaunchedException;
 import we.ytc.disbordissimo.server.internal.VoiceChannelsManager;
 import we.ytc.disbordissimo.server.internal.commands.*;
-import we.ytc.disbordissimo.server.internal.networking.KCPServer;
-import we.ytc.disbordissimo.server.internal.networking.TCPServer;
+import we.ytc.disbordissimo.server.internal.TCPServer;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
@@ -29,7 +28,6 @@ public class DisbordissimoServer extends Thread {
 
     private VoiceChannelsManager voiceChannels;
     private List<CommandResponse> commandsHandlers;
-    private KCPServer kcpServer;
     private TCPServer tcpServer;
 
     /**
@@ -52,10 +50,10 @@ public class DisbordissimoServer extends Thread {
         this.logger = logger;
         this.config = config;
 
-        voiceChannels = new VoiceChannelsManager(
-                config.activeClassCleanerConfig.userTimeout,
-                config.activeClassCleanerConfig.cleaningSleep
-        );
+//        voiceChannels = new VoiceChannelsManager(
+//                config.activeClassCleanerConfig.userTimeout,
+//                config.activeClassCleanerConfig.cleaningSleep
+//        );
 
         commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new PingCommandResponse());
@@ -76,14 +74,11 @@ public class DisbordissimoServer extends Thread {
         commandsHandlers.add(new GetGuildMembersCommandResponse());
         commandsHandlers.add(new GetGuildChannelConnectedMembersCommandResponse());
 
-        kcpServer = new KCPServer(config.kcpServerConfig.port);
         tcpServer = new TCPServer(config.tcpServerConfig.port, commandsHandlers);
     }
 
     @Override
     public void run() {
-        kcpServer.start();
-        getLogger().logDebug("KCP server opened on: %:" + config.kcpServerConfig.port);
         tcpServer.start();
         getLogger().logDebug("TCP server opened on: %:" + config.tcpServerConfig.port);
 
@@ -96,7 +91,6 @@ public class DisbordissimoServer extends Thread {
      * Stops the Disbordissimo Server.
      */
     public void stopServer() {
-        kcpServer.close();
         tcpServer.stopServer();
         try {
             this.join();

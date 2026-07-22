@@ -33,18 +33,13 @@ public class MainCli {
      * Main method of the program that handles all the commands that a not logged user can do.
      */
     public static void main(String[] args) {
-        sysErrRedirection();
-
         // TODO: Make client config based off a file
-        config = new ClientFactory.Config("localhost", 10469);
+        config = new ClientFactory.Config("localhost", 6969);
         client = ClientFactory.create(config);
         sc = new Scanner(System.in);
         guild = -1;
 
         isMainRunning = isServerRunning();
-
-        client.setPacketReceivedHandler(bArr -> om.write(bArr));
-        client.setPacketSendingHandler(mm::getMicBytes);
 
         if (isMainRunning) {
             printGreeting();
@@ -269,15 +264,5 @@ public class MainCli {
         printErr("Err -1: Server Unreachable");
         printErr("The connection will be closed!");
         System.exit(-1);
-    }
-
-    /**
-     * Redirects the default error stream into a dummy stream
-     */
-    private static void sysErrRedirection() {
-        System.setErr(new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {}
-        }));
     }
 }

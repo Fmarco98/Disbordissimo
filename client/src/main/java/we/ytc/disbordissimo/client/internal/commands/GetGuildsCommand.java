@@ -18,7 +18,7 @@ public class GetGuildsCommand extends Command{
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = String.valueOf(Client.getUserID());
+        String userID = String.valueOf(getClient().getUserID());
 
         JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID));
         super.send(JsonIO.serializeReq(request));
@@ -26,19 +26,19 @@ public class GetGuildsCommand extends Command{
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.setLastStringList(response.result);
+                getClient().setLastStringList(response.result);
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logError("An invalid command was sent.");
+                getClient().getLogger().logError("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

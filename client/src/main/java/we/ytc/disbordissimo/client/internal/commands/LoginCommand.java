@@ -32,24 +32,25 @@ public class LoginCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.getLogger().logDebug("user{"+username+"} logged in successfully.");
-                Client.setUserID(Long.valueOf(response.result.get(0)));
+                getClient().getLogger().logDebug("user{"+username+"} logged in successfully.");
+                getClient().setUsername(username);
+                getClient().setUserID(Long.valueOf(response.result.get(0)));
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.USER_NOT_FOUND:
-                Client.getLogger().logWarning("user{"+username+"} hasn't been found.");
+                getClient().getLogger().logWarning("user{"+username+"} hasn't been found.");
                 return ReturnCodes.USER_NOT_FOUND;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logWarning("An invalid command was sent.");
+                getClient().getLogger().logWarning("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

@@ -34,28 +34,6 @@ import java.net.InetAddress;
 public interface DisbordissimoClient {
 
     /**
-     * Sets the {@link PacketSendingHandler}. It defines all operation that will be performed
-     * when the client tries to send a UDP packet. <br>
-     * <br>
-     * Important: All UDP packet contains audio data.
-     *
-     * @param sending
-     *        The function
-     */
-    void setPacketSendingHandler(PacketSendingHandler sending);
-
-    /**
-     * Sets the {@link PacketReceivedHandler}. It defines all operation that will be performed
-     * when the client received a UDP packet. <br>
-     * <br>
-     * Important: All UDP packet contains audio data.
-     *
-     * @param received
-     *        The function
-     */
-    void setPacketReceivedHandler(PacketReceivedHandler received);
-
-    /**
      * Signs up the user.
      *
      * @param username

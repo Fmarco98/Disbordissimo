@@ -1,6 +1,5 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
-import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -18,7 +17,7 @@ public class CreateGuildChannelCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = String.valueOf(Client.getUserID());
+        String userID = String.valueOf(getClient().getUserID());
         String guildName = params[0];
         String channelName = params[1];
 
@@ -31,27 +30,27 @@ public class CreateGuildChannelCommand extends Command {
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.NO_PERMISSION:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.NO_PERMISSION;
 
             case ReturnCodes.GUILD_NOT_FOUND:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.GUILD_NOT_FOUND;
 
             case ReturnCodes.CHANNEL_ALREADY_EXISTS:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.CHANNEL_ALREADY_EXISTS;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logWarning("An invalid command was sent.");
+                getClient().getLogger().logWarning("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

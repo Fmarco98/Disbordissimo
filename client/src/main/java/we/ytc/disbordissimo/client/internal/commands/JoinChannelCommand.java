@@ -1,7 +1,7 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
-import we.ytc.disbordissimo.client.internal.Client;
-import we.ytc.disbordissimo.client.internal.KCPClient;
+import dev.onvoid.webrtc.media.audio.AudioOptions;
+import we.ytc.disbordissimo.client.internal.WebRTCClient;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -19,7 +19,7 @@ public class JoinChannelCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = String.valueOf(Client.getUserID());
+        String userID = String.valueOf(getClient().getUserID());
         String guild = params[0];
         String channel = params[1];
 
@@ -29,36 +29,59 @@ public class JoinChannelCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                Client.setKCPClient(new KCPClient(
-                    Client.getConfig().getServerAddress(),
-                    Client.getConfig().getServerPort()
-                ));
 
-                Client.getLogger().logDebug("join ok");
+                AudioOptions o = new AudioOptions();
+                o.highpassFilter = false;
+                o.noiseSuppression = false;
+                o.echoCancellation = false;
+                o.autoGainControl = false;
+
+                getClient().setWebRTCClient(new WebRTCClient(
+                        getClient().getUserID(),
+                        getClient().getUsername(),
+                        Integer.valueOf(response.result.get(0)),    // RoomID
+                        response.result.get(1),                     // Room pin
+                        response.result.get(2),                     // JanusURL
+                        response.result.get(3),                     // StunURL
+                        o
+                ));
+                try {
+                    getClient().getWebRTCClient().start();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+//                getClient().setKCPClient(new KCPClient(
+//                    getClient().getConfig().getServerAddress(),
+//                    getClient().getConfig().getServerPort(),
+//                    getClient()
+//                ));
+
+                getClient().getLogger().logDebug("join ok");
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.CHANNEL_ALREADY_JOINED:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.CHANNEL_ALREADY_JOINED;
 
             case ReturnCodes.GUILD_NOT_FOUND:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.GUILD_NOT_FOUND;
 
             case ReturnCodes.CHANNEL_NOT_FOUND:
-                Client.getLogger().logWarning(response.msgCode);
+                getClient().getLogger().logWarning(response.msgCode);
                 return ReturnCodes.CHANNEL_NOT_FOUND;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                Client.getLogger().logError("An invalid command was sent.");
+                getClient().getLogger().logError("An invalid command was sent.");
                 return ReturnCodes.COMMAND_NOT_FOUND;
 
             case ReturnCodes.ERROR:
-                Client.getLogger().logError("A server error occurred");
+                getClient().getLogger().logError("A server error occurred");
                 return ReturnCodes.ERROR;
 
             default:
-                Client.getLogger().logWarning("Unknown response code; response=" + response);
+                getClient().getLogger().logWarning("Unknown response code; response=" + response);
                 return ReturnCodes.ERROR;
         }
     }

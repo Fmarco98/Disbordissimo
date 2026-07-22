@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.client.internal;
 
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
+import we.ytc.disbordissimo.client.internal.commands.Command;
 import we.ytc.disbordissimo.client.internal.commands.PingCommand;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -24,6 +25,7 @@ public class PingThread extends Thread {
     private int pingInterval;
     private int sumPings;
     private int nPings;
+    private Command command;
 
     private boolean running;
     private boolean serverReachable;
@@ -37,7 +39,7 @@ public class PingThread extends Thread {
      * @param interval
      *        Ping interval
      */
-    public PingThread(int interval) {
+    public PingThread(int interval, Client c) {
         if(interval <= 0) throw new IllegalArgumentException("interval <= 0");
 
         this.pingInterval = interval;
@@ -48,13 +50,15 @@ public class PingThread extends Thread {
         running = true;
         serverReachable = true;
         waitPing = true;
+
+        command = new PingCommand().setCurrentClient(c);
     }
 
     @Override
     public void run() {
         while (running) {
 
-            int exit = new PingCommand().execute();
+            int exit = command.execute();
 
             switch (exit) {
                 case ReturnCodes.SUCCESS:
@@ -132,9 +136,11 @@ public class PingThread extends Thread {
     }
 
     private void waitPing() {
-        if(waitPing)
-            try {
-                this.wait();
-            } catch (InterruptedException e) {}
+        synchronized (this) {
+            if(waitPing)
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {}
+        }
     }
 }
