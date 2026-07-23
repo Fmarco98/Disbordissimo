@@ -21,12 +21,6 @@ class InChannelCli {
         while (isInChannel) {
             System.out.println("Currently in channel: " + channelName);
             System.out.println("Type \"leave\" to leave the channel");
-            try {
-                mm.open();
-                om.open();
-            } catch (LineUnavailableException e) {
-                printErr(e.getMessage());
-            }
 
             String cmd = sc.nextLine();
             switch (cmd) {
@@ -37,8 +31,6 @@ class InChannelCli {
                     // Handles the exit from a channel and closes all audio sinks.
                     try {
                         client.quitChannel(channelName, client.getGuilds()[guild]);
-                        mm.close();
-                        om.close();
                         isInChannel = false;
                     } catch (CommandFailedException e) {
                         throw new RuntimeException(e);
@@ -59,6 +51,14 @@ class InChannelCli {
                     }
                     break;
 
+                case "ping":
+                    ping();
+                    break;
+
+                case "help":
+                    help();
+                    break;
+
                 default:
                     if (!cmd.isBlank()) {
                         printErr("Err: Command Not Recognized or not authorized");
@@ -68,5 +68,15 @@ class InChannelCli {
             System.out.println();
 
         }
+    }
+
+    private static void help() {
+        System.out.println("----------- Help -----------");
+        System.out.println("Available commands: ");
+        System.out.println(" - users");
+        System.out.println(" - leave (aliases: q, quit, exit)");
+        System.out.println(" - ping");
+        System.out.println(" - help");
+        System.out.println("----------------------------");
     }
 }

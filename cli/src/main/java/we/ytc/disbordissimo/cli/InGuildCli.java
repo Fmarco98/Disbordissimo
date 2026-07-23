@@ -76,6 +76,7 @@ class InGuildCli {
                     }
                     break;
 
+                case "join chan":
                 case "join channel":
                     try {
                         InChannelCli.inChannel(joinChannel());
@@ -101,6 +102,10 @@ class InGuildCli {
                 case "ping":
                     ping();
                     break;
+
+                case "help":
+                    help();
+                    break;
                     
                 default:
                     if (!cmd.isBlank()) {
@@ -110,6 +115,19 @@ class InGuildCli {
             }
             System.out.println();
         }
+    }
+
+    private static void help() {
+        System.out.println("----------- Help -----------");
+        System.out.println("Available commands: ");
+        System.out.println(" - list channels (aliases: ls chan, ls channels, lis channels, list chan)");
+        System.out.println(" - create channel (aliases: make guild)");
+        System.out.println(" - drop channel (aliases: delete guild)");
+        System.out.println(" - join channel (aliases: join chan)");
+        System.out.println(" - ping");
+        System.out.println(" - exit (aliases: q, quit)");
+        System.out.println(" - help");
+        System.out.println("----------------------------");
     }
 
     /**

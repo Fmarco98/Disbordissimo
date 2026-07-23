@@ -6,9 +6,6 @@ import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -26,15 +23,12 @@ public class MainCli {
     protected static String user;
     protected static boolean isMainRunning;
 
-    protected static MicManager mm = new MicManager();
-    protected static OutManager om = new OutManager();
-
     /**
      * Main method of the program that handles all the commands that a not logged user can do.
      */
     public static void main(String[] args) {
         // TODO: Make client config based off a file
-        config = new ClientFactory.Config("localhost", 6969);
+        config = new ClientFactory.Config("localhost", 10469);
         client = ClientFactory.create(config);
         sc = new Scanner(System.in);
         guild = -1;
@@ -99,6 +93,10 @@ public class MainCli {
                     ping();
                     break;
 
+                case "help":
+                    help();
+                    break;
+
                 default:
                     if (!cmd.isBlank()) {
                         printErr("Err: Command Not Recognized or not authorized");
@@ -109,6 +107,17 @@ public class MainCli {
         }
 
         client.destroy();
+    }
+
+    private static void help() {
+        System.out.println("----------- Help -----------");
+        System.out.println("Available commands: ");
+        System.out.println(" - login");
+        System.out.println(" - signup");
+        System.out.println(" - ping");
+        System.out.println(" - exit (aliases: q, quit)");
+        System.out.println(" - help");
+        System.out.println("----------------------------");
     }
 
     /**
@@ -242,6 +251,7 @@ public class MainCli {
      * Prints the current ping to the server.
      */
     protected static void ping() {
+        System.out.println("Pong!");
         System.out.println("Current Ping: " + client.getPing() + " ms");
     }
 

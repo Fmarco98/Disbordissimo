@@ -115,20 +115,23 @@ class LoggedInCli {
                     }
                     break;
 
-                case "logout":
-                    client.logout();
-                    System.out.println("Successfully logged out!");
-                    isLoggedInRunning = false;
-                    break;
-
                 case "ping":
                     ping();
+                    break;
+
+                case "help":
+                    help();
                     break;
 
                 case "q":
                 case "exit":
                 case "quit":
-                    printErr("First run the logout command");
+                case "logout":
+                    client.logout();
+                    System.out.println("Successfully logged out!");
+                    isLoggedInRunning = false;
+                    PROMPT = "disbordissimo> ";
+                    break;
 
                 default:
                     if (!cmd.isBlank()) {
@@ -138,6 +141,21 @@ class LoggedInCli {
             }
             System.out.println();
         }
+    }
+
+    private static void help() {
+        System.out.println("----------- Help -----------");
+        System.out.println("Available commands: ");
+        System.out.println(" - list guilds (aliases: ls guilds, lis guilds)");
+        System.out.println(" - select guild (aliases: use guild, sel guild)");
+        System.out.println(" - create guild (aliases: make guild)");
+        System.out.println(" - drop guild (aliases: delete guild)");
+        System.out.println(" - join guild");
+        System.out.println(" - leave guild");
+        System.out.println(" - ping");
+        System.out.println(" - exit (aliases: q, quit)");
+        System.out.println(" - help");
+        System.out.println("----------------------------");
     }
 
     /**
