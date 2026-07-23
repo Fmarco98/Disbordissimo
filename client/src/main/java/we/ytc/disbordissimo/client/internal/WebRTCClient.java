@@ -6,8 +6,7 @@ import dev.onvoid.webrtc.*;
 import dev.onvoid.webrtc.media.MediaStream;
 import dev.onvoid.webrtc.media.audio.AudioOptions;
 import dev.onvoid.webrtc.media.audio.AudioTrack;
-import org.slf4j.LoggerFactory;
-import we.ytc.disbordissimo.client.internal.utils.TxUtils;
+import we.ytc.disbordissimo.common.TxUtils;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.NullLogger;
 
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver {
     private static final Gson gson = new Gson();
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(WebRTCClient.class);
 
     private long userID;
     private String username;

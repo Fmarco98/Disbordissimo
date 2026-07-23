@@ -1,6 +1,7 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
 import we.ytc.disbordissimo.client.internal.Client;
+import we.ytc.disbordissimo.client.internal.WebRTCClient;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -27,7 +28,11 @@ public class QuitChannelCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                getClient().getWebRTCClient().stop();
+                try {
+                    getClient().getWebRTCClient().stop();
+                    getClient().setWebRTCClient(null);
+                    System.gc();
+                } catch (NullPointerException ignored) {}
 
                 getClient().getLogger().logDebug("quit ok");
                 return ReturnCodes.SUCCESS;

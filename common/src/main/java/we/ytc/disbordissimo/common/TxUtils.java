@@ -1,4 +1,4 @@
-package we.ytc.disbordissimo.client.internal.utils;
+package we.ytc.disbordissimo.common;
 
 import java.util.UUID;
 

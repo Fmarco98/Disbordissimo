@@ -24,7 +24,6 @@ public class DisbordissimoServer extends Thread {
 
     private Config config;
     private Logger logger;
-    private boolean running = true;
 
     private VoiceChannelsManager voiceChannels;
     private List<CommandResponse> commandsHandlers;
@@ -50,10 +49,7 @@ public class DisbordissimoServer extends Thread {
         this.logger = logger;
         this.config = config;
 
-//        voiceChannels = new VoiceChannelsManager(
-//                config.activeClassCleanerConfig.userTimeout,
-//                config.activeClassCleanerConfig.cleaningSleep
-//        );
+        voiceChannels = new VoiceChannelsManager(config.activeClassCleanerConfig.cleaningSleep);
 
         commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new PingCommandResponse());
@@ -92,6 +88,8 @@ public class DisbordissimoServer extends Thread {
      */
     public void stopServer() {
         tcpServer.stopServer();
+        voiceChannels.stopCleaner();
+
         try {
             this.join();
         } catch (InterruptedException e) {}

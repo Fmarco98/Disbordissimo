@@ -4,10 +4,9 @@ module server {
     requires java.sql;
 
     requires common;
-    requires kcp.fec;
-    requires io.netty.buffer;
-    requires kcp.base;
     requires jdk.unsupported;
+    requires java.net.http;
+    requires jdk.compiler;
 
     exports we.ytc.disbordissimo.server;
     exports we.ytc.disbordissimo.server.exceptions;

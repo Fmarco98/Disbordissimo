@@ -1,0 +1,3 @@
+-> fare il room Destroyer thread:
+ !Warning: esiste caso che uno fa un join e per motivi di scheduling la camera venga rimossa da cleaner poichè il
+           nParticipants == 0

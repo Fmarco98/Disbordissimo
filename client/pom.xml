@@ -23,11 +23,6 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.l42111996</groupId>
-            <artifactId>kcp-base</artifactId>
-            <version>1.6.2</version>
-        </dependency>
     </dependencies>
 
 </project>
