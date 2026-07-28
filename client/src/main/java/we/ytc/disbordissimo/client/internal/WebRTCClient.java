@@ -1,3 +1,21 @@
+/**
+ * Disbordissimo: a voice chat application.
+ * Copyright (C) <2026>  authors: YTC_Fmarco98; Harly
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package we.ytc.disbordissimo.client.internal;
 
 import com.google.gson.Gson;
@@ -19,6 +37,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <h1>WebRTC Client class</h1>
+ * This class represents a webRTC client. <br>
+ * The WebRTC communication uses the MCU architecture, in specific the MCU server is Janus. <br>
+ * <br>
+ * Object methods:<br>
+ *  - "constructor"(..)<br>
+ *  - start()<br>
+ *  - stop()<br>
+ *  - setLogger(..)<br>
+ * <br>
+ * <br>
+ * Janus: https://github.com/meetecho/janus-gateway
+ */
 public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver {
     private static final Gson gson = new Gson();
 
@@ -40,11 +72,45 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
 
     private Logger logger;
 
+    /**
+     * Constructor.
+     *
+     * @param userID
+     *        Users ID
+     * @param username
+     *        Username
+     * @param roomID
+     *        Room ID
+     * @param roomPin
+     *        Room security pin
+     * @param janusUrl
+     *        Janus server URL
+     * @param audioOptions
+     *        {@link AudioOptions} to configure mic params.
+     */
     public WebRTCClient(long userID ,String username, int roomID, String roomPin, String janusUrl,
                      AudioOptions audioOptions) {
         this(userID, username, roomID, roomPin, janusUrl, "stun:stun.l.google.com:19302", audioOptions);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param userID
+     *        Users ID
+     * @param username
+     *        Username
+     * @param roomID
+     *        Room ID
+     * @param roomPin
+     *        Room security pin
+     * @param janusUrl
+     *        Janus server URL
+     * @param stunServer
+     *        STUN server URL
+     * @param audioOptions
+     *        {@link AudioOptions} to configure mic params.
+     */
     public WebRTCClient(long userID ,String username, int roomID, String roomPin, String janusUrl,
                      String stunServer, AudioOptions audioOptions) {
         this.userID = userID;
@@ -58,7 +124,10 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
         logger = new NullLogger();
     }
 
-    public void start() throws Exception {
+    /**
+     * Starts the WebRTC communication. It joins the room.
+     */
+    public void start() {
         HttpClient client = HttpClient.newHttpClient();
         this.webSocket = client.newWebSocketBuilder()
                 .subprotocols("janus-protocol")
@@ -70,6 +139,9 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
         createSession();
     }
 
+    /**
+     * Stops the WebRTC communication by quitting from the room and freeing the resources.
+     */
     public void stop() {
         leaveRoom();
 
@@ -84,13 +156,21 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
                 peerConnection = null;
             }
             if (factory != null) {
-                factory.dispose(); // Libera la memoria allocata sul lato C++ nativo
+                factory.dispose();
                 factory = null;
             }
         } catch (Exception e) {}
         System.gc();
     }
 
+    /**
+     * Sets the logger.
+     *
+     * @param logger
+     *        {@link Logger}
+     *
+     * @return the object itself
+     */
     public WebRTCClient setLogger(Logger logger) {
         this.logger = logger;
 

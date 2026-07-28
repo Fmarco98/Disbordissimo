@@ -1,3 +1,21 @@
+/**
+ * Disbordissimo: a voice chat application.
+ * Copyright (C) <2026>  authors: YTC_Fmarco98; Harly
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package we.ytc.disbordissimo.server.internal;
 
 import com.google.gson.Gson;
@@ -12,6 +30,13 @@ import java.net.http.WebSocket;
 import java.util.*;
 import java.util.concurrent.*;
 
+/**
+ * <h1>Janus Client class</h1>
+ * This is a Janus API client.
+ * <br>
+ * <br>
+ * Janus: https://github.com/meetecho/janus-gateway
+ */
 public class JanusClient implements WebSocket.Listener {
     private static final Gson gson = new Gson();
     
@@ -23,6 +48,14 @@ public class JanusClient implements WebSocket.Listener {
     private ScheduledExecutorService keepAlive;
     private Map<String, CompletableFuture<JsonObject>> activeRequests;
 
+    /**
+     * Constructor.
+     *
+     * @param clientID
+     *        ID
+     * @param janusUrl
+     *        Janus server URL
+     */
     public JanusClient(int clientID, String janusUrl) {
         this.clientID = clientID;
         activeRequests = new TreeMap<>();
@@ -36,6 +69,15 @@ public class JanusClient implements WebSocket.Listener {
         createSession();
     }
 
+    /**
+     * Creates a room.
+     *
+     * @param id
+     *        Room ID
+     *
+     * @return {@link Room} if operation completed successfully;
+     *         {@code null} otherwise
+     */
     public Room createRoom(long id) {
         String pin = genRandomPswd();
         String secret = genRandomPswd();
@@ -46,6 +88,15 @@ public class JanusClient implements WebSocket.Listener {
         );
     }
 
+    /**
+     * Destroys a Room.
+     *
+     * @param room
+     *        {@link Room}
+     *
+     * @return {@code true} if operation completed successfully;
+     *         {@code false} otherwise
+     */
     public boolean destroyRoom(Room room) {
         if(room == null) return false;
 
@@ -54,6 +105,14 @@ public class JanusClient implements WebSocket.Listener {
         return waitComplete(tx).get("audiobridge").getAsString().equals("destroyed");
     }
 
+    /**
+     * Lists the room's participants.
+     *
+     * @param room
+     *        {@link Room}
+     *
+     * @return List of users' ID
+     */
     public List<Long> listParticipants(Room room) {
         List<Long> members = new ArrayList<>();
         if(room == null) return members;
@@ -72,6 +131,9 @@ public class JanusClient implements WebSocket.Listener {
         return members;
     }
 
+    /**
+     * Close the client.
+     */
     public void close() {
         if(!keepAlive.isShutdown()) keepAlive.shutdown();
 
