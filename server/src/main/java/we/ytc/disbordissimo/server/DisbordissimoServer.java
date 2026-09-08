@@ -23,6 +23,7 @@ import we.ytc.disbordissimo.server.internal.VoiceChannelsManager;
 import we.ytc.disbordissimo.server.internal.commands.*;
 import we.ytc.disbordissimo.server.internal.TCPServer;
 import we.ytc.disbordissimo.common.logger.Logger;
+import we.ytc.disbordissimo.server.internal.config.Config;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
 import java.io.IOException;
@@ -64,7 +65,7 @@ public class DisbordissimoServer extends Thread {
         this.logger = logger;
         this.config = config;
 
-        voiceChannels = new VoiceChannelsManager(config.activeClassCleanerConfig.cleaningSleep);
+        voiceChannels = new VoiceChannelsManager(config.misc.roomCleaningInterval);
 
         commandsHandlers = new ArrayList<>();
         commandsHandlers.add(new PingCommandResponse());
@@ -85,13 +86,13 @@ public class DisbordissimoServer extends Thread {
         commandsHandlers.add(new GetGuildMembersCommandResponse());
         commandsHandlers.add(new GetGuildChannelConnectedMembersCommandResponse());
 
-        tcpServer = new TCPServer(config.tcpServerConfig.port, commandsHandlers);
+        tcpServer = new TCPServer(config.tcpServer.port, commandsHandlers);
     }
 
     @Override
     public void run() {
         tcpServer.start();
-        getLogger().logDebug("TCP server opened on: %:" + config.tcpServerConfig.port);
+        getLogger().logDebug("TCP server opened on: %:" + config.tcpServer.port);
 
         try {
             tcpServer.join();
@@ -119,10 +120,10 @@ public class DisbordissimoServer extends Thread {
     public Connection getDB() {
         try {
             Connection conn = DBUtils.connect(
-                    config.sqlConnectionConfig.host,
-                    config.sqlConnectionConfig.user,
-                    config.sqlConnectionConfig.password,
-                    config.sqlConnectionConfig.dbName
+                    config.sql.host,
+                    config.sql.user,
+                    config.sql.password,
+                    config.sql.dbName
             );
             getLogger().logDebug("DB connected");
             return conn;

@@ -21,6 +21,8 @@ package we.ytc.disbordissimo.server;
 import we.ytc.disbordissimo.common.fm.exceptions.FileSetUpException;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.YtcLogger;
+import we.ytc.disbordissimo.server.internal.config.Config;
+import we.ytc.disbordissimo.server.internal.config.Operations;
 
 /**
  * Disbordissimo Server main launcher class.
@@ -32,16 +34,23 @@ public class Main {
      * Main.
      */
     public static void main(String[] args) throws Exception {
-        Config config = null;
-        if (Config.configFileExists()) {
-            config = Config.loadConfig();
-        } else {
-            getLogger().logWarning("Couldn't find config file. Creating one...");
-            config = Config.defaultConfig();
+        Config config = Operations.load();
+
+        System.out.println("Setting up logger based on config...");
+        try {
+            if (config.logger.isFileEnabled) {
+                if (config.logger.isDefaultLogFile) {
+                    logger = new YtcLogger(config.logger.isConsoleEnabled, true);
+                } else {
+                    logger = new YtcLogger(config.logger.isConsoleEnabled, config.logger.filePath);
+                }
+            } else {
+                logger = new YtcLogger(config.logger.isConsoleEnabled, false);
+            }
+        } catch (FileSetUpException e) {
+            throw new RuntimeException(e);
         }
 
-        getLogger().logMsg("Setting up logger based on config...");
-        changeLogger(config);
         getLogger().logMsg("Logger loaded!");
 
         DisbordissimoServer server = new DisbordissimoServer(config, getLogger());
@@ -61,29 +70,5 @@ public class Main {
             logger = new YtcLogger();
         }
         return logger;
-    }
-
-    /**
-     * Creates a new logger with the proprieties specified in {@link Config}. <br>
-     * The previous logger is closed during the {@code changeLogger} operation.
-     *
-     * @param config
-     *        The {@link Config}
-     */
-    public static void changeLogger(Config config) {
-        if(logger != null) logger.close();
-        try {
-            if (config.loggerConfig.isFileEnabled) {
-                if (config.loggerConfig.isDefaultLogFile) {
-                    logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, true);
-                } else {
-                    logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, config.loggerConfig.filePath);
-                }
-            } else {
-                logger = new YtcLogger(config.loggerConfig.isConsoleEnabled, false);
-            }
-        } catch (FileSetUpException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

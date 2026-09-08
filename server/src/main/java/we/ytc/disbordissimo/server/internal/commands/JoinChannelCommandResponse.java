@@ -35,8 +35,8 @@ import java.util.List;
  * Logic to respond to the command "join".
  */
 public class JoinChannelCommandResponse implements CommandResponse{
-    public static final String JANUS_URL = "ws://localhost:8188/";
-    public static final String STUN_URL = "stun:stun.l.google.com:19302";
+    //public static final String JANUS_URL = "ws://localhost:8188/";
+    //public static final String STUN_URL = "stun:stun.l.google.com:19302";
 
     protected static String IS_MEMBER_QUERY = "SELECT COUNT(id_member) as exist " +
                                             "FROM user_guild_byname " +
@@ -83,8 +83,6 @@ public class JoinChannelCommandResponse implements CommandResponse{
             long channelID = queryResult.getLong("id_channel");
             queryResult.close();
 
-            //TODO
-
             // Checks if the user has already joined the channel
             if (DisbordissimoServer.getServer().getActiveVoiceChannels()
                     .getChannelMembers(channelID).contains(userID)) {
@@ -97,8 +95,8 @@ public class JoinChannelCommandResponse implements CommandResponse{
             return JsonIO.genSuccessResponse(List.of(
                     String.valueOf(channel.id),
                     channel.pin,
-                    JANUS_URL,
-                    STUN_URL
+                    DisbordissimoServer.getServer().getConfig().webrtc.janusUrl,
+                    DisbordissimoServer.getServer().getConfig().webrtc.stunUrl
             ));
         } catch (SQLException e) {
             DBUtils.close(db);

@@ -24,6 +24,7 @@ import we.ytc.disbordissimo.server.DisbordissimoServer;
 import we.ytc.disbordissimo.server.internal.dataclasses.Room;
 import we.ytc.disbordissimo.common.TxUtils;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -61,11 +62,16 @@ public class JanusClient implements WebSocket.Listener {
         activeRequests = new TreeMap<>();
         
         HttpClient client = HttpClient.newHttpClient();
-        this.webSocket = client.newWebSocketBuilder()
-                .subprotocols("janus-protocol")
-                .buildAsync(URI.create(janusUrl), this)
-                .join();
-        
+        try {
+            this.webSocket = client.newWebSocketBuilder()
+                    .subprotocols("janus-protocol")
+                    .buildAsync(URI.create(janusUrl), this)
+                    .join();
+        } catch (Exception e) {
+            DisbordissimoServer.getServer().getLogger().logError("Janus server unavailable");
+            System.exit(-1); //TODO: custom exit codes
+        }
+
         createSession();
     }
 

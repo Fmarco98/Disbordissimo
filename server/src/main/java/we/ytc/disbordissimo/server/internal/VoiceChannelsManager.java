@@ -78,7 +78,7 @@ public class VoiceChannelsManager {
      */
     public VoiceChannelsManager(int cleanerInterval) {
         activeChannels = new TreeMap<>();
-        janus = new JanusClient(0, JoinChannelCommandResponse.JANUS_URL);
+        janus = new JanusClient(0, DisbordissimoServer.getServer().getConfig().webrtc.janusUrl);
 
         this.cleanerSleep = cleanerInterval;
         t_running = true;
