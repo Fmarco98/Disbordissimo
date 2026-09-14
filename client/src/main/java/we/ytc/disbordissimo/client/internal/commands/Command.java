@@ -18,14 +18,12 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
-import we.ytc.disbordissimo.client.ClientFactory;
+import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.client.internal.Client;
-import we.ytc.disbordissimo.client.DisbordissimoClient;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
-import java.io.IOException;
 import java.io.PrintStream;
-import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -53,19 +51,12 @@ import java.util.Scanner;
  */
 public abstract class Command {
 
-    private String commandName;
-    private Client myClient = null;
+    private String cmdName;
+    private Client myClient;
 
-    private Scanner in;
-    private PrintStream out;
-
-    /**
-     * Constructor.
-     * @param name
-     *        Command name
-     */
-    protected Command(String name) {
-        this.commandName = name;
+    public Command(String name, Client client) {
+        cmdName = name;
+        myClient = client;
     }
 
     /**
@@ -73,8 +64,22 @@ public abstract class Command {
      *
      * @return command name
      */
-    public String getCommandName() {
-        return this.commandName;
+    String getCommandName() {
+        return cmdName;
+    }
+
+    /**
+     * Executes the command.
+     *
+     * @param params
+     *        Calling params
+     *
+     * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
+     */
+    public int execute(String ...params) {
+        //TODO: how to raise UnreachableSeverEx
+
+        return onActionPerformed(params);
     }
 
     /**
@@ -87,47 +92,7 @@ public abstract class Command {
      *
      * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
      */
-    public abstract int onActionPerformed(String ...params);
-
-    /**
-     * Executes the command.
-     *
-     * @param params
-     *        Calling params
-     *
-     * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
-     */
-    public int execute(String ...params) {
-        try {
-            ClientFactory.Config conf = getClient().getConfig();
-            Socket socket = new Socket(conf.getServerAddress(), conf.getServerPort());
-            in = new Scanner(socket.getInputStream());
-            out = new PrintStream(socket.getOutputStream());
-
-            int exit = this.onActionPerformed(params);
-
-            in.close();
-            out.close();
-            socket.close();
-
-            return exit;
-        } catch (IOException e) {
-            return ReturnCodes.SERVER_UNREACHABLE;
-        }
-    }
-
-    /**
-     * Sets the current client.
-     *
-     * @param client
-     *        Current {@link Client}
-     *
-     * @return {@link Command} itself
-     */
-    public Command setCurrentClient(Client client) {
-        this.myClient = client;
-        return this;
-    }
+    protected abstract int onActionPerformed(String ...params);
 
     /**
      * Sends a {@code request} to the sever.
@@ -136,7 +101,10 @@ public abstract class Command {
      *        String request
      */
     protected void send(String request) {
-        out.println(request);
+        myClient.getSocketOUT().println(request);
+
+        if(myClient.getSocketOUT().checkError())
+            throw new UnreachableServerException();
     }
 
     /**
@@ -145,7 +113,11 @@ public abstract class Command {
      * @return {@code response}
      */
     protected String recv() {
-        return in.nextLine();
+        try {
+            return myClient.getSocketIN().nextLine();
+        } catch (NoSuchElementException e) {
+            throw new UnreachableServerException();
+        }
     }
 
     /**

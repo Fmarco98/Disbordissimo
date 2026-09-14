@@ -231,7 +231,7 @@ public class JanusClient implements WebSocket.Listener {
         String jsonString = data.toString();
         JsonObject response = gson.fromJson(jsonString, JsonObject.class);
 
-        DisbordissimoServer.getServer().getLogger().logDebug("IN: "+jsonString);
+        //DisbordissimoServer.getServer().getLogger().logDebug("IN: "+jsonString);
 
         String janus = response.has("janus") ? response.get("janus").getAsString() : "";
         String tx = response.get("transaction").getAsString();
@@ -246,6 +246,8 @@ public class JanusClient implements WebSocket.Listener {
 
                 } else if (handleId == null && dataObj.has("id")) {
                     handleId = dataObj.get("id").getAsLong();
+
+                    DisbordissimoServer.getServer().getLogger().logDebug("Janus connected");
                 }
             }
         }
@@ -279,7 +281,7 @@ public class JanusClient implements WebSocket.Listener {
         }
         String jsonString = gson.toJson(json);
 
-        DisbordissimoServer.getServer().getLogger().logDebug("OUT: "+jsonString);
+        //DisbordissimoServer.getServer().getLogger().logDebug("OUT: "+jsonString);
 
         this.webSocket.sendText(jsonString, true);
     }

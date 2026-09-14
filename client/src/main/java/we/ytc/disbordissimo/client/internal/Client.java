@@ -23,11 +23,14 @@ import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.client.internal.commands.*;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.client.exceptions.NotLoggedInException;
-import we.ytc.disbordissimo.common.AudioUtils;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.common.logger.Logger;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.util.List;
+import java.util.Scanner;
 
 import static we.ytc.disbordissimo.client.ClientFactory.Config;
 
@@ -39,19 +42,20 @@ import static we.ytc.disbordissimo.client.ClientFactory.Config;
  *  - Thread-safe
  */
 public final class Client implements DisbordissimoClient {
-    public static final int DATAGRAM_PACKET_SIZE = 8 + AudioUtils.MIC_FRAME_LENGTH;
-
     private String username;
     private long userID = -1;
 
     private WebRTCClient rtcClient;
+    private Socket clientSoc;
+    private Scanner socIN;
+    private PrintStream socOUT;
 
     private Logger logger;
     private Config config;
-    private PingThread pingThread;
 
     private boolean lastBoolResult = false;
     private List<String> lastStringList = null;
+    private int lastIntResult = 0;
     private String lastJoinedChannelCh = "";
     private String lastJoinedChannelGuild = "";
 
@@ -59,14 +63,18 @@ public final class Client implements DisbordissimoClient {
         config = conf;
         this.logger = logger;
 
-        pingThread = new PingThread(conf.getPingInterval(), this);
-        pingThread.start();
+        try {
+            clientSoc = new Socket(conf.getServerAddress(), conf.getServerPort());
+            socIN = new Scanner(clientSoc.getInputStream());
+            socOUT = new PrintStream(clientSoc.getOutputStream());
+        } catch (IOException e) {
+            throw new UnreachableServerException();
+        }
     }
 
     @Override
     public synchronized void signUp(String username, String password) throws CommandFailedException {
-        int exit = new SignUpCommand()
-                .setCurrentClient(this)
+        int exit = new SignUpCommand(this)
                 .execute(username, password);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -75,8 +83,7 @@ public final class Client implements DisbordissimoClient {
 
     @Override
     public synchronized void login(String username, String password) throws CommandFailedException {
-        int exit = new LoginCommand()
-                .setCurrentClient(this)
+        int exit = new LoginCommand(this)
                 .execute(username, password);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -103,8 +110,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void joinChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new JoinChannelCommand()
-                .setCurrentClient(this)
+        int exit = new JoinChannelCommand(this)
                 .execute(guild, channel);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -118,8 +124,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void quitChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new QuitChannelCommand()
-                .setCurrentClient(this)
+        int exit = new QuitChannelCommand(this)
                 .execute(guild, channel);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -130,8 +135,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized boolean isConnectedTo(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new TestVoiceChatConnectionCommand()
-                .setCurrentClient(this)
+        int exit = new TestVoiceChatConnectionCommand(this)
                 .execute(channel, guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -150,8 +154,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized String[] getGuilds() throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new GetGuildsCommand()
-                .setCurrentClient(this)
+        int exit = new GetGuildsCommand(this)
                 .execute();
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -164,8 +167,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized String getGuildOwner(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new GetGuildOwnerCommand()
-                .setCurrentClient(this)
+        int exit = new GetGuildOwnerCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -178,8 +180,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized String[] getGuildChannels(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new GetGuildChannelsCommand()
-                .setCurrentClient(this)
+        int exit = new GetGuildChannelsCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -192,8 +193,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void createGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new CreateGuildCommand()
-                .setCurrentClient(this)
+        int exit = new CreateGuildCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -204,8 +204,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void createGuildChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new CreateGuildChannelCommand()
-                .setCurrentClient(this)
+        int exit = new CreateGuildChannelCommand(this)
                 .execute(guild, channel);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -216,8 +215,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void joinGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new JoinGuildCommand()
-                .setCurrentClient(this)
+        int exit = new JoinGuildCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -228,8 +226,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void leaveGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new LeaveGuildCommand()
-                .setCurrentClient(this)
+        int exit = new LeaveGuildCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -240,8 +237,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void dropGuildChannel(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new DropGuildChannelCommand()
-                .setCurrentClient(this)
+        int exit = new DropGuildChannelCommand(this)
                 .execute(guild, channel);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -252,8 +248,7 @@ public final class Client implements DisbordissimoClient {
     public synchronized void dropGuild(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new DropGuildCommand()
-                .setCurrentClient(this)
+        int exit = new DropGuildCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -261,34 +256,24 @@ public final class Client implements DisbordissimoClient {
     }
 
     @Override
-    public synchronized int getPing() {
-        return pingThread.getMediumPing();
-    }
-
-    @Override
-    public synchronized boolean isServerReachable() {
-        try {
-            pingThread.makePing();
-            getPing();
-            return true;
-        } catch (UnreachableServerException e) {
-            return false;
-        }
-    }
-
-    @Override
     public synchronized void destroy() {
         this.logout();
 
-        this.pingThread.stopThread();
+        try {
+            socIN.close();
+            socOUT.close();
+            clientSoc.close();
+        } catch (IOException e) {
+            logger.logError("An error occurred while closing the client: "+ e);
+            e.printStackTrace();
+        }
     }
 
     @Override
     public synchronized String[] getGuildMemers(String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new GetGuildMembersCommand()
-                .setCurrentClient(this)
+        int exit = new GetGuildMembersCommand(this)
                 .execute(guild);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
@@ -301,14 +286,23 @@ public final class Client implements DisbordissimoClient {
     public synchronized String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException {
         checksLoggedIn();
 
-        int exit = new GetGuildChannelConnectedMembersCommand()
-                .setCurrentClient(this)
+        int exit = new GetGuildChannelConnectedMembersCommand(this)
                 .execute(guild, channel);
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
 
         return lastStringList.toArray(new String[]{});
+    }
+
+    @Override
+    public synchronized int ping(){
+        int exit = new PingCommand(this)
+                .execute();
+
+        if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
+
+        return lastIntResult;
     }
 
     public void setLastBooleanResult(boolean r) {
@@ -322,9 +316,6 @@ public final class Client implements DisbordissimoClient {
     }
     public WebRTCClient getWebRTCClient() {
         return rtcClient;
-    }
-    public PingThread getPingThread() {
-        return pingThread;
     }
     public Config getConfig() {
         return config;
@@ -344,8 +335,18 @@ public final class Client implements DisbordissimoClient {
     public void setUsername(String username) {
         this.username = username;
     }
+    public PrintStream getSocketOUT() {
+        return socOUT;
+    }
+    public Scanner getSocketIN() {
+        return socIN;
+    }
+    public void setLastInt(int n) {
+        lastIntResult = n;
+    }
 
     private void checksLoggedIn() {
         if(!isLoggedIn()) throw new NotLoggedInException();
     }
+
 }

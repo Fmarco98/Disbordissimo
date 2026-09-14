@@ -248,19 +248,6 @@ public interface DisbordissimoClient {
     void destroy();
 
     /**
-     * Gets the server medium ping.
-     * @return {@code ping}
-     */
-    int getPing();
-
-    /**
-     * Checks if the server is reachable.
-     * @return {@code true} if server is reachable;
-     *         {@code false} otherwise;
-     */
-    boolean isServerReachable();
-
-    /**
      * Gets all members of the given {@code guild}.
      *
      * @return String array that contains the username of all members.
@@ -278,4 +265,10 @@ public interface DisbordissimoClient {
      * @return String array that contains the username of all members connected to {@code channel}
      */
     String[] getChannelConnectedMembers(String channel, String guild) throws CommandFailedException;
+
+    /**
+     * Pings the server.
+     * @return {@code ping}
+     */
+    int ping();
 }

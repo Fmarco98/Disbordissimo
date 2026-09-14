@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.HashUtils;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
@@ -35,8 +36,8 @@ public class SignUpCommand extends Command {
     /**
      * Constructor.
      */
-    public SignUpCommand() {
-        super("sign-up");
+    public SignUpCommand(Client c) {
+        super("sign-up", c);
     }
 
     @Override

@@ -18,10 +18,13 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
+import java.io.PrintStream;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * <H1>CreateGuildChannel Command</h1>
@@ -29,8 +32,8 @@ import java.util.List;
  */
 public class CreateGuildChannelCommand extends Command {
 
-    public CreateGuildChannelCommand() {
-        super("create-guild-channel");
+    public CreateGuildChannelCommand(Client c) {
+        super("create-guild-channel", c);
     }
 
     @Override

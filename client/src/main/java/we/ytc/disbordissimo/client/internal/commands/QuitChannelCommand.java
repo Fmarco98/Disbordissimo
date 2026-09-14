@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -28,8 +29,8 @@ import java.util.List;
  * Quits from a voice channel.
  */
 public class QuitChannelCommand extends Command {
-    public QuitChannelCommand() {
-        super("quit");
+    public QuitChannelCommand(Client c) {
+        super("quit", c);
     }
 
     @Override

@@ -28,13 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <h1>TCP Server class</h1>
  *
  * The class is a TCP Server, the server runs on its own thread after the construction.<br>
- * The TCP server is implemented as a Token server. It responds to the DisbordissimoClient API Requests.<br>
+ * It responds to the DisbordissimoClient API Requests.<br>
  * <br>
  * Request structure: {@link we.ytc.disbordissimo.common.jsonio.JsonIO.Req}<br>
  * Response structure: {@link we.ytc.disbordissimo.common.jsonio.JsonIO.Resp}<br>
@@ -65,23 +65,23 @@ public class TCPServer extends Thread {
 
     @Override
     public void run() {
-        ExecutorService threadPool = Executors.newFixedThreadPool(POOL_N_THREADS);
+        ExecutorService vThreads = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("TCP-Response-", 0).factory()
+        );
 
         while(running) {
-            Socket client;
             try {
-                client = server.accept();
+                Socket client = server.accept();
+                vThreads.submit(new TCPResponse(client, commandsHandlers));
             } catch (IOException e) {
                 DisbordissimoServer.getServer().getLogger().logError("An Error occurred while accepting a client");
-                continue;
             }
-
-            threadPool.submit(() -> {
-                TCPResponse.respond(client, commandsHandlers);
-            });
         }
 
-        threadPool.close();
+        vThreads.shutdown();
+        try {
+            vThreads.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {}
         try {
             server.close();
         } catch (IOException e) {

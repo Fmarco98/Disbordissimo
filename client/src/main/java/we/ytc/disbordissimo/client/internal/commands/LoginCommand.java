@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.HashUtils;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
@@ -32,8 +33,8 @@ import java.util.List;
  */
 public class LoginCommand extends Command {
 
-    public LoginCommand() {
-        super("login");
+    public LoginCommand(Client c) {
+        super("login", c);
     }
 
     @Override

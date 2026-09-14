@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -29,8 +30,8 @@ import java.util.List;
  */
 public class DropGuildChannelCommand extends Command {
 
-    public DropGuildChannelCommand() {
-        super("drop-guild-channel");
+    public DropGuildChannelCommand(Client c) {
+        super("drop-guild-channel", c);
     }
 
     @Override

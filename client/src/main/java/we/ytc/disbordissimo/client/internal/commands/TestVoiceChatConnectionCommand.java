@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -29,8 +30,8 @@ import java.util.List;
  */
 public class TestVoiceChatConnectionCommand extends Command {
 
-    public TestVoiceChatConnectionCommand() {
-        super("test-voice-chat-connection");
+    public TestVoiceChatConnectionCommand(Client c) {
+        super("test-voice-chat-connection", c);
     }
 
     @Override

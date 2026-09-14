@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
@@ -29,8 +30,8 @@ import java.util.List;
  */
 public class GetGuildChannelConnectedMembersCommand extends Command {
 
-    public GetGuildChannelConnectedMembersCommand() {
-        super("get-guild-channel-connected-members");
+    public GetGuildChannelConnectedMembersCommand(Client c) {
+        super("get-guild-channel-connected-members", c);
     }
 
     @Override

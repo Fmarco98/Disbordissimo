@@ -128,6 +128,7 @@ public class DisbordissimoServer extends Thread {
             getLogger().logDebug("DB connected");
             return conn;
         } catch (SQLException e) {
+            getLogger().logError("DB unreachable: "+ e);
             throw new RuntimeException(e);
         }
     }

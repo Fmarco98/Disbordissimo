@@ -33,9 +33,18 @@ import java.util.Scanner;
  *
  * Core logic of a TCP Response.<br>
  */
-public class TCPResponse {
+public class TCPResponse implements Runnable {
 
-    public static void respond(Socket client, List<CommandResponse> commandsHandlers) {
+    private Socket client;
+    private List<CommandResponse> commandsHandlers;
+
+    public TCPResponse(Socket client, List<CommandResponse> commandsHandlers) {
+        this.client = client;
+        this.commandsHandlers = commandsHandlers;
+    }
+
+    @Override
+    public void run() {
         String address = String.valueOf(client.getInetAddress());
         int port = client.getPort();
 
@@ -45,21 +54,23 @@ public class TCPResponse {
                 Scanner in = new Scanner(client.getInputStream());
                 PrintStream out = new PrintStream(client.getOutputStream())
         ) {
-            JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
+            while(in.hasNextLine()) {
+                JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
 
-            var ref = new Object() {
-                boolean commandFound = false;
-                JsonIO.Resp response;
-            };
-            commandsHandlers.stream().forEach(command -> {
-                if(command.getCommandName().equals(request.cmdName)) {
-                    ref.commandFound = true;
-                    ref.response = command.onPerformed(toArray(request.params));
-                }
-            });
+                var ref = new Object() {
+                    boolean commandFound = false;
+                    JsonIO.Resp response;
+                };
+                commandsHandlers.stream().forEach(command -> {
+                    if(command.getCommandName().equals(request.cmdName)) {
+                        ref.commandFound = true;
+                        ref.response = command.onPerformed(toArray(request.params));
+                    }
+                });
 
-            String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
-            out.println(jsonResponse);
+                String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
+                out.println(jsonResponse);
+            }
 
             out.close();
             in.close();
@@ -68,7 +79,7 @@ public class TCPResponse {
             DisbordissimoServer.getServer().getLogger().logError(
                     "An IO Error occurred while responding to client={"+address+":"+port+"}: " + e.getMessage()
             );
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

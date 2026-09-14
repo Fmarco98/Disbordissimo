@@ -21,7 +21,6 @@ public class MainCli {
     protected static int guild;
 
     protected static String user;
-    protected static boolean isMainRunning;
 
     /**
      * Main method of the program that handles all the commands that a not logged user can do.
@@ -29,16 +28,25 @@ public class MainCli {
     public static void main(String[] args) {
         // TODO: Make client config based off a file
         config = new ClientFactory.Config("localhost", 10469);
-        client = ClientFactory.create(config);
         sc = new Scanner(System.in);
         guild = -1;
 
-        isMainRunning = isServerRunning();
+        try {
+            client = ClientFactory.create(config);
+        } catch (UnreachableServerException e) {
+            printErr("Err -1: Server Unreachable");
+            printErr("FATAL ERROR: The session will be closed.");
 
-        if (isMainRunning) {
-            printGreeting();
+            System.exit(1); //TODO: custom exit codes
         }
 
+        System.out.println("Connected to Server!");
+        System.out.println("Ping: " + client.ping() + " ms");
+        System.out.println();
+        System.out.println("Welcome to Disbordissimo's CLI!");
+        System.out.println("Type \"help\" to print a list of commands");
+
+        boolean isMainRunning = true;
         while (isMainRunning) {
             System.out.print(PROMPT);
             String cmd = sc.nextLine().strip().toLowerCase();
@@ -118,29 +126,6 @@ public class MainCli {
         System.out.println(" - exit (aliases: q, quit)");
         System.out.println(" - help");
         System.out.println("----------------------------");
-    }
-
-    /**
-     * Checks if the server is running based off the client's ping
-     *
-     * @return {@code true} if the server is running, otherwise {@code false}
-     */
-    private static boolean isServerRunning() {
-        try {
-            int ping = client.getPing();
-
-            System.out.println("Connected to Server!");
-            System.out.println("Ping: " + ping + " ms");
-
-            System.out.println();
-            return true;
-        } catch (UnreachableServerException e) {
-            printErr("Err -1: Server Unreachable");
-            printErr("FATAL ERROR: The session will be closed.");
-
-            return false;
-        }
-
     }
 
     /**
@@ -230,14 +215,6 @@ public class MainCli {
     }
 
     /**
-     * Only used once to print the program's greeting
-     */
-    private static void printGreeting() {
-        System.out.println("Welcome to Disbordissimo's CLI!");
-        System.out.println("Type \"help\" to print a list of commands");
-    }
-
-    /**
      * Prints an error message with the right color. Necessary because {@code System.out} and {@code System.err} have
      * different buffers.
      *
@@ -252,7 +229,7 @@ public class MainCli {
      */
     protected static void ping() {
         System.out.println("Pong!");
-        System.out.println("Current Ping: " + client.getPing() + " ms");
+        System.out.println("Current Ping: " + client.ping() + " ms");
     }
 
     /**

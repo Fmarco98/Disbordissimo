@@ -18,6 +18,7 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.TimeUtils;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
@@ -28,8 +29,8 @@ import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
  */
 public class PingCommand extends Command {
 
-    public PingCommand() {
-        super("ping");
+    public PingCommand(Client c) {
+        super("ping", c);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class PingCommand extends Command {
         JsonIO.Resp response = JsonIO.deserializeResp(r);
         switch (response.code) {
             case ReturnCodes.SUCCESS:
-                getClient().getPingThread().setLastPing((int)(t1 - t0));
+                getClient().setLastInt((int)(t1 - t0));
                 return ReturnCodes.SUCCESS;
 
             case ReturnCodes.COMMAND_NOT_FOUND:

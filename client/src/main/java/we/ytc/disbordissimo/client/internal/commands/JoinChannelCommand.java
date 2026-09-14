@@ -19,6 +19,7 @@
 package we.ytc.disbordissimo.client.internal.commands;
 
 import dev.onvoid.webrtc.media.audio.AudioOptions;
+import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.client.internal.WebRTCClient;
 import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
@@ -31,8 +32,8 @@ import java.util.List;
  */
 public class JoinChannelCommand extends Command {
 
-    public JoinChannelCommand() {
-        super("join");
+    public JoinChannelCommand(Client c) {
+        super("join", c);
     }
 
     @Override
