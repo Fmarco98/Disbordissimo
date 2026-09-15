@@ -19,11 +19,13 @@
 package we.ytc.disbordissimo.client.internal;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.onvoid.webrtc.*;
 import dev.onvoid.webrtc.media.MediaStream;
 import dev.onvoid.webrtc.media.audio.AudioOptions;
 import dev.onvoid.webrtc.media.audio.AudioTrack;
+import we.ytc.disbordissimo.client.EventHandler;
 import we.ytc.disbordissimo.common.TxUtils;
 import we.ytc.disbordissimo.common.logger.Logger;
 import we.ytc.disbordissimo.common.logger.NullLogger;
@@ -31,7 +33,9 @@ import we.ytc.disbordissimo.common.logger.NullLogger;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -71,27 +75,9 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
     private ScheduledExecutorService pingScheduler;
 
     private Logger logger;
+    private EventHandler eventHandler;
 
-    /**
-     * Constructor.
-     *
-     * @param userID
-     *        Users ID
-     * @param username
-     *        Username
-     * @param roomID
-     *        Room ID
-     * @param roomPin
-     *        Room security pin
-     * @param janusUrl
-     *        Janus server URL
-     * @param audioOptions
-     *        {@link AudioOptions} to configure mic params.
-     */
-    public WebRTCClient(long userID ,String username, int roomID, String roomPin, String janusUrl,
-                     AudioOptions audioOptions) {
-        this(userID, username, roomID, roomPin, janusUrl, "stun:stun.l.google.com:19302", audioOptions);
-    }
+    private Map<Long, String> inVoiceUsers = null;
 
     /**
      * Constructor.
@@ -112,7 +98,7 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
      *        {@link AudioOptions} to configure mic params.
      */
     public WebRTCClient(long userID ,String username, int roomID, String roomPin, String janusUrl,
-                     String stunServer, AudioOptions audioOptions) {
+                     String stunServer, AudioOptions audioOptions, EventHandler handler) {
         this.userID = userID;
         this.username = username;
         this.roomID = roomID;
@@ -120,8 +106,11 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
         this.janusUrl = janusUrl;
         this.stunServer = stunServer;
         this.audioOptions = audioOptions;
+        this.eventHandler = handler;
 
         logger = new NullLogger();
+
+        this.inVoiceUsers = new HashMap<>();
     }
 
     /**
@@ -388,8 +377,41 @@ public class WebRTCClient implements WebSocket.Listener, PeerConnectionObserver 
         String eventType = pluginData.get("audiobridge").getAsString();
 
         switch (eventType) {
-            case "joined": // Conferma di ingresso nella stanza
+            case "joined":
+                logger.logDebug("audiobridge:joined detected");
                 if(peerConnection == null) initWebRTCPeerConnection();
+
+                //TODO: janus doc inconsistent: missing "display"
+                if(pluginData.has("id")) {
+                    inVoiceUsers.put(pluginData.get("id").getAsLong(), "pluginData.get(\"display\").getAsString()");
+                    eventHandler.onChannelJoin("pluginData.get(\"display\").getAsString()");
+                }
+
+                for(JsonElement participant : pluginData.get("participants").getAsJsonArray()) {
+                    JsonObject user = participant.getAsJsonObject();
+                    if(!inVoiceUsers.containsKey(user.get("id").getAsLong())) {
+                        inVoiceUsers.put(user.get("id").getAsLong(), user.get("display").getAsString());
+                        eventHandler.onChannelJoin(user.get("display").getAsString());
+                    }
+                }
+                break;
+
+            case "left":
+                logger.logDebug("audiobridge:left detected");
+                for(String user : inVoiceUsers.values()) {
+                    eventHandler.onChannelLeave(user);
+                }
+                inVoiceUsers.clear();
+                break;
+
+            case "event":
+                if (!pluginData.has("leaving")) break;
+
+                // Someone left the channel
+                logger.logDebug("audiobridge:leave detected");
+                String user = inVoiceUsers.remove(pluginData.get("leaving").getAsLong());
+                if(user == null) break;
+                eventHandler.onChannelLeave(user);
                 break;
 
             default:

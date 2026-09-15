@@ -4,7 +4,7 @@ package we.ytc.disbordissimo.client;
 
 public interface EventHandler {
 
-    void onChannelJoin(String channel, String user);
+    void onChannelJoin(String user);
 
-    void onChannelLeave(String channel, String user);
+    void onChannelLeave(String user);
 }

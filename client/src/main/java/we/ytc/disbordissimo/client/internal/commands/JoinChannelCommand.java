@@ -62,8 +62,9 @@ public class JoinChannelCommand extends Command {
                         response.result.get(1),                     // Room pin
                         response.result.get(2),                     // JanusURL
                         response.result.get(3),                     // StunURL
-                        o
-                ));
+                        o,                                          // Audio Options
+                        getClient().getEventHandler()               // Client handler
+                ).setLogger(getClient().getLogger()));
                 getClient().getWebRTCClient().start();
 
                 getClient().getLogger().logDebug("join ok");

@@ -2,9 +2,11 @@ package we.ytc.disbordissimo.cli;
 
 import we.ytc.disbordissimo.client.ClientFactory;
 import we.ytc.disbordissimo.client.DisbordissimoClient;
+import we.ytc.disbordissimo.client.EventHandler;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
+import we.ytc.disbordissimo.common.logger.YtcLogger;
 
 import java.util.Scanner;
 
@@ -32,7 +34,17 @@ public class MainCli {
         guild = -1;
 
         try {
-            client = ClientFactory.create(config);
+            client = ClientFactory.create(config, new EventHandler() {
+                @Override
+                public void onChannelJoin(String user) {
+                    System.out.println(user);
+                }
+
+                @Override
+                public void onChannelLeave(String user) {
+                    System.out.println(user);
+                }
+            });
         } catch (UnreachableServerException e) {
             printErr("Err -1: Server Unreachable");
             printErr("FATAL ERROR: The session will be closed.");

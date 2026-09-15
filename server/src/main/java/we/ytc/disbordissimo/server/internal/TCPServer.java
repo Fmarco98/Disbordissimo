@@ -40,8 +40,6 @@ import java.util.concurrent.TimeUnit;
  * Response structure: {@link we.ytc.disbordissimo.common.jsonio.JsonIO.Resp}<br>
  */
 public class TCPServer extends Thread {
-    private static final int POOL_N_THREADS = 4;
-
     private boolean running;
     private ServerSocket server;
     private List<TCPResponse> activeResponses;

@@ -1,3 +1,5 @@
+//TODO: modify documentation
+
 /**
  * Disbordissimo: a voice chat application.
  * Copyright (C) <2026>  authors: YTC_Fmarco98; Harly
@@ -144,8 +146,8 @@ public class ClientFactory {
      *
      * @return client instance
      */
-    public static DisbordissimoClient create(Config config) {
-        return create(config, new NullLogger());
+    public static DisbordissimoClient create(Config config, EventHandler handler) {
+        return create(config, handler, new NullLogger());
     }
 
     /**
@@ -158,7 +160,7 @@ public class ClientFactory {
      *
      * @return client instance
      */
-    public static DisbordissimoClient create(Config config, Logger logger) {
-        return new Client(config, logger);
+    public static DisbordissimoClient create(Config config, EventHandler handler , Logger logger) {
+        return new Client(config, handler, logger);
     }
 }

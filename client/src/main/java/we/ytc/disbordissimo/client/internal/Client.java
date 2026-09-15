@@ -19,6 +19,7 @@
 package we.ytc.disbordissimo.client.internal;
 
 import we.ytc.disbordissimo.client.DisbordissimoClient;
+import we.ytc.disbordissimo.client.EventHandler;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.client.internal.commands.*;
 import we.ytc.disbordissimo.client.exceptions.CommandFailedException;
@@ -52,6 +53,7 @@ public final class Client implements DisbordissimoClient {
 
     private Logger logger;
     private Config config;
+    private EventHandler eventHandler;
 
     private boolean lastBoolResult = false;
     private List<String> lastStringList = null;
@@ -59,8 +61,9 @@ public final class Client implements DisbordissimoClient {
     private String lastJoinedChannelCh = "";
     private String lastJoinedChannelGuild = "";
 
-    public Client(Config conf, Logger logger) {
+    public Client(Config conf, EventHandler handler, Logger logger) {
         config = conf;
+        eventHandler = handler;
         this.logger = logger;
 
         try {
@@ -344,9 +347,11 @@ public final class Client implements DisbordissimoClient {
     public void setLastInt(int n) {
         lastIntResult = n;
     }
+    public EventHandler getEventHandler() {
+        return eventHandler;
+    }
 
     private void checksLoggedIn() {
         if(!isLoggedIn()) throw new NotLoggedInException();
     }
-
 }
