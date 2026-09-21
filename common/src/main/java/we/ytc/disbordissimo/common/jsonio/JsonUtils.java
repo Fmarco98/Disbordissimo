@@ -16,31 +16,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package we.ytc.disbordissimo.server.internal.commands;
+package we.ytc.disbordissimo.common.jsonio;
 
-import com.google.gson.JsonObject;
-import we.ytc.disbordissimo.common.jsonio.Template;
-import we.ytc.disbordissimo.server.DisbordissimoServer;
+import com.google.gson.JsonArray;
+
+import java.util.List;
 
 /**
- * <h1>Ping CommandResponse</h1>
- * Logic to respond to the command "ping".
+ * <h1>JsonUtils class</h1>
+ *
+ * It contains static functions that are useful to cast standard Java Types into JSON friendly types.<br>
+ *
+ * Functions:<br>
+ *  - toJsonArray(..)
  */
-public class PingCommandResponse implements CommandResponse {
-    @Override
-    public String getCommandName() {
-        return "ping";
-    }
+public class JsonUtils {
 
-    @Override
-    public JsonObject onPerformed(JsonObject request) {
-        try {
-            return Template.success();
+    /**
+     * Casts a {@code List<String>} into a {@code JsonArray} object.
+     *
+     * @param list
+     *        List of strings
+     *
+     * @return {@link JsonArray}
+     */
+    public static JsonArray toJsonArray(List<String> list) {
+        JsonArray array = new JsonArray(list.size());
 
-        } catch (Exception e) {
-            DisbordissimoServer.getServer().getLogger().logError(e.toString());
-            e.printStackTrace();
-            return Template.error();
-        }
+        list.forEach(e -> {
+            array.add(e);
+        });
+
+        return array;
     }
 }

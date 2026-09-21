@@ -18,13 +18,9 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import com.google.gson.JsonObject;
 import we.ytc.disbordissimo.client.internal.Client;
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
-
-import java.io.PrintStream;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * <H1>CreateGuildChannel Command</h1>
@@ -38,41 +34,39 @@ public class CreateGuildChannelCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = String.valueOf(getClient().getUserID());
+        long userID = getClient().getUserID();
         String guildName = params[0];
         String channelName = params[1];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, guildName, channelName));
-        super.send(JsonIO.serializeReq(request));
+        JsonObject request = new JsonObject();
+        request.addProperty("userID", userID);
+        request.addProperty("guild", guildName);
+        request.addProperty("channel", channelName);
+        super.send(request);
 
-        JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
-        switch (response.code) {
+        JsonObject response = super.recv();
+        int code = response.get("code").getAsInt();
+        String msgCode = response.get("msgCode").getAsString();
+
+        switch (code) {
             case ReturnCodes.SUCCESS:
-                return ReturnCodes.SUCCESS;
+                getClient().getLogger().logDebug(msgCode);
+                break;
 
             case ReturnCodes.NO_PERMISSION:
-                getClient().getLogger().logWarning(response.msgCode);
-                return ReturnCodes.NO_PERMISSION;
-
             case ReturnCodes.GUILD_NOT_FOUND:
-                getClient().getLogger().logWarning(response.msgCode);
-                return ReturnCodes.GUILD_NOT_FOUND;
-
             case ReturnCodes.CHANNEL_ALREADY_EXISTS:
-                getClient().getLogger().logWarning(response.msgCode);
-                return ReturnCodes.CHANNEL_ALREADY_EXISTS;
-
             case ReturnCodes.COMMAND_NOT_FOUND:
-                getClient().getLogger().logWarning("An invalid command was sent.");
-                return ReturnCodes.COMMAND_NOT_FOUND;
+                getClient().getLogger().logWarning(msgCode);
+                break;
 
             case ReturnCodes.ERROR:
                 getClient().getLogger().logError("A server error occurred");
-                return ReturnCodes.ERROR;
+                break;
 
             default:
                 getClient().getLogger().logWarning("Unknown response code; response=" + response);
-                return ReturnCodes.ERROR;
         }
+        return code;
     }
 }

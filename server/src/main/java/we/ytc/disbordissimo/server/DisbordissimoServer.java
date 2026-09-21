@@ -73,7 +73,6 @@ public class DisbordissimoServer extends Thread {
         commandsHandlers.add(new LoginCommandResponse());
         commandsHandlers.add(new JoinChannelCommandResponse());
         commandsHandlers.add(new QuitChannelCommandResponse());
-        commandsHandlers.add(new TestVoiceChatConnectionCommandResponse());
         commandsHandlers.add(new GetGuildsCommandResponse());
         commandsHandlers.add(new GetGuildChannelsCommandResponse());
         commandsHandlers.add(new CreateGuildCommandResponse());

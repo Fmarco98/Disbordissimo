@@ -18,10 +18,12 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import we.ytc.disbordissimo.client.internal.Client;
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,33 +38,41 @@ public class GetGuildChannelsCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-        String userID = String.valueOf(getClient().getUserID());
+        long userID = getClient().getUserID();
         String guildName = params[0];
 
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), List.of(userID, guildName));
-        super.send(JsonIO.serializeReq(request));
+        JsonObject request = new JsonObject();
+        request.addProperty("userID", userID);
+        request.addProperty("guild", guildName);
+        super.send(request);
 
-        JsonIO.Resp response = JsonIO.deserializeResp(super.recv());
-        switch (response.code) {
+        JsonObject response = super.recv();
+        int code = response.get("code").getAsInt();
+        String msgCode = response.get("msgCode").getAsString();
+
+        switch (code) {
             case ReturnCodes.SUCCESS:
-                getClient().setLastStringList(response.result);
-                return ReturnCodes.SUCCESS;
+                List<String> result = new ArrayList<>();
+                for(JsonElement e : response.get("channels").getAsJsonArray()) {
+                    result.add(e.getAsString());
+                }
+                getClient().setLastStringList(result);
+
+                getClient().getLogger().logDebug(msgCode);
+                break;
 
             case ReturnCodes.GUILD_NOT_FOUND:
-                getClient().getLogger().logError(response.msgCode);
-                return ReturnCodes.GUILD_NOT_FOUND;
-
             case ReturnCodes.COMMAND_NOT_FOUND:
-                getClient().getLogger().logWarning("An invalid command was sent.");
-                return ReturnCodes.COMMAND_NOT_FOUND;
+                getClient().getLogger().logWarning(msgCode);
+                break;
 
             case ReturnCodes.ERROR:
                 getClient().getLogger().logError("A server error occurred");
-                return ReturnCodes.ERROR;
+                break;
 
             default:
                 getClient().getLogger().logWarning("Unknown response code; response=" + response);
-                return ReturnCodes.ERROR;
         }
+        return code;
     }
 }

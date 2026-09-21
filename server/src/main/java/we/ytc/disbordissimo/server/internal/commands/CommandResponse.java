@@ -18,7 +18,7 @@
 
 package we.ytc.disbordissimo.server.internal.commands;
 
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
+import com.google.gson.JsonObject;
 
 /**
  * <h1>Command response interface</h1>
@@ -30,6 +30,7 @@ public interface CommandResponse {
 
     /**
      * Gets the command name.
+     *
      * @return command name
      */
     String getCommandName();
@@ -37,10 +38,10 @@ public interface CommandResponse {
     /**
      * Performs the command response.
      *
-     * @param params
-     *        {@link JsonIO.Req} params
+     * @param request
+     *        {@link JsonObject} request
      *
-     * @return {@link JsonIO.Resp}
+     * @return {@link JsonObject}
      */
-    JsonIO.Resp onPerformed(String ...params);
+    JsonObject onPerformed(JsonObject request);
 }

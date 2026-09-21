@@ -18,8 +18,12 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import we.ytc.disbordissimo.client.exceptions.UnreachableServerException;
 import we.ytc.disbordissimo.client.internal.Client;
+import we.ytc.disbordissimo.common.TxUtils;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 import java.io.PrintStream;
@@ -50,6 +54,7 @@ import java.util.Scanner;
  *  - getCommandName()<br>
  */
 public abstract class Command {
+    private static final Gson gson = new GsonBuilder().create();
 
     private String cmdName;
     private Client myClient;
@@ -77,8 +82,6 @@ public abstract class Command {
      * @return {@link we.ytc.disbordissimo.common.jsonio.ReturnCodes}
      */
     public int execute(String ...params) {
-        //TODO: how to raise UnreachableSeverEx
-
         return onActionPerformed(params);
     }
 
@@ -100,8 +103,13 @@ public abstract class Command {
      * @param request
      *        String request
      */
-    protected void send(String request) {
-        myClient.getSocketOUT().println(request);
+    protected void send(JsonObject request) {
+        request.addProperty("cmd", getCommandName());
+        request.addProperty("transaction", TxUtils.gen());
+
+        String s = gson.toJson(request);
+        getClient().getLogger().logDebug("SEND: \""+ s +"\"");
+        myClient.getSocketOUT().println(s);
 
         if(myClient.getSocketOUT().checkError())
             throw new UnreachableServerException();
@@ -112,9 +120,13 @@ public abstract class Command {
      *
      * @return {@code response}
      */
-    protected String recv() {
+    protected JsonObject recv() {
         try {
-            return myClient.getSocketIN().nextLine();
+            String s = myClient.getSocketIN().nextLine();
+
+            getClient().getLogger().logDebug("RECV: \""+ s +"\"");
+
+            return gson.fromJson(s, JsonObject.class);
         } catch (NoSuchElementException e) {
             throw new UnreachableServerException();
         }

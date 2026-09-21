@@ -18,9 +18,8 @@
 
 package we.ytc.disbordissimo.server.internal.commands;
 
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
-import we.ytc.disbordissimo.common.jsonio.MsgCodes;
-import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
+import com.google.gson.JsonObject;
+import we.ytc.disbordissimo.common.jsonio.Template;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
@@ -40,29 +39,32 @@ public class SignUpCommandResponse implements CommandResponse {
     }
 
     @Override
-    public JsonIO.Resp onPerformed(String... params) {
+    public JsonObject onPerformed(JsonObject request) {
+        if(!request.has("username") || !request.has("hpwd"))
+            return Template.error();
+
+        String username = request.get("username").getAsString();
+        String hashPasswd = request.get("hpwd").getAsString();
+
         Connection db = null;
         try {
             db = DisbordissimoServer.getServer().getDB();
-
-            String username = params[0];
-            String hashPasswd = params[1];
 
             DBUtils.startTransaction(db);
             DBUtils.bindParams(db, USER_INSERT_QUERY,"ss", username, hashPasswd).executeUpdate();
             DBUtils.commit(db);
 
-            return JsonIO.genSuccessResponse();
+            return Template.success();
         } catch (SQLException e) {
             DBUtils.rollback(db);
             DBUtils.close(db);
             if (e.getErrorCode() == 1062) { // That username has already been used.
-                return new JsonIO.Resp(ReturnCodes.USER_ALREADY_EXISTS, MsgCodes.USER_ALREADY_EXISTS, null);
+                return Template.userAlreadyExists();
             }
 
             DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: "+ e);
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
 
         } catch (Exception e) {
             if(db != null) {
@@ -71,7 +73,7 @@ public class SignUpCommandResponse implements CommandResponse {
             }
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
         }
     }
 }

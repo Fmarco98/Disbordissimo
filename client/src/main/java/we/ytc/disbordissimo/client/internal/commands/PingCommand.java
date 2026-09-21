@@ -18,9 +18,9 @@
 
 package we.ytc.disbordissimo.client.internal.commands;
 
+import com.google.gson.JsonObject;
 import we.ytc.disbordissimo.client.internal.Client;
 import we.ytc.disbordissimo.common.TimeUtils;
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
 import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 
 /**
@@ -35,32 +35,34 @@ public class PingCommand extends Command {
 
     @Override
     public int onActionPerformed(String... params) {
-
-        JsonIO.Req request = new JsonIO.Req(super.getCommandName(), null);
-        String jsonRequest = JsonIO.serializeReq(request);
+        JsonObject request = new JsonObject();
 
         long t0 = TimeUtils.currentTimestamp();
-        super.send(jsonRequest);
-        String r = super.recv();
+        super.send(request);
+        JsonObject response = super.recv();
         long t1 = TimeUtils.currentTimestamp();
 
-        JsonIO.Resp response = JsonIO.deserializeResp(r);
-        switch (response.code) {
+        int code = response.get("code").getAsInt();
+        String msgCode = response.get("msgCode").getAsString();
+
+        switch (code) {
             case ReturnCodes.SUCCESS:
                 getClient().setLastInt((int)(t1 - t0));
-                return ReturnCodes.SUCCESS;
+
+                getClient().getLogger().logDebug(msgCode);
+                break;
 
             case ReturnCodes.COMMAND_NOT_FOUND:
-                getClient().getLogger().logWarning("An invalid command was sent.");
-                return ReturnCodes.COMMAND_NOT_FOUND;
+                getClient().getLogger().logWarning(msgCode);
+                break;
 
             case ReturnCodes.ERROR:
                 getClient().getLogger().logError("A server error occurred");
-                return ReturnCodes.ERROR;
+                break;
 
             default:
                 getClient().getLogger().logWarning("Unknown response code; response=" + response);
-                return ReturnCodes.ERROR;
         }
+        return code;
     }
 }

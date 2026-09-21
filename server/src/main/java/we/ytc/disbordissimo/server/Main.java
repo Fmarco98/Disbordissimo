@@ -34,7 +34,7 @@ public class Main {
      * Main.
      */
     public static void main(String[] args) throws Exception {
-        Config config = Operations.load();
+        Config config = Config.load();
 
         System.out.println("Setting up logger based on config...");
         try {

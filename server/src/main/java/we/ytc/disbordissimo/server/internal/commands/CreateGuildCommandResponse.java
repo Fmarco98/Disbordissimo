@@ -18,9 +18,8 @@
 
 package we.ytc.disbordissimo.server.internal.commands;
 
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
-import we.ytc.disbordissimo.common.jsonio.MsgCodes;
-import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
+import com.google.gson.JsonObject;
+import we.ytc.disbordissimo.common.jsonio.Template;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
@@ -47,13 +46,16 @@ public class CreateGuildCommandResponse implements CommandResponse {
     }
 
     @Override
-    public JsonIO.Resp onPerformed(String... params) {
+    public JsonObject onPerformed(JsonObject request) {
+        if(!request.has("userID") || !request.has("guild"))
+            return Template.error();
+
+        long userID = request.get("userID").getAsLong();
+        String guildName = request.get("guild").getAsString();
+
         Connection db = null;
         try {
             db = DisbordissimoServer.getServer().getDB();
-
-            long userID = Long.valueOf(params[0]);
-            String guildName = params[1];
 
             DBUtils.startTransaction(db);
             DBUtils.bindParams(db, GUILD_INSERT_QUERY,"sl", guildName, userID).executeUpdate();
@@ -61,17 +63,17 @@ public class CreateGuildCommandResponse implements CommandResponse {
             DBUtils.commit(db);
 
             DBUtils.close(db);
-            return JsonIO.genSuccessResponse();
+            return Template.success();
         } catch (SQLException e) {
             DBUtils.rollback(db);
             DBUtils.close(db);
             if (e.getErrorCode() == 1062) { // That guild already exists
-                return new JsonIO.Resp(ReturnCodes.GUILD_ALREADY_EXISTS, MsgCodes.GUILD_ALREADY_EXISTS, null);
+                return Template.guildAlreadyExists();
             }
 
             DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: " + e);
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
 
         } catch (Exception e) {
             if(db != null) {
@@ -80,7 +82,7 @@ public class CreateGuildCommandResponse implements CommandResponse {
             }
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
         }
     }
 }

@@ -130,19 +130,6 @@ public interface DisbordissimoClient {
     void reconnectToChannel(String channel, String guild) throws CommandFailedException;
 
     /**
-     * Checks if the user is connected to the given voice channel ({@code guild.channel}).
-     *
-     * @param guild
-     *        The guild name
-     * @param channel
-     *        The voice channel name
-     *
-     * @throws CommandFailedException
-     *         If the command doesn't end with {@code ReturnCodes.SUCCESS}
-     */
-    boolean isConnectedTo(String channel, String guild) throws CommandFailedException;
-
-    /**
      * Gets all {@code guilds} where the logged user is member.
      *
      * @throws CommandFailedException

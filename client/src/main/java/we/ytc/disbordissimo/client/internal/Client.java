@@ -58,8 +58,8 @@ public final class Client implements DisbordissimoClient {
     private boolean lastBoolResult = false;
     private List<String> lastStringList = null;
     private int lastIntResult = 0;
-    private String lastJoinedChannelCh = "";
-    private String lastJoinedChannelGuild = "";
+    private String lastJoinedChannelCh = null;
+    private String lastJoinedChannelGuild = null;
 
     public Client(Config conf, EventHandler handler, Logger logger) {
         config = conf;
@@ -98,7 +98,8 @@ public final class Client implements DisbordissimoClient {
         if(!this.isLoggedIn()) return;
 
         try {
-            quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
+            if(lastJoinedChannelCh != null && lastJoinedChannelGuild != null)
+                quitChannel(lastJoinedChannelCh, lastJoinedChannelGuild);
         } catch (CommandFailedException e) {}
 
         this.userID = -1;
@@ -132,19 +133,6 @@ public final class Client implements DisbordissimoClient {
 
         if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
         if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
-    }
-
-    @Override
-    public synchronized boolean isConnectedTo(String channel, String guild) throws CommandFailedException {
-        checksLoggedIn();
-
-        int exit = new TestVoiceChatConnectionCommand(this)
-                .execute(channel, guild);
-
-        if (exit == ReturnCodes.SERVER_UNREACHABLE) throw new UnreachableServerException();
-        if (exit != ReturnCodes.SUCCESS) throw new CommandFailedException(exit);
-
-        return lastBoolResult;
     }
 
     @Override

@@ -18,7 +18,11 @@
 
 package we.ytc.disbordissimo.server.internal;
 
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import we.ytc.disbordissimo.common.jsonio.MsgCodes;
+import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
 import we.ytc.disbordissimo.server.internal.commands.CommandResponse;
 
@@ -34,6 +38,7 @@ import java.util.Scanner;
  * Core logic of a TCP Response.<br>
  */
 public class TCPResponse implements Runnable {
+    private static final Gson gson = new GsonBuilder().create();
 
     private Socket client;
     private List<CommandResponse> commandsHandlers;
@@ -45,6 +50,7 @@ public class TCPResponse implements Runnable {
 
     @Override
     public void run() {
+        //TODO sistemare tutte le risposte
         String address = String.valueOf(client.getInetAddress());
         int port = client.getPort();
 
@@ -55,20 +61,35 @@ public class TCPResponse implements Runnable {
                 PrintStream out = new PrintStream(client.getOutputStream())
         ) {
             while(in.hasNextLine()) {
-                JsonIO.Req request = JsonIO.deserializeReq(in.nextLine());
+                String jsonRequest = in.nextLine();
+                DisbordissimoServer.getServer().getLogger().logDebug("RECV: \""+jsonRequest+"\"");
+                JsonObject request = gson.fromJson(jsonRequest, JsonObject.class);
 
                 var ref = new Object() {
                     boolean commandFound = false;
-                    JsonIO.Resp response;
+                    JsonObject response = null;
                 };
                 commandsHandlers.stream().forEach(command -> {
-                    if(command.getCommandName().equals(request.cmdName)) {
+                    if(command.getCommandName().equals(request.get("cmd").getAsString())) {
                         ref.commandFound = true;
-                        ref.response = command.onPerformed(toArray(request.params));
+                        ref.response = command.onPerformed(request);
                     }
                 });
 
-                String jsonResponse = ref.commandFound ? JsonIO.serializeResp(ref.response) : JsonIO.CMD_NOT_FOUND_RESPONSE;
+                String jsonResponse = "";
+                if(ref.commandFound) {
+                    ref.response.addProperty("transaction", request.get("transaction").getAsString());
+                    jsonResponse = gson.toJson(ref.response);
+                } else {
+                    JsonObject cmdNotFound = new JsonObject();
+                    cmdNotFound.addProperty("code", ReturnCodes.COMMAND_NOT_FOUND);
+                    cmdNotFound.addProperty("msgCode", MsgCodes.COMMAND_NOT_FOUND);
+                    cmdNotFound.addProperty("transaction", request.get("transaction").getAsString());
+                    jsonResponse = gson.toJson(cmdNotFound);
+                }
+
+                DisbordissimoServer.getServer().getLogger().logDebug("SEND: \""+jsonResponse+"\"");
+
                 out.println(jsonResponse);
             }
 
@@ -81,13 +102,5 @@ public class TCPResponse implements Runnable {
             );
             e.printStackTrace();
         }
-    }
-
-    private static String[] toArray(List<String> list) {
-        var arr = new String[list.size()];
-        for(int i=0; i < list.size(); i++) {
-            arr[i] = list.get(i);
-        }
-        return  arr;
     }
 }

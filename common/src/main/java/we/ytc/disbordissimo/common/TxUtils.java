@@ -33,4 +33,13 @@ public class TxUtils {
     public static String gen(long userID, String contest) {
         return contest +"|"+ userID +"|"+ UUID.randomUUID().toString().substring(0, 8);
     }
+
+    /**
+     * Generates a transaction ID as UUID.
+     *
+     * @return transaction ID
+     */
+    public static String gen() {
+        return UUID.randomUUID().toString();
+    }
 }

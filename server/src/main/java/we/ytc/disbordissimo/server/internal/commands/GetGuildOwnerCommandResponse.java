@@ -18,16 +18,14 @@
 
 package we.ytc.disbordissimo.server.internal.commands;
 
-import we.ytc.disbordissimo.common.jsonio.JsonIO;
-import we.ytc.disbordissimo.common.jsonio.MsgCodes;
-import we.ytc.disbordissimo.common.jsonio.ReturnCodes;
+import com.google.gson.JsonObject;
+import we.ytc.disbordissimo.common.jsonio.Template;
 import we.ytc.disbordissimo.server.DisbordissimoServer;
 import we.ytc.disbordissimo.server.internal.utils.db.DBUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import static we.ytc.disbordissimo.server.internal.commands.JoinChannelCommandResponse.IS_MEMBER_QUERY;
 
@@ -48,13 +46,16 @@ public class GetGuildOwnerCommandResponse implements CommandResponse {
     }
 
     @Override
-    public JsonIO.Resp onPerformed(String... params) {
+    public JsonObject onPerformed(JsonObject request) {
+        if(!request.has("userID") || !request.has("guild"))
+            return Template.error();
+
+        long userID = request.get("userID").getAsLong();
+        String guildName = request.get("guild").getAsString();
+
         Connection db = null;
         try {
             db = DisbordissimoServer.getServer().getDB();
-
-            long userID = Long.valueOf(params[0]);
-            String guildName = params[1];
 
             //Checks if the user is a guild member
             ResultSet queryResult = DBUtils.bindParams(db, IS_MEMBER_QUERY, "sl", guildName, userID).executeQuery();
@@ -62,7 +63,7 @@ public class GetGuildOwnerCommandResponse implements CommandResponse {
             if (queryResult.getRow() != 1 || !queryResult.getBoolean("exist")) {
                 queryResult.close();
                 DBUtils.close(db);
-                return new JsonIO.Resp(ReturnCodes.GUILD_NOT_FOUND, MsgCodes.GUILD_NOT_FOUND, null);
+                return Template.guildNotFound();
             }
             queryResult.close();
 
@@ -72,18 +73,20 @@ public class GetGuildOwnerCommandResponse implements CommandResponse {
             queryResult.close();
 
             DBUtils.close(db);
-            return JsonIO.genSuccessResponse(List.of(owner));
+            JsonObject response = Template.success();
+            response.addProperty("owner", owner);
+            return response;
         } catch (SQLException e) {
             DBUtils.close(db);
             DisbordissimoServer.getServer().getLogger().logError("SQL error occurred: " + e);
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
 
         } catch (Exception e) {
             if(db != null) DBUtils.close(db);
             DisbordissimoServer.getServer().getLogger().logError(e.toString());
             e.printStackTrace();
-            return new JsonIO.Resp(ReturnCodes.ERROR, MsgCodes.ERROR, null);
+            return Template.error();
         }
     }
 }
