@@ -192,7 +192,7 @@ public class Config {
     }
 
     private static void exit(int code) {
-        System.out.println("Press any key to exit.");
+        System.out.println("Press any key to exit...");
         try {
             System.in.read();
         } catch (IOException ex) {}
